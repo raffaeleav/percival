@@ -50,7 +50,7 @@ percival/
 │── data/                  
 │   ├── images/            # Docker images
 │   ├── reports/		   
-│   └── temp/       	     # Image layers / manifest.json
+│   └── temp/       	    # Image layers / manifest.json
 │
 │── percival/              
 │
