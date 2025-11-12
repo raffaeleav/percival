@@ -1,0 +1,6 @@
+percival/core/__pycache__/
+percival/helpers/__pycache__/
+
+data/
+
+.DS_Store
