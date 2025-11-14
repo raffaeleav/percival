@@ -5,7 +5,9 @@ import platform
 from yaspin import yaspin
 from yaspin.spinners import Spinners
 from percival.helpers import folders as fld
-from percival.core import scan as scn, fetch as ftc, report as rpt, extract as ext
+from percival.core import fetch as ftc, extract as ext
+from percival.rengine import report as rpt
+from percival.vscanner import scan as scn
 
 
 def run_with_spinner(desc, func, *args, **kwargs):

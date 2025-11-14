@@ -1,8 +1,9 @@
 import os
 import json
 
-from percival.core import parse as prs, extract as ext
+from percival.core import extract as ext
 from percival.helpers import api, shell as sh, folders as fld
+from percival.vscanner import parse as prs
 
 
 def trivy(image_tag):
