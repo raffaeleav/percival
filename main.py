@@ -8,6 +8,15 @@ from percival.helpers import folders as fld
 from percival.core import fetch as ftc, extract as ext
 from percival.rengine import report as rpt
 from percival.vscanner import scan as scn
+from percival.helpers import shell as sh
+
+
+def is_docker_running():
+    try:
+        sh.run_command("docker ps")
+        return True
+    except RuntimeError:
+        return False
 
 
 def run_with_spinner(desc, func, *args, **kwargs):
@@ -47,6 +56,10 @@ class Percival(cmd2.Cmd):
         Args:
             image_tag (str): The Docker image tag to pull.
         """
+        if(not is_docker_running()):
+            print("[Failure] To fetch an image, Docker daemon should be running")
+            return
+
         run_with_spinner("Pulling image", ftc.pull, self, image_tag)
         run_with_spinner("Extracting manifest", ext.get_manifest, self, image_tag)
         run_with_spinner("Extracting layers", ext.get_layers, self, image_tag)
