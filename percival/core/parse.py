@@ -6,10 +6,6 @@ from collections import defaultdict
 from percival.core import lngs_dict
 
 
-def is_cve(cve_id):
-    return re.match(r"^CVE-\d{4}-\d{4,}$", cve_id) is not None
-
-
 def group_trivy_pkg_findings(report):
     grouped = defaultdict(lambda: {"package": None, "version": None, "cves": []})
 

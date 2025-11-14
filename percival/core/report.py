@@ -1,8 +1,53 @@
 import os
+import re
 import json
 
-from percival.core import parse as prs
 from percival.helpers import api, shell as sh, folders as fld
+
+CVE_PATTERN = r"(CVE-\d{4}-\d{4,})"
+
+
+def is_cve(cve_id):
+    if "CVE-" in cve_id:
+        return True
+    else:
+        return False
+    
+
+def extract_cve_id(cve_id):
+    match = re.search(CVE_PATTERN, cve_id)
+    
+    if match:
+        return match.group(1)
+
+
+def filter_pkgs_cve_ids(report): 
+    for entry in report:
+        entry["cves"] = [
+            cve for cve in entry["cves"] 
+            if cve.get("id") and is_cve(cve["id"])
+        ]
+
+    return report 
+
+
+def extract_pkgs_cve_ids(report):
+    for entry in report:
+        for cve in entry["cves"]:
+                cve_id = cve.get("id")
+                cve_id = extract_cve_id(cve_id)
+                
+                if cve_id:
+                    cve["id"] = cve_id
+                
+    return report
+
+
+def filter_pkgs_report(report):
+    report = filter_pkgs_cve_ids(report)
+    report = extract_pkgs_cve_ids(report)
+    
+    return report
 
 
 def get_pkgs_cvss_scores(report):
@@ -11,8 +56,7 @@ def get_pkgs_cvss_scores(report):
 
     for entry in report:
         for cve in entry["cves"]:
-            if cve["id"] and prs.is_cve(cve["id"]):
-                cve_ids.append(cve["id"])
+            cve_ids.append(cve["id"])
 
     for i in range(0, len(cve_ids), batch_size):
         batch = cve_ids[i: i+batch_size]
@@ -40,6 +84,24 @@ def get_pkgs_cvss_scores(report):
     return report
 
 
+def filter_lngs_report_cve_ids(report): 
+    for entry in report:
+        for dependency in entry["dependencies"]: 
+            dependency["cves"] = [
+                cve 
+                for cve in dependency["cves"] 
+                if cve.get("id") and is_cve(cve["id"])
+            ]
+
+    return report
+
+
+def filter_lngs_report(report):
+    report = filter_lngs_report_cve_ids(report)
+    
+    return report
+
+
 def get_lngs_cvss_scores(report):
     cve_ids = []
     batch_size = 50
@@ -47,8 +109,7 @@ def get_lngs_cvss_scores(report):
     for entry in report:
         for dependecy in entry["dependencies"]:
             for cve in dependecy["cves"]:
-                if cve["id"] and prs.is_cve(cve["id"]):
-                    cve_ids.append(cve["id"])
+                cve_ids.append(cve["id"])
 
     for i in range(0, len(cve_ids), batch_size):
         batch = cve_ids[i: i+batch_size]
@@ -75,39 +136,6 @@ def get_lngs_cvss_scores(report):
                             cve["cvss"] = cvss
 
     return report
-
-
-def filter_pkgs(report):
-    filtered = []
-
-    for pkg in report:
-        package = pkg.get("package", "")
-        version = pkg.get("version", "")
-        cves = pkg.get("cves", [])
-
-        if not isinstance(cves, list):
-            continue
-
-        cves_with_scores = [
-            cve
-            for cve in cves
-            if any(cve.get("cvss", {}).get(k) for k in ["2.0", "3.0", "3.1"])
-        ]
-        cves_without_scores = [cve for cve in cves if cve not in cves_with_scores]
-
-        filtered_cves = cves_with_scores[:10]
-        if len(filtered_cves) < 10:
-            filtered_cves += cves_without_scores[: 10 - len(filtered_cves)]
-
-        filtered.append(
-            {
-                "package": package,
-                "version": version,
-                "cves": filtered_cves,
-            }
-        )
-
-    return filtered
 
 
 def format_pkgs_report(report):
@@ -206,8 +234,9 @@ def vscan_report(image_tag):
 
         if report:
             if "pkgs" in file:
+                report = filter_pkgs_report(report)
                 report = get_pkgs_cvss_scores(report)
-                report = filter_pkgs(report)
+
                 table = format_pkgs_report(report)
 
                 if "trivy" in file:
@@ -216,7 +245,9 @@ def vscan_report(image_tag):
                     tables["percival_pkgs"] = table
                 
             elif "lngs" in file:
+                report = filter_lngs_report(report)
                 report = get_lngs_cvss_scores(report)
+
                 table = format_lngs_report(report)
 
                 if "trivy" in file:
