@@ -75,7 +75,16 @@ class Percival(cmd2.Cmd):
         run_with_spinner("Scanning for vulnerabilities with Trivy", scn.trivy, image_tag)
         run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan_os_packages, image_tag)
         run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan_language_dependencies, image_tag)
-        
+
+    def do_ccheck(self, image_tag):
+        """
+        Check for insecure default settings in a Docker image.
+
+        Args:
+            image_tag (str): The Docker image tag to check.
+        """
+        print("[Work in Progress] ...")
+
     def do_report(self, image_tag):
         """
         Generate a vulnerability report for a Docker image.

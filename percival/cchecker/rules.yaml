@@ -1,0 +1,32 @@
+---
+dockerFileRules:
+  - id: "ROOT_USER"
+    description: "Container runs as root user"
+    condition: "USER root"
+    severity: "High"
+    remediation: "Switch to a non-root user using the USER instruction."
+
+  - id: "NO_HEALTHCHECK"
+    description: "Container has no HEALTHCHECK instruction"
+    condition: "!HEALTHCHECK"
+    severity: "Medium"
+    remediation: "Add a HEALTHCHECK instruction to define a container health check command."
+
+  - id: "EXPOSED_PORTS"
+    description: "Exposed ports could increase attack surface"
+    condition: "EXPOSE"
+    severity: "Medium"
+    remediation: "Remove all unnecessary ports from the EXPOSE instruction."
+
+  - id: "LATEST_TAG"
+    description: "Uses an unpinned image tag"
+    condition: "FROM .*:latest"
+    severity: "Low"
+    remediation: "Pin the image version by replacing :latest with a specific version tag."
+
+  - id: "SUDO_USAGE"
+    description: "Uses sudo"
+    condition: "RUN sudo *"
+    severity: "Low"
+    remediation: "Remove sudo from RUN commands, as they run as root by default."
+...
