@@ -196,7 +196,7 @@ def format_lngs_report(report):
                 cvss = cve.get("cvss", {})
 
                 v2 = cvss.get("2.0", "N/A")
-                v3 = cvss.get("2.1", "N/A")
+                v3 = cvss.get("3.0", "N/A")
                 v31 = cvss.get("3.1", "N/A")
 
                 md_lines += f"|  |  |  | {cve_id} | {v2} | {v3} | {v31} |\n"
@@ -209,9 +209,6 @@ def format_lngs_report(report):
 
 def vscan_report(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
-    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
-    md_file = fld.get_file_path(image_report_dir, "report.md")
-    pdf_file = fld.get_file_path(image_report_dir, "report.pdf")
 
     files = fld.list_files(image_temp_dir)
     files = [file for file in files if file.endswith(".json")]
@@ -220,7 +217,7 @@ def vscan_report(image_tag):
         "trivy_pkgs": "",
         "trivy_lngs": "",
         "percival_pkgs": "",
-        "percival_lngs": "",
+        "percival_lngs": ""
     }
 
     for file in files:
@@ -258,21 +255,94 @@ def vscan_report(image_tag):
     no_results = "No vulnerabilities found\n"
 
     lines = [
-        "# Vulnerability Report",
-        "## Trivy OS packages findings",
+        "## Vulnerability Report",
+        "### Trivy OS packages findings",
         tables["trivy_pkgs"] or no_results,
-        "## Trivy language dependencies findings",
+        "### Trivy language dependencies findings",
         tables["trivy_lngs"] or no_results,
-        "## PerCIVAl OS packages findings",
+        "### PerCIVAl OS packages findings",
         tables["percival_pkgs"] or no_results,
-        "## PerCIVAl language dependencies findings",
-        tables["percival_lngs"] or no_results,
+        "### PerCIVAl language dependencies findings",
+        tables["percival_lngs"] or no_results
     ]
 
     vscan_report = "\n".join(lines)
 
+    return vscan_report
+
+
+def format_dive_report(report):
+    return None
+
+
+def format_ccheck_report(report):
+    return None
+
+
+def ccheck_report(image_tag):
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+
+    files = fld.list_files(image_temp_dir)
+    files = [file for file in files if file.endswith(".json")]
+
+    tables = {
+        "dive": "",
+        "dockerfile": ""
+    }
+
+    for file in files:
+        with open(os.path.join(image_temp_dir, file), "r") as f:
+            content = f.read()
+
+            try:
+                report = json.loads(content)
+            except json.JSONDecodeError:
+                report = None
+
+        if report: 
+            if "dive" in file:
+                table = format_dive_report(report)
+
+                tables["dive"] = table
+            elif "ccheck" in file: 
+                table = format_ccheck_report(report)
+
+                tables["dockerfile"] = table
+
+    no_results = "No configuration errors found\n"
+
+    lines = [
+        "## Configuration Report",
+        "### Image Efficiency",
+        tables["dive"] or no_results,
+        "### Configuration Errors",
+        tables["trivy_lngs"] or no_results,
+    ]
+
+    ccheck_report = "\n".join(lines)
+
+    return ccheck_report
+
+
+def report(image_tag):
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+    md_file = fld.get_file_path(image_report_dir, "report.md")
+    pdf_file = fld.get_file_path(image_report_dir, "report.pdf")
+
+    vreport = vscan_report(image_tag)
+    creport = ccheck_report(image_tag)
+
+    lines = [
+        "# perCIVAl Report",
+        vreport, 
+        creport
+    ]
+
+    report = "\n".join(lines)
+
     with open(md_file, "w") as f:
-        f.write(vscan_report)
+        f.write(report)
 
     sh.run_command(
         f"pandoc {md_file} -o {pdf_file} "
@@ -287,7 +357,3 @@ def vscan_report(image_tag):
         "-V title='Vulnerability Assessment Report' "  
         "-V lang=en "
     )
-
-
-def report(image_tag):
-    vscan_report(image_tag)

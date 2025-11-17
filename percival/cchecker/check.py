@@ -1,3 +1,6 @@
+import json
+import yaml
+
 from percival.helpers import shell as sh
 from percival.helpers import folders as fld
 
@@ -22,8 +25,34 @@ def dive(image_tag):
     return output
 
 
-def check_conig(image_tag):
+def check_config(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
-    docker_file = fld.get_file_path(image_temp_dir, "Dockerfile")
+    ccheck_file = fld.get_file_path(image_temp_dir, "ccheck.json")
 
-    # [to-do] ...
+    docker_file = fld.get_file_path(image_temp_dir, "Dockerfile")
+    rules_file = fld.get_file_path(".", "rules.yaml")
+
+    report = []
+
+    with open(docker_file, "r") as f:
+        lines = f.readlines()
+
+    with open(rules_file, "r") as f:
+        data = yaml.safe_load(f)
+        rules = data["docker_file_rules"]
+
+    for rule in rules:
+        condition = rule["condition"]
+
+        for line in lines:
+            if condition in line:
+                report.append(
+                    rule["description"],
+                    rule["severity"],
+                    rule["remediation"]
+                )
+
+    with open(ccheck_file, "w") as f:
+        json.dump(report, f, indent=2)
+
+    return report

@@ -1,5 +1,5 @@
 ---
-dockerFileRules:
+docker_file_rules:
   - id: "ROOT_USER"
     description: "Container runs as root user"
     condition: "USER root"
