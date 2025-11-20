@@ -26,11 +26,13 @@ def dive(image_tag):
 
 
 def check_config(image_tag):
+    module_dir = fld.get_module_dir("cchecker")
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
     ccheck_file = fld.get_file_path(image_temp_dir, "ccheck.json")
+    
 
     docker_file = fld.get_file_path(image_temp_dir, "Dockerfile")
-    rules_file = fld.get_file_path(".", "rules.yaml")
+    rules_file = fld.get_file_path(module_dir, "rules.yaml")
 
     report = []
 

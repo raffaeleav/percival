@@ -7,6 +7,7 @@ from yaspin.spinners import Spinners
 from percival.helpers import folders as fld
 from percival.core import fetch as ftc, extract as ext
 from percival.rengine import report as rpt
+from percival.cchecker import check as chk
 from percival.vscanner import scan as scn
 from percival.helpers import shell as sh
 
@@ -83,7 +84,9 @@ class Percival(cmd2.Cmd):
         Args:
             image_tag (str): The Docker image tag to check.
         """
-        print("[Work in Progress] ...")
+        run_with_spinner("Reconstructing Dockerfile", chk.reconstruct_docker_file, image_tag)
+        run_with_spinner("Running image efficiency check with dive", chk.dive, image_tag)
+        run_with_spinner("Checking Dockerfile best practices", chk.check_config, image_tag)
 
     def do_report(self, image_tag):
         """
