@@ -47,6 +47,7 @@ def check_config(image_tag):
         for line in lines:
             if condition in line:
                 report.append(
+                    rule["condition"],
                     rule["description"],
                     rule["severity"],
                     rule["remediation"]

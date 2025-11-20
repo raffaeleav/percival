@@ -272,11 +272,39 @@ def vscan_report(image_tag):
 
 
 def format_dive_report(report):
-    return None
+    image = report.get("image", {})
+
+    size = image.get("sizeBytes", "")
+    bytes = image.get("inefficientBytes", "")
+    score = image.get("efficiencyScore", "")
+
+    md_lines = (
+        "| Image size | Redundant bytes | Efficiency score|\n"
+        "|-|-|-|\n"
+    )
+
+    md_lines += f"| {size} | {bytes} | {score} |\n"
+    md_lines += "|---|---|---|\n"
+    
+    return md_lines
 
 
 def format_ccheck_report(report):
-    return None
+    md_lines = (
+        "| Dockerfile Condition | Description | Severity | Remediation |\n"
+        "|-|-|-|-|\n"
+    )
+
+    for entry in report:
+        condition = entry.get("condition", "")
+        description = entry.get("description", "")
+        severity = entry.get("severity", "")
+        remediation = entry.get("remediation", "")
+
+        md_lines += f"| {condition} | {description} | {severity} | {remediation} |\n"
+        md_lines += "|---|---|---|---|\n"
+
+    return md_lines
 
 
 def ccheck_report(image_tag):
