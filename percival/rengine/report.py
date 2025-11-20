@@ -281,7 +281,6 @@ def format_ccheck_report(report):
 
 def ccheck_report(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
-    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
 
     files = fld.list_files(image_temp_dir)
     files = [file for file in files if file.endswith(".json")]
