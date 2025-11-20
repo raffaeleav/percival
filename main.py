@@ -4,31 +4,12 @@ import platform
 
 from yaspin import yaspin
 from yaspin.spinners import Spinners
+from percival.helpers import shell as sh
+from percival.vscanner import scan as scn
+from percival.cchecker import check as chk
+from percival.rengine import report as rpt
 from percival.helpers import folders as fld
 from percival.core import fetch as ftc, extract as ext
-from percival.rengine import report as rpt
-from percival.cchecker import check as chk
-from percival.vscanner import scan as scn
-from percival.helpers import shell as sh
-
-
-def is_docker_running():
-    try:
-        sh.run_command("docker ps")
-        return True
-    except RuntimeError:
-        return False
-
-
-def run_with_spinner(desc, func, *args, **kwargs):
-    with yaspin(Spinners.arc, text=desc) as spinner:
-        try:
-            result = func(*args, **kwargs)
-            spinner.ok("[Success]")
-            return result
-        except Exception as e:
-            spinner.fail("[Failure]")
-            print(f"{e}")
 
 
 class Percival(cmd2.Cmd):
@@ -112,7 +93,6 @@ class Percival(cmd2.Cmd):
         """
         print("\033c", end="")
 
-
     def do_exit(self, arg):
         """
         Exit the PerCIVAl shell.
@@ -121,6 +101,25 @@ class Percival(cmd2.Cmd):
             bool: True to signal the shell to exit.
         """
         return True
+    
+
+def is_docker_running():
+    try:
+        sh.run_command("docker ps")
+        return True
+    except RuntimeError:
+        return False
+
+
+def run_with_spinner(desc, func, *args, **kwargs):
+    with yaspin(Spinners.arc, text=desc) as spinner:
+        try:
+            result = func(*args, **kwargs)
+            spinner.ok("[Success]")
+            return result
+        except Exception as e:
+            spinner.fail("[Failure]")
+            print(f"{e}")
 
 
 if __name__ == "__main__":
