@@ -266,9 +266,9 @@ def vscan_report(image_tag):
         tables["percival_lngs"] or no_results
     ]
 
-    vscan_report = "\n".join(lines)
+    vreport = "\n".join(lines)
 
-    return vscan_report
+    return vreport
 
 
 def format_dive_report(report):
@@ -279,7 +279,7 @@ def format_dive_report(report):
     score = image.get("efficiencyScore", "")
 
     md_lines = (
-        "| Image size | Redundant bytes | Efficiency score|\n"
+        "| Image size | Redundant bytes | Efficiency score |\n"
         "|-|-|-|\n"
     )
 
@@ -344,12 +344,12 @@ def ccheck_report(image_tag):
         "### Image Efficiency",
         tables["dive"] or no_results,
         "### Configuration Errors",
-        tables["trivy_lngs"] or no_results,
+        tables["dockerfile"] or no_results,
     ]
 
-    ccheck_report = "\n".join(lines)
+    creport = "\n".join(lines)
 
-    return ccheck_report
+    return creport
 
 
 def report(image_tag):
