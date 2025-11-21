@@ -88,7 +88,7 @@ def list_files(root_dir):
 def remove_temp_files(image_tag):
     dirs = [
         os.path.join(get_images_dir(), image_tag),
-        os.path.join(get_reports_dir(), image_tag),
+        # os.path.join(get_reports_dir(), image_tag),
         os.path.join(get_temp_dir(), image_tag),
     ]
 
