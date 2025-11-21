@@ -60,7 +60,7 @@ class Percival(cmd2.Cmd):
 
     def do_ccheck(self, image_tag):
         """
-        Check for insecure default settings in a Docker image.
+        Check for insecure practices in a Docker image.
 
         Args:
             image_tag (str): The Docker image tag to check.
@@ -74,7 +74,7 @@ class Percival(cmd2.Cmd):
         Generate a vulnerability report for a Docker image.
 
         Args:
-            image_tag (str): The Docker image tag for which to generate a report.
+            image_tag (str): The Docker image tag to generate the report for.
         """
         run_with_spinner("Generating report", rpt.report, image_tag)
 
