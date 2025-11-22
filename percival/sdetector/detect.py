@@ -8,12 +8,12 @@ from percival.sdetector import excluded_files, excluded_dirs, key_patterns
 
 
 def is_excluded(file):
-    for e_file in excluded_files:
-        if e_file in file:
+    for excluded_file in excluded_files:
+        if excluded_file in file:
             return True
         
-    for e_dir in excluded_dirs:
-        if e_dir in file:
+    for excluded_dir in excluded_dirs:
+        if excluded_dir in file:
             return True
 
     return False
