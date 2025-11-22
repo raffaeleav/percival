@@ -7,6 +7,7 @@ from yaspin.spinners import Spinners
 from percival.helpers import shell as sh
 from percival.vscanner import scan as scn
 from percival.cchecker import check as chk
+from percival.sdetector import detect as det
 from percival.rengine import report as rpt
 from percival.helpers import folders as fld
 from percival.core import fetch as ftc, extract as ext
@@ -68,6 +69,17 @@ class Percival(cmd2.Cmd):
         run_with_spinner("Reconstructing Dockerfile", chk.reconstruct_docker_file, image_tag)
         run_with_spinner("Running image efficiency check with dive", chk.dive, image_tag)
         run_with_spinner("Checking Dockerfile best practices", chk.check_config, image_tag)
+
+    
+    def do_sdetect(self, image_tag):
+        """
+        Finds common secrets in a Docker image.
+
+        Args:
+            image_tag (str): The Docker image tag to analyze.
+        """
+        run_with_spinner("Finding secrets", det.detect_secrets, image_tag)
+
 
     def do_report(self, image_tag):
         """

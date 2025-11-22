@@ -61,6 +61,24 @@ def get_layers(self, image_tag):
                 print(f"Extraction failed for layer: {layer.replace(".tar", "")}")
 
 
+def get_all_files(image_tag):
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    layers_dir = fld.get_dir(image_temp_dir, "blobs")
+    layers_dir = fld.get_dir(layers_dir, "sha256")
+
+    files = []
+
+    for layer_dir in os.listdir(layers_dir):
+        layer_path = os.path.join(layers_dir, layer_dir)
+        layer_files = fld.list_files(layer_path)
+
+        for file in layer_files:
+            file_path = fld.get_file_path(layer_path, file)
+            files.append(file_path)
+
+    return files
+
+
 def get_pkg_files(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
     layers_dir = fld.get_dir(image_temp_dir, "blobs")
