@@ -352,6 +352,20 @@ def ccheck_report(image_tag):
     return creport
 
 
+def sdetector_report():
+    lines = [
+        "## Secret Detection Report",
+        "### API Keys",
+        # tables["dive"] or no_results,
+        "### High-Entropy Strings",
+        # tables["dockerfile"] or no_results,
+    ]
+
+    sreport = "\n".join(lines)
+
+    return sreport
+
+
 def report(image_tag):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
     md_file = fld.get_file_path(image_report_dir, "report.md")
@@ -359,11 +373,13 @@ def report(image_tag):
 
     vreport = vscan_report(image_tag)
     creport = ccheck_report(image_tag)
+    sreport = sdetector_report(image_tag)
 
     lines = [
         "# perCIVAl Report",
         vreport, 
-        creport
+        creport, 
+        sreport,
     ]
 
     report = "\n".join(lines)
