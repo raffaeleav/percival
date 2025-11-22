@@ -1,7 +1,9 @@
 import re
 import math
+import json
 
 from percival.core import extract as ext
+from percival.helpers import folders as fld
 from percival.sdetector import excluded_files, excluded_dirs, key_patterns
 
 
@@ -62,6 +64,9 @@ def get_keys(lines):
 
 
 def detect_secrets(image_tag):
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    secrets_file = fld.get_file_path(image_temp_dir, "secrets.json")
+
     files = ext.get_all_files(image_tag)
 
     report = []
@@ -87,5 +92,8 @@ def detect_secrets(image_tag):
             }
 
             report.append(entry)
+
+    with open(secrets_file, "w") as f:
+        json.dump(report, f, indent=2)
 
     return report
