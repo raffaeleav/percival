@@ -36,7 +36,7 @@ def get_high_entropy_strings(lines, min_length, treshold):
 
     for line in lines:
         for word in line.split():
-            if word.length() < min_length:
+            if len(word) >= min_length:
                 entropy = shannon_entropy(word)
 
                 if entropy >= treshold:

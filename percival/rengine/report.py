@@ -352,13 +352,72 @@ def ccheck_report(image_tag):
     return creport
 
 
-def sdetector_report():
+def format_keys_report(report):
+    md_lines = (
+        "| File | Keys |\n"
+        "|-|-|\n"
+    )
+
+    for entry in report:
+        file = entry.get("file", "")   
+        keys = entry.get("keys", [])
+
+        md_lines += f"| {file} |  |\n"
+
+        for key in keys:
+            md_lines += f"| | {key} |\n"
+
+    return md_lines
+
+
+def format_strings_table(report):
+    md_lines = (
+        "| File | Secrets |\n"
+        "|-|-|\n"
+    )
+
+    for entry in report:
+        file = entry.get("file", "")   
+        strings = entry.get("strings", [])
+
+        md_lines += f"| {file} |  |\n"
+
+        for string in strings:
+            md_lines += f"| | {string} |\n"
+
+    return md_lines
+
+
+def sdetector_report(image_tag):
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+
+    files = fld.list_files(image_temp_dir)
+    files = [file for file in files if file.endswith(".json")]
+
+    for file in files:
+        with open(os.path.join(image_temp_dir, file), "r") as f:
+            content = f.read()
+
+            try:
+                report = json.loads(content)
+            except json.JSONDecodeError:
+                report = None
+
+        if report: 
+            if "secrets" in file:
+                keys_table = format_keys_report(report)
+                strings_table = format_strings_table(report)
+
+                break
+
+    no_results = "No secrets found\n"
+
     lines = [
         "## Secret Detection Report",
         "### API Keys",
-        # tables["dive"] or no_results,
+        keys_table or no_results,
         "### High-Entropy Strings",
-        # tables["dockerfile"] or no_results,
+        strings_table or no_results,
     ]
 
     sreport = "\n".join(lines)
