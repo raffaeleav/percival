@@ -1,6 +1,7 @@
 import os
 import re
 import json
+import base64
 
 from percival.helpers import api, shell as sh, folders as fld
 
@@ -284,7 +285,6 @@ def format_dive_report(report):
     )
 
     md_lines += f"| {size} | {bytes} | {score} |\n"
-    md_lines += "|---|---|---|\n"
     
     return md_lines
 
@@ -302,7 +302,6 @@ def format_ccheck_report(report):
         remediation = entry.get("remediation", "")
 
         md_lines += f"| {condition} | {description} | {severity} | {remediation} |\n"
-        md_lines += "|---|---|---|---|\n"
 
     return md_lines
 
@@ -352,6 +351,10 @@ def ccheck_report(image_tag):
     return creport
 
 
+def sanitize(text):
+    return base64.b64encode(text.encode("utf-8", errors="ignore")).decode()
+
+
 def format_keys_report(report):
     md_lines = (
         "| File | Keys |\n"
@@ -365,6 +368,7 @@ def format_keys_report(report):
         md_lines += f"| {file} |  |\n"
 
         for key in keys:
+            key = sanitize(key)
             md_lines += f"| | {key} |\n"
 
     return md_lines
@@ -383,6 +387,7 @@ def format_strings_table(report):
         md_lines += f"| {file} |  |\n"
 
         for string in strings:
+            string = sanitize(string)
             md_lines += f"| | {string} |\n"
 
     return md_lines

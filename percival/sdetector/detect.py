@@ -78,7 +78,7 @@ def detect_secrets(image_tag):
         if is_excluded(file):
             continue
 
-        with open(file, "r") as f:
+        with open(file, "r", errors="ignore") as f:
             lines = f.readlines()
 
         if lines:
