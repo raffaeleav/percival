@@ -1,0 +1,1 @@
+CVE_PATTERN = r"(CVE-\d{4}-\d{4,})"
