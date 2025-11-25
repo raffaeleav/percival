@@ -1,3 +1,4 @@
+import os
 import base64
 
 
@@ -104,6 +105,10 @@ def format_ccheck_report(report):
     return md_lines
 
 
+def get_file_name(file_path):
+    filename = os.path.basename(file_path)
+
+
 def sanitize(text):
     return base64.b64encode(text.encode("utf-8", errors="ignore")).decode()
 
@@ -115,8 +120,10 @@ def format_keys_report(report):
     )
 
     for entry in report:
-        file = entry.get("file", "")   
+        file_path = entry.get("file", "")   
         keys = entry.get("keys", [])
+
+        file = get_file_name(file_path)
 
         md_lines += f"| {file} |  |\n"
 
@@ -134,8 +141,10 @@ def format_strings_table(report):
     )
 
     for entry in report:
-        file = entry.get("file", "")   
+        file_path = entry.get("file", "")   
         strings = entry.get("strings", [])
+
+        file = get_file_name(file_path)
 
         md_lines += f"| {file} |  |\n"
 

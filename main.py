@@ -32,6 +32,23 @@ class Percival(cmd2.Cmd):
             print(f"{os_name} is currently not supported")
             sys.exit(0)
 
+    def do_analyze(self, image_tag):
+        """
+        Analyze a Docker image with all the components.
+        """
+        run_with_spinner("Updating Trivy db", scn.update_trivy)
+        run_with_spinner("Scanning for vulnerabilities with Trivy", scn.trivy, image_tag)
+        run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan_os_packages, image_tag)
+        run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan_language_dependencies, image_tag)
+
+        run_with_spinner("Reconstructing Dockerfile", chk.reconstruct_docker_file, image_tag)
+        run_with_spinner("Running image efficiency check with dive", chk.dive, image_tag)
+        run_with_spinner("Checking Dockerfile best practices", chk.check_config, image_tag)
+
+        run_with_spinner("Finding secrets", det.detect_secrets, image_tag)
+
+        run_with_spinner("Generating report", rpt.report, image_tag)
+
     def do_fetch(self, image_tag):
         """
         Pull a Docker image from the registry.
