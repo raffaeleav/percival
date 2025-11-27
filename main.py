@@ -2,15 +2,12 @@ import sys
 import cmd2
 import platform
 
-from yaspin import yaspin
-from yaspin.spinners import Spinners
-from percival.helpers import shell as sh
 from percival.vscanner import scan as scn
 from percival.cchecker import check as chk
 from percival.sdetector import detect as det
 from percival.rengine import report as rpt
-from percival.helpers import folders as fld
-from percival.core import fetch as ftc, extract as ext
+from percival.core import extract as ext, fetch as ftc
+from percival.helpers import folders as fld, runtime as rnt
 
 
 class Percival(cmd2.Cmd):
@@ -36,18 +33,22 @@ class Percival(cmd2.Cmd):
         """
         Analyze a Docker image with all the components.
         """
-        run_with_spinner("Updating Trivy db", scn.update_trivy)
-        run_with_spinner("Scanning for vulnerabilities with Trivy", scn.trivy, image_tag)
-        run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan_os_packages, image_tag)
-        run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan_language_dependencies, image_tag)
+        if not rnt.is_fetched(image_tag):
+            print("[Failure] To analyze an image, it should be fetched first")
+            return
 
-        run_with_spinner("Reconstructing Dockerfile", chk.reconstruct_docker_file, image_tag)
-        run_with_spinner("Running image efficiency check with dive", chk.dive, image_tag)
-        run_with_spinner("Checking Dockerfile best practices", chk.check_config, image_tag)
+        rnt.run_with_spinner("Updating Trivy db", scn.update_trivy)
+        rnt.run_with_spinner("Scanning for vulnerabilities with Trivy", scn.trivy, image_tag)
+        rnt.run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan_os_packages, image_tag)
+        rnt.run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan_language_dependencies, image_tag)
 
-        run_with_spinner("Finding secrets", det.detect_secrets, image_tag)
+        rnt.run_with_spinner("Reconstructing Dockerfile", chk.reconstruct_docker_file, image_tag)
+        rnt.run_with_spinner("Running image efficiency check with dive", chk.dive, image_tag)
+        rnt.run_with_spinner("Checking Dockerfile best practices", chk.check_config, image_tag)
 
-        run_with_spinner("Generating report", rpt.report, image_tag)
+        rnt.run_with_spinner("Finding secrets", det.detect_secrets, image_tag)
+
+        rnt.run_with_spinner("Generating report", rpt.report, image_tag)
 
     def do_fetch(self, image_tag):
         """
@@ -56,13 +57,13 @@ class Percival(cmd2.Cmd):
         Args:
             image_tag (str): The Docker image tag to pull.
         """
-        if(not is_docker_running()):
+        if not rnt.is_docker_running():
             print("[Failure] To fetch an image, Docker daemon should be running")
             return
 
-        run_with_spinner("Pulling image", ftc.pull, self, image_tag)
-        run_with_spinner("Extracting manifest", ext.get_manifest, self, image_tag)
-        run_with_spinner("Extracting layers", ext.get_layers, self, image_tag)
+        rnt.run_with_spinner("Pulling image", ftc.pull, self, image_tag)
+        rnt.run_with_spinner("Extracting manifest", ext.get_manifest, self, image_tag)
+        rnt.run_with_spinner("Extracting layers", ext.get_layers, self, image_tag)
         
     def do_vscan(self, image_tag):
         """
@@ -71,10 +72,10 @@ class Percival(cmd2.Cmd):
         Args:
             image_tag (str): The Docker image tag to scan.
         """
-        run_with_spinner("Updating Trivy db", scn.update_trivy)
-        run_with_spinner("Scanning for vulnerabilities with Trivy", scn.trivy, image_tag)
-        run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan_os_packages, image_tag)
-        run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan_language_dependencies, image_tag)
+        rnt.run_with_spinner("Updating Trivy db", scn.update_trivy)
+        rnt.run_with_spinner("Scanning for vulnerabilities with Trivy", scn.trivy, image_tag)
+        rnt.run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan_os_packages, image_tag)
+        rnt.run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan_language_dependencies, image_tag)
 
     def do_ccheck(self, image_tag):
         """
@@ -83,9 +84,9 @@ class Percival(cmd2.Cmd):
         Args:
             image_tag (str): The Docker image tag to check.
         """
-        run_with_spinner("Reconstructing Dockerfile", chk.reconstruct_docker_file, image_tag)
-        run_with_spinner("Running image efficiency check with dive", chk.dive, image_tag)
-        run_with_spinner("Checking Dockerfile best practices", chk.check_config, image_tag)
+        rnt.run_with_spinner("Reconstructing Dockerfile", chk.reconstruct_docker_file, image_tag)
+        rnt.run_with_spinner("Running image efficiency check with dive", chk.dive, image_tag)
+        rnt.run_with_spinner("Checking Dockerfile best practices", chk.check_config, image_tag)
 
     
     def do_sdetect(self, image_tag):
@@ -95,7 +96,7 @@ class Percival(cmd2.Cmd):
         Args:
             image_tag (str): The Docker image tag to analyze.
         """
-        run_with_spinner("Finding secrets", det.detect_secrets, image_tag)
+        rnt.run_with_spinner("Finding secrets", det.detect_secrets, image_tag)
 
 
     def do_report(self, image_tag):
@@ -105,7 +106,7 @@ class Percival(cmd2.Cmd):
         Args:
             image_tag (str): The Docker image tag to generate the report for.
         """
-        run_with_spinner("Generating report", rpt.report, image_tag)
+        rnt.run_with_spinner("Generating report", rpt.report, image_tag)
 
     def do_cleanup(self, image_tag):
         """
@@ -114,7 +115,7 @@ class Percival(cmd2.Cmd):
         Args:
             image_tag (str): The Docker image tag related to temporary files.
         """
-        run_with_spinner("Deleting temp files", fld.remove_temp_files, image_tag)
+        rnt.run_with_spinner("Deleting temp files", fld.remove_temp_files, image_tag)
 
     def do_clear(self, arg):
         """
@@ -130,25 +131,6 @@ class Percival(cmd2.Cmd):
             bool: True to signal the shell to exit.
         """
         return True
-    
-
-def is_docker_running():
-    try:
-        sh.run_command("docker ps")
-        return True
-    except RuntimeError:
-        return False
-
-
-def run_with_spinner(desc, func, *args, **kwargs):
-    with yaspin(Spinners.arc, text=desc) as spinner:
-        try:
-            result = func(*args, **kwargs)
-            spinner.ok("[Success]")
-            return result
-        except Exception as e:
-            spinner.fail("[Failure]")
-            print(f"{e}")
 
 
 if __name__ == "__main__":
