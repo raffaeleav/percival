@@ -1,7 +1,7 @@
 import os
 import docker
 
-from docker.errors import APIError, ImageNotFound, DockerException
+from docker.errors import ImageNotFound
 
 
 def pull(self, image_tag):
@@ -23,10 +23,6 @@ def pull(self, image_tag):
 
     except ImageNotFound:
         print(f"Image not found, maybe there's a typo?")
-    except APIError as api_err:
-        print(f"Docker API error: {api_err}")
-    except DockerException as de:
-        print(f"Docker error: {de}")
     except Exception as e:
         print(f"Unexpected error: {e}")
 
