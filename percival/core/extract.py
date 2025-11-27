@@ -8,8 +8,7 @@ from percival.core import pkgs_dict, lngs_dict
 
 def get_manifest(self, image_tag):
     if self.params["image"] is None:
-        print("An error occured while extracting manifest, please try again")
-        return
+        raise RuntimeError("An unexpected error occurred while extracting manifest, please try fetching again")
 
     images_dir = fld.get_dir(fld.get_data_dir(), "images")
     image_file = fld.get_file_path(images_dir, image_tag + ".tar")
@@ -20,18 +19,13 @@ def get_manifest(self, image_tag):
             f.write(chunk)
 
     with tarfile.open(image_file, "r") as tar:
-        try:
-            tar.extract("manifest.json", path=image_temp_dir)
-        except KeyError:
-            print(
-                "manifest.json not found in tar archive, is your image built correctly?"
-            )
+        tar.extract("manifest.json", path=image_temp_dir)
+
 
 
 def get_layers(self, image_tag):
     if self.params["image"] is None:
-        print("An error occured while extracting image layers, please try again")
-        return
+        raise RuntimeError("An unexpected error occurred while extracting layers, please try fetching again")
 
     images_dir = fld.get_dir(fld.get_data_dir(), "images")
     image_file = fld.get_file_path(images_dir, image_tag + ".tar")
@@ -59,6 +53,8 @@ def get_layers(self, image_tag):
                     layer_obj.extractall(path=layer_dir)
             else:
                 print(f"Extraction failed for layer: {layer.replace(".tar", "")}")
+    
+    self.params["image"] = None
 
 
 def get_all_files(image_tag):

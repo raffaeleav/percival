@@ -1,8 +1,6 @@
 import os
 import docker
 
-from docker.errors import ImageNotFound
-
 
 def pull(self, image_tag):
     """Pull a Docker image"""
@@ -15,16 +13,12 @@ def pull(self, image_tag):
         }
 
         if auth_config:
-            self.params["image"] = client.images.pull(
-                image_tag, auth_config=auth_config
-            )
+            self.params["image"] = client.images.pull(image_tag, auth_config)
         else:
             self.params["image"] = client.images.pull(image_tag)
 
-    except ImageNotFound:
-        print(f"Image not found, maybe there's a typo?")
     except Exception as e:
-        print(f"Unexpected error: {e}")
+        raise RuntimeError(f"An unexpected error occurred while pulling image: {e}") from e
 
     finally:
         client.close()
