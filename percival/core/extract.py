@@ -22,6 +22,15 @@ def get_manifest(self, image_tag):
         tar.extract("manifest.json", path=image_temp_dir)
 
 
+# this is needed to avoid dangerous that could overwrite files
+def get_all_members(layer_tar, layer_dir):
+    for member in layer_tar.getmembers():
+        if member.islnk() or member.issym():
+            if os.path.isabs(member.linkname):
+                member.linkname = member.linkname.lstrip("/")
+                
+        layer_tar.extract(member, path=layer_dir)
+
 
 def get_layers(self, image_tag):
     if self.params["image"] is None:
@@ -39,20 +48,19 @@ def get_layers(self, image_tag):
 
     with tarfile.open(image_file, "r") as tar:
         for layer in layers:
-            layer_member = tar.getmember(layer)
+            layer_name = layer.replace(".tar", "")
 
-            layer_dir = os.path.abspath(
-                os.path.join(image_temp_dir, layer.replace(".tar", ""))
-            )
+            layer_dir = fld.get_dir(image_temp_dir, layer_name)
             os.makedirs(layer_dir, exist_ok=True)
 
+            layer_member = tar.getmember(layer)
             layer_fileobj = tar.extractfile(layer_member)
 
             if layer_fileobj:
                 with tarfile.open(fileobj=layer_fileobj) as layer_obj:
-                    layer_obj.extractall(path=layer_dir)
+                    get_all_members(layer_obj, layer_dir)
             else:
-                print(f"Extraction failed for layer: {layer.replace(".tar", "")}")
+                print(f"Extraction failed for layer: {layer_name}")
     
     self.params["image"] = None
 

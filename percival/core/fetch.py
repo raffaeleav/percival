@@ -13,12 +13,12 @@ def pull(self, image_tag):
         }
 
         if auth_config:
-            self.params["image"] = client.images.pull(image_tag, auth_config)
+            self.params["image"] = client.images.pull(image_tag, auth_config=auth_config)
         else:
             self.params["image"] = client.images.pull(image_tag)
 
-    except Exception as e:
-        raise RuntimeError(f"An unexpected error occurred while pulling image: {e}") from e
+    except Exception:
+        raise
 
     finally:
         client.close()
