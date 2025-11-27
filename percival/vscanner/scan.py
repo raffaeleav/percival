@@ -2,8 +2,15 @@ import os
 import json
 
 from percival.core import extract as ext
-from percival.helpers import api, shell as sh, folders as fld
 from percival.vscanner import parse as prs
+from percival.helpers import api, shell as sh, folders as fld
+
+
+def update_trivy():
+    cmd = "trivy image --download-db-only"
+    output = sh.run_command(cmd)
+
+    return output
 
 
 def trivy(image_tag):
@@ -23,13 +30,6 @@ def trivy(image_tag):
         json.dump(lngs_report, f, indent=2)
 
     os.remove(vulns_file)
-
-    return output
-
-
-def update_trivy():
-    cmd = "trivy image --download-db-only"
-    output = sh.run_command(cmd)
 
     return output
 
