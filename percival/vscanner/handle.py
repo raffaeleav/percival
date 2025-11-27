@@ -1,6 +1,7 @@
 from percival.helpers import api
 from percival.vscanner import parse as prs
 
+# [to-do] check exception handling
 
 def scan_javascript_package_json(lng_file):
     dependencies = prs.parse_javascript_package_json(lng_file)

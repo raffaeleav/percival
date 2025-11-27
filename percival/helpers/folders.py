@@ -33,27 +33,21 @@ def get_data_dir():
 
 
 def get_images_dir():
-    file_path = os.path.dirname(os.path.abspath(__file__))
-    project_path = os.path.abspath(os.path.join(file_path, "..", ".."))
-    data_dir = os.path.abspath(os.path.join(project_path, "data"))
+    data_dir = get_data_dir()
     images_dir = os.path.abspath(os.path.join(data_dir, "images"))
 
     return images_dir
 
 
 def get_temp_dir():
-    file_path = os.path.dirname(os.path.abspath(__file__))
-    project_path = os.path.abspath(os.path.join(file_path, "..", ".."))
-    data_dir = os.path.abspath(os.path.join(project_path, "data"))
+    data_dir = get_data_dir()
     temp_dir = os.path.abspath(os.path.join(data_dir, "temp"))
 
     return temp_dir
 
 
 def get_reports_dir():
-    file_path = os.path.dirname(os.path.abspath(__file__))
-    project_path = os.path.abspath(os.path.join(file_path, "..", ".."))
-    data_dir = os.path.abspath(os.path.join(project_path, "data"))
+    data_dir = get_data_dir()
     reports_dir = os.path.abspath(os.path.join(data_dir, "reports"))
 
     return reports_dir

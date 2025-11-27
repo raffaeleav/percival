@@ -5,6 +5,7 @@ import xml.etree.ElementTree as et
 from collections import defaultdict
 from percival.core import lngs_dict
 
+# [to-do] check exception handling
 
 def group_trivy_pkg_findings(report):
     grouped = defaultdict(lambda: {"package": None, "version": None, "cves": []})
