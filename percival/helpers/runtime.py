@@ -15,8 +15,8 @@ def is_docker_running():
     
 
 def is_fetched(image_tag):
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
-    tar_file = fld.get_file_path(image_temp_dir, image_tag + ".tar")
+    images_dir = fld.get_images_dir()
+    tar_file = fld.get_file_path(images_dir, image_tag + ".tar")
 
     return os.path.exists(tar_file)
     

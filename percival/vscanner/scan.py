@@ -3,7 +3,7 @@ import json
 
 from percival.core import extract as ext
 from percival.vscanner import handle as hnd, parse as prs
-from percival.helpers import api, folders as fld, shell as sh
+from percival.helpers import api, folders as fld, runtime as rnt, shell as sh
 
 
 def update_trivy():
@@ -14,6 +14,9 @@ def update_trivy():
 
 
 def trivy(image_tag):
+    if not rnt.is_fetched(image_tag):
+        raise RuntimeError("An unexpected error occurred while scanning with Trivy, please fetch the image and try again")
+    
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
     vulns_file = fld.get_file_path(image_temp_dir, "trivy_vulns.json")
     pkgs_vulns_file = fld.get_file_path(image_temp_dir, "trivy_pkgs_vulns.json")
@@ -35,6 +38,9 @@ def trivy(image_tag):
 
 
 def scan_os_packages(image_tag):
+    if not rnt.is_fetched(image_tag):
+        raise RuntimeError("An unexpected error occurred while scanning with perCIVAl, please fetch the image and try again")
+    
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
     pkgs_vulns_file = fld.get_file_path(image_temp_dir, "pkgs_vulns.json")
 
@@ -75,6 +81,9 @@ def scan_os_packages(image_tag):
 
 
 def scan_language_dependencies(image_tag):
+    if not rnt.is_fetched(image_tag):
+        raise RuntimeError("An unexpected error occurred while scanning with perCIVAl, please fetch the image and try again")
+    
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
     lngs_vulns_file = fld.get_file_path(image_temp_dir, "lngs_vulns.json")
 

@@ -1,3 +1,4 @@
+import os
 import re
 import json
 import xml.etree.ElementTree as et
@@ -7,7 +8,10 @@ from percival.core import lngs_dict
 
 # [to-do] check exception handling
 
-def group_trivy_pkg_findings(report):
+def _group_trivy_pkgs_findings(report):
+    if not isinstance(report, list):
+        raise TypeError("Report should be a list")
+
     grouped = defaultdict(lambda: {"package": None, "version": None, "cves": []})
 
     for entry in report:
@@ -21,7 +25,10 @@ def group_trivy_pkg_findings(report):
     return list(grouped.values())
 
 
-def group_trivy_lng_findings(report):
+def _group_trivy_lngs_findings(report):
+    if not isinstance(report, list):
+        raise TypeError("Report should be a list")
+    
     result = []
     item = {"language": "?", "file_type": "?", "dependencies": []}
 
@@ -43,6 +50,9 @@ def group_trivy_lng_findings(report):
 
     
 def parse_trivy_file(trivy_file):
+    if not isinstance(trivy_file, (str, bytes, os.PathLike)):
+        raise TypeError(f"trivy_file must be a path-like object, got {type(trivy_file).__name__} instead")
+    
     with open(trivy_file, "r") as f:
         data = json.load(f)
 
@@ -71,40 +81,47 @@ def parse_trivy_file(trivy_file):
             elif pkg_type == "lang-pkgs":
                 lngs_report.append(entry)
 
-    pkgs_report = group_trivy_pkg_findings(pkgs_report)
-    lngs_report = group_trivy_lng_findings(lngs_report)
+    pkgs_report = _group_trivy_pkgs_findings(pkgs_report)
+    lngs_report = _group_trivy_lngs_findings(lngs_report)
 
     return pkgs_report, lngs_report
 
 
 def parse_pkg_file(pkg_file):
+    if not isinstance(pkg_file, (str, bytes, os.PathLike)):
+        raise TypeError(f"pkg_file must be a path-like object, got {type(pkg_file).__name__} instead")
+    
     if "dpkg" in pkg_file:
-        return parse_dpkg_pkgs(pkg_file)
+        return _parse_dpkg_pkgs(pkg_file)
     elif "pacman" in pkg_file:
-        return parse_pacman_pkgs(pkg_file)
+        return _parse_pacman_pkgs(pkg_file)
     elif "rpm" in pkg_file:
-        return parse_rpm_pkgs(pkg_file)
+        return _parse_rpm_pkgs(pkg_file)
     else:
-        raise ValueError(
-            "Unknown package file type: expected 'dpkg', 'pacman', or 'rpm' in filename"
-        )
+        raise ValueError("Unknown package file type: expected 'dpkg', 'pacman', or 'rpm' in filename")
 
 
-def extract_blocks(pkg_file):
-    blocks = []
-
+def _extract_blocks(pkg_file):
+    if not isinstance(pkg_file, (str, bytes, os.PathLike)):
+        raise TypeError(f"pkg_file must be a path-like object, got {type(pkg_file).__name__} instead")
+    
     with open(pkg_file, "r") as f:
         contents = f.read()
 
-    if contents is None:
-        return blocks
+    blocks = []
 
-    return contents.strip().split("\n\n")
+    if contents:
+        blocks = contents.strip().split("\n\n")
+
+    return blocks
 
 
-def parse_dpkg_pkgs(pkg_file):
+def _parse_dpkg_pkgs(pkg_file):
+    if not isinstance(pkg_file, (str, bytes, os.PathLike)):
+        raise TypeError(f"pkg_file must be a path-like object, got {type(pkg_file).__name__} instead")
+    
     pkgs = []
-    blocks = extract_blocks(pkg_file)
+    blocks = _extract_blocks(pkg_file)
 
     for block in blocks:
         pkg = {"version": None, "name": None}
@@ -124,15 +141,18 @@ def parse_dpkg_pkgs(pkg_file):
     return pkgs
 
 
-def parse_pacman_pkgs():
+def _parse_pacman_pkgs(pkg_file):
     raise ValueError("Not supported yet")
 
 
-def parse_rpm_pkgs():
+def _parse_rpm_pkgs(pkg_file):
     raise ValueError("Not supported yet")
 
 
 def parse_lng_file(lng_file):
+    if not isinstance(lng_file, (str, bytes, os.PathLike)):
+        raise TypeError(f"lng_file must be a path-like object, got {type(lng_file).__name__} instead")
+    
     lng = {
         "language": None,
         "file_type": None,
@@ -150,6 +170,9 @@ def parse_lng_file(lng_file):
 
 
 def parse_javascript_package_json(lng_file):
+    if not isinstance(lng_file, (str, bytes, os.PathLike)):
+        raise TypeError(f"lng_file must be a path-like object, got {type(lng_file).__name__} instead")
+    
     with open(lng_file, "r") as f:
         data = json.load(f)
 
@@ -166,6 +189,9 @@ def parse_javascript_package_json(lng_file):
 
 
 def parse_python_requirements_txt(lng_file):
+    if not isinstance(lng_file, (str, bytes, os.PathLike)):
+        raise TypeError(f"lng_file must be a path-like object, got {type(lng_file).__name__} instead")
+    
     dependencies = []
 
     with open(lng_file, "r") as f:
@@ -188,6 +214,9 @@ def parse_python_requirements_txt(lng_file):
 
 
 def parse_java_pom_xml(lng_file):
+    if not isinstance(lng_file, (str, bytes, os.PathLike)):
+        raise TypeError(f"lng_file must be a path-like object, got {type(lng_file).__name__} instead")
+    
     dependencies = []
     tree = et.parse(lng_file)
     root = tree.getroot()
