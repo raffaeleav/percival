@@ -3,7 +3,7 @@ import json
 import tarfile
 
 from percival.helpers import folders as fld
-from percival.core import pkgs_dict, lngs_dict
+from percival.core.loader import pkgs_dict, lngs_dict
 
 
 def get_manifest(self, image_tag):

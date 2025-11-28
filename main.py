@@ -2,11 +2,11 @@ import sys
 import cmd2
 import platform
 
-from percival.vscanner import scan as scn
-from percival.cchecker import check as chk
-from percival.sdetector import detect as det
-from percival.rengine import report as rpt
-from percival.core import extract as ext, fetch as ftc
+from percival.core.vscanner import scan as scn 
+from percival.core.cchecker import check as chk 
+from percival.core.sdetector import detect as det 
+from percival.core.rengine import report as rpt 
+from percival.core.loader import extract as ext, fetch as ftc 
 from percival.helpers import folders as fld, runtime as rnt
 
 
@@ -44,8 +44,8 @@ class Percival(cmd2.Cmd):
             return
 
         rnt.run_with_spinner("Pulling image", ftc.pull, self, image_tag)
-        rnt.run_with_spinner("Extracting manifest", ext.get_manifest, self, image_tag)
-        rnt.run_with_spinner("Extracting layers", ext.get_layers, self, image_tag)
+        rnt.run_with_spinner("Extracting manifest", ftc.get_manifest, self, image_tag)
+        rnt.run_with_spinner("Extracting layers", ftc.get_layers, self, image_tag)
 
 
     def do_analyze(self, image_tag):
@@ -56,10 +56,10 @@ class Percival(cmd2.Cmd):
             print("[Failure] To analyze an image, it should be fetched first")
             return
 
-        rnt.run_with_spinner("Updating Trivy db", scn.update_trivy)
-        rnt.run_with_spinner("Scanning for vulnerabilities with Trivy", scn.trivy, image_tag)
-        rnt.run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan_os_packages, image_tag)
-        rnt.run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan_language_dependencies, image_tag)
+        rnt.run_with_spinner("Updating Trivy db", scn.scan.update_trivy)
+        rnt.run_with_spinner("Scanning for vulnerabilities with Trivy", scn.scan.trivy, image_tag)
+        rnt.run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan.scan_os_packages, image_tag)
+        rnt.run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan.scan_language_dependencies, image_tag)
 
         rnt.run_with_spinner("Reconstructing Dockerfile", chk.reconstruct_docker_file, image_tag)
         rnt.run_with_spinner("Running image efficiency check with dive", chk.dive, image_tag)
@@ -67,6 +67,7 @@ class Percival(cmd2.Cmd):
 
         rnt.run_with_spinner("Finding secrets", det.detect_secrets, image_tag)
 
+        # [to-do] change report method name
         rnt.run_with_spinner("Generating report", rpt.report, image_tag)
 
 
@@ -77,10 +78,10 @@ class Percival(cmd2.Cmd):
         Args:
             image_tag (str): The Docker image tag to scan.
         """
-        rnt.run_with_spinner("Updating Trivy db", scn.update_trivy)
-        rnt.run_with_spinner("Scanning for vulnerabilities with Trivy", scn.trivy, image_tag)
-        rnt.run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan_os_packages, image_tag)
-        rnt.run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan_language_dependencies, image_tag)
+        rnt.run_with_spinner("Updating Trivy db", scn.scan.update_trivy)
+        rnt.run_with_spinner("Scanning for vulnerabilities with Trivy", scn.scan.trivy, image_tag)
+        rnt.run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan.scan_os_packages, image_tag)
+        rnt.run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan.scan_language_dependencies, image_tag)
 
 
     def do_ccheck(self, image_tag):
@@ -125,7 +126,7 @@ class Percival(cmd2.Cmd):
         """
         rnt.run_with_spinner("Deleting temp files", fld.remove_temp_files, image_tag)
 
-
+    # [to-do] clear method in runtime
     def do_clear(self, arg):
         """
         Clear the shell screen.

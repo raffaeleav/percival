@@ -2,9 +2,9 @@ import re
 import math
 import json
 
-from percival.core import extract as ext
 from percival.helpers import folders as fld
-from percival.sdetector import excluded_files, excluded_dirs, key_patterns
+from percival.core.loader import extract as ext
+from percival.core.sdetector import excluded_files, excluded_dirs, key_patterns
 
 
 def is_excluded(file):

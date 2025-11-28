@@ -1,9 +1,8 @@
 import os
 
 from percival.helpers import api
-from percival.vscanner import parse as prs
+from percival.core.vscanner import parse as prs
 
-# [to-do] check exception handling
 
 def _scan_javascript_package_json(lng_file):
     if not isinstance(lng_file, (str, bytes, os.PathLike)):

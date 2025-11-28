@@ -3,7 +3,7 @@ import re
 import json
 
 from percival.helpers import shell as sh, folders as fld
-from percival.rengine import format as fmt, score as scr, filter as flt
+from percival.core.rengine import format as fmt, score as scr, filter as flt
 
 def vscan_report(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)

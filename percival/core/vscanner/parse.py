@@ -4,9 +4,8 @@ import json
 import xml.etree.ElementTree as et
 
 from collections import defaultdict
-from percival.core import lngs_dict
+from percival.core.loader import lngs_dict
 
-# [to-do] check exception handling
 
 def _group_trivy_pkgs_findings(report):
     if not isinstance(report, list):

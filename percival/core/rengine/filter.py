@@ -1,6 +1,6 @@
 import re
 
-from percival.rengine import CVE_PATTERN
+from percival.core.rengine import CVE_PATTERN
 
 
 def is_cve(cve_id):
