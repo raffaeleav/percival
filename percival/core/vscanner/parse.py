@@ -4,7 +4,7 @@ import json
 import xml.etree.ElementTree as et
 
 from collections import defaultdict
-from percival.core.loader import lngs_dict
+from percival.core.dloader import lngs_dict
 
 
 def _group_trivy_pkgs_findings(report):

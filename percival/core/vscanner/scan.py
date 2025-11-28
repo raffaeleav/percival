@@ -1,7 +1,7 @@
 import os
 import json
 
-from percival.core.loader import extract as ext
+from percival.core.dloader import extract as ext
 from percival.core.vscanner import handle as hnd, parse as prs
 from percival.helpers import api, folders as fld, runtime as rnt, shell as sh
 

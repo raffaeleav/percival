@@ -3,7 +3,7 @@ import math
 import json
 
 from percival.helpers import folders as fld
-from percival.core.loader import extract as ext
+from percival.core.dloader import extract as ext
 from percival.core.sdetector import excluded_files, excluded_dirs, key_patterns
 
 

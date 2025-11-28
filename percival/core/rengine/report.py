@@ -5,7 +5,7 @@ import json
 from percival.helpers import shell as sh, folders as fld
 from percival.core.rengine import format as fmt, score as scr, filter as flt
 
-def vscan_report(image_tag):
+def report_vscanner(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
 
     files = fld.list_files(image_temp_dir)
@@ -69,7 +69,7 @@ def vscan_report(image_tag):
     return vreport
 
 
-def ccheck_report(image_tag):
+def report_cchecker(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
 
     files = fld.list_files(image_temp_dir)
@@ -114,7 +114,7 @@ def ccheck_report(image_tag):
     return creport
 
 
-def sdetector_report(image_tag):
+def report_sdetector(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
 
     files = fld.list_files(image_temp_dir)
@@ -151,14 +151,14 @@ def sdetector_report(image_tag):
     return sreport
 
 
-def report(image_tag):
+def report_all(image_tag):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
     md_file = fld.get_file_path(image_report_dir, "report.md")
     pdf_file = fld.get_file_path(image_report_dir, "report.pdf")
 
-    vreport = vscan_report(image_tag)
-    creport = ccheck_report(image_tag)
-    sreport = sdetector_report(image_tag)
+    vreport = report_vscanner(image_tag)
+    creport = report_cchecker(image_tag)
+    sreport = report_sdetector(image_tag)
 
     lines = [
         "# perCIVAl Report",

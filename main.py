@@ -6,7 +6,7 @@ from percival.core.vscanner import scan as scn
 from percival.core.cchecker import check as chk 
 from percival.core.sdetector import detect as det 
 from percival.core.rengine import report as rpt 
-from percival.core.loader import extract as ext, fetch as ftc 
+from percival.core.dloader import extract as ext, fetch as ftc 
 from percival.helpers import folders as fld, runtime as rnt
 
 
@@ -44,8 +44,8 @@ class Percival(cmd2.Cmd):
             return
 
         rnt.run_with_spinner("Pulling image", ftc.pull, self, image_tag)
-        rnt.run_with_spinner("Extracting manifest", ftc.get_manifest, self, image_tag)
-        rnt.run_with_spinner("Extracting layers", ftc.get_layers, self, image_tag)
+        rnt.run_with_spinner("Extracting manifest", ext.get_manifest, self, image_tag)
+        rnt.run_with_spinner("Extracting layers", ext.get_layers, self, image_tag)
 
 
     def do_analyze(self, image_tag):
@@ -67,8 +67,7 @@ class Percival(cmd2.Cmd):
 
         rnt.run_with_spinner("Finding secrets", det.detect_secrets, image_tag)
 
-        # [to-do] change report method name
-        rnt.run_with_spinner("Generating report", rpt.report, image_tag)
+        rnt.run_with_spinner("Generating report", rpt.report_all, image_tag)
 
 
     def do_vscan(self, image_tag):
@@ -114,7 +113,7 @@ class Percival(cmd2.Cmd):
         Args:
             image_tag (str): The Docker image tag to generate the report for.
         """
-        rnt.run_with_spinner("Generating report", rpt.report, image_tag)
+        rnt.run_with_spinner("Generating report", rpt.report_all, image_tag)
 
 
     def do_cleanup(self, image_tag):
@@ -126,7 +125,6 @@ class Percival(cmd2.Cmd):
         """
         rnt.run_with_spinner("Deleting temp files", fld.remove_temp_files, image_tag)
 
-    # [to-do] clear method in runtime
     def do_clear(self, arg):
         """
         Clear the shell screen.
