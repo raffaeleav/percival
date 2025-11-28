@@ -2,8 +2,8 @@ import os
 import json
 import tarfile
 
-from percival.helpers import folders as fld
 from percival.core.dloader import pkgs_dict, lngs_dict
+from percival.helpers import folders as fld, runtime as rnt
 
 
 def get_manifest(self, image_tag):
@@ -23,7 +23,13 @@ def get_manifest(self, image_tag):
 
 
 # this is needed to avoid dangerous that could overwrite files
-def get_all_members(layer_tar, layer_dir):
+def _get_all_members(layer_tar, layer_dir):
+    if not isinstance(layer_tar, tarfile.TarFile):
+        raise TypeError(f"layer_tar must be a tarfile.TarFile instance, got {type(layer_tar).__name__} instead")
+
+    if not isinstance(layer_dir, (str, os.PathLike)):
+        raise TypeError(f"layer_dir must be a path-like object, got {type(layer_dir).__name__} instead")
+
     for member in layer_tar.getmembers():
         if member.islnk() or member.issym():
             if os.path.isabs(member.linkname):
@@ -58,7 +64,7 @@ def get_layers(self, image_tag):
 
             if layer_fileobj:
                 with tarfile.open(fileobj=layer_fileobj) as layer_obj:
-                    get_all_members(layer_obj, layer_dir)
+                    _get_all_members(layer_obj, layer_dir)
             else:
                 print(f"Extraction failed for layer: {layer_name}")
     
@@ -66,6 +72,9 @@ def get_layers(self, image_tag):
 
 
 def get_all_files(image_tag):
+    if not rnt.is_fetched(image_tag):
+        raise RuntimeError("An unexpected error occurred while extracting files, please fetch the image and try again")
+    
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
     layers_dir = fld.get_dir(image_temp_dir, "blobs")
     layers_dir = fld.get_dir(layers_dir, "sha256")
@@ -84,6 +93,9 @@ def get_all_files(image_tag):
 
 
 def get_pkg_files(image_tag):
+    if not rnt.is_fetched(image_tag):
+        raise RuntimeError("An unexpected error occurred while extracting package files, please fetch the image and try again")
+    
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
     layers_dir = fld.get_dir(image_temp_dir, "blobs")
     layers_dir = fld.get_dir(layers_dir, "sha256")
@@ -105,6 +117,9 @@ def get_pkg_files(image_tag):
 
 
 def get_lng_files(image_tag):
+    if not rnt.is_fetched(image_tag):
+        raise RuntimeError("An unexpected error occurred while extracting language files, please fetch the image and try again")
+    
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
     layers_dir = fld.get_dir(image_temp_dir, "blobs")
     layers_dir = fld.get_dir(layers_dir, "sha256")
