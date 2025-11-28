@@ -33,3 +33,8 @@ def run_with_spinner(desc, func, *args, **kwargs):
             print(f"{e}")
             
             raise 
+
+
+def clear():
+    print("\033c", end="")
+    

@@ -131,7 +131,7 @@ class Percival(cmd2.Cmd):
         """
         Clear the shell screen.
         """
-        print("\033c", end="")
+        rnt.clear()
 
 
     def do_exit(self, arg):
