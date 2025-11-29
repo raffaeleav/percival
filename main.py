@@ -26,15 +26,12 @@ class Percival(cmd2.Cmd):
         and perform initial setup.
         """
         super().__init__()
+
         rnt.clear()
+        rnt.check_support()
+
         fld.setup()
         self.params = {"image": None}
-
-        os_name = platform.system()
-
-        if os_name != "Linux" and os_name != "Darwin":
-            print(f"{os_name} is currently not supported")
-            sys.exit(0)
 
 
     def do_fetch(self, image_tag):
@@ -104,6 +101,7 @@ class Percival(cmd2.Cmd):
         Generate a vulnerability report for a Docker image.
         """
         rnt.run_with_spinner("Generating report", rpt.report_all, image_tag)
+        rnt.run_with_spinner("Opening report in browser", rpt.view_report, image_tag)
 
 
     def do_cleanup(self, _):

@@ -1,5 +1,6 @@
 import os
 import json
+import platform
 
 from percival.helpers import shell as sh, folders as fld
 from percival.core.rengine import format as fmt, score as scr, filter as flt
@@ -156,6 +157,8 @@ def report_sdetector(image_tag):
 
 def report_all(image_tag):
     rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
+    styles_file = fld.get_file_path(rengine_config_dir, "styles.css")
+
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
     md_file = fld.get_file_path(image_report_dir, "report.md")
     html_file = fld.get_file_path(image_report_dir, "report.html")
@@ -176,8 +179,29 @@ def report_all(image_tag):
     with open(md_file, "w") as f:
         f.write(report)
 
-    sh.run_command(
+    cmd = (
         f"pandoc {md_file} "
         f"-o {html_file} "
-        f"-c {rengine_config_dir}/styles.css "
+        f"-c {styles_file} "
+        "--self-contained "
     )
+
+    output = sh.run_command(cmd)
+
+    return output
+
+
+def view_report(image_tag):
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+    html_file = fld.get_file_path(image_report_dir, "report.html")
+
+    os_name = platform.system()
+
+    if os_name == "Linux":
+        cmd = f"xdg-open {html_file}"
+    elif os_name == "Darwin":
+        cmd = f"open {html_file}"
+
+    output = sh.run_command(cmd)
+
+    return output

@@ -1,9 +1,19 @@
 import os
 import sys
+import platform
 
 from yaspin import yaspin
 from yaspin.spinners import Spinners
 from percival.helpers import folders as fld, shell as sh
+
+
+def check_support():
+    os_name = platform.system()
+
+    if os_name != "Linux" and os_name != "Darwin":
+        print(f"{os_name} is currently not supported")
+
+        sys.exit(0)
 
 
 def is_docker_running():

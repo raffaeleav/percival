@@ -1,10 +1,48 @@
+body {
+    font-family: "Times New Roman", serif;
+    font-size: 10pt;
+    line-height: 1.5;
+    margin: 1.5cm;
+    color: #333;
+}
+
 table {
     border-collapse: collapse;
     width: 100%;
+    margin-bottom: 1em;
+    table-layout: fixed;
 }
 
-th, td {
-    border: 1px solid black;
-    padding: 5px;
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    text-align: left;
+    border: 1px solid #333;
+    padding: 6px;
+}
+
+td {
+    border: 1px solid #333;
+    padding: 6px;
     vertical-align: top;
+    word-wrap: break-word;
+    white-space: pre-line;
+}
+
+tr:hover {
+    background-color: #fafafa;
+}
+
+details summary {
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #e6e6e6;
+    padding: 4px 6px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-bottom: 4px;
+}
+
+details table {
+    margin-top: 4px;
 }
