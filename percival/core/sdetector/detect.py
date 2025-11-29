@@ -85,13 +85,13 @@ def detect_secrets(image_tag):
             continue
 
         if lines:
-            secrets = get_keys(lines)
+            keys = get_keys(lines)
             strings = get_high_entropy_strings(lines, min_length, treshold)
 
-            if secrets or strings:
+            if keys or strings:
                 entry = {
                     "file": file,
-                    "secrets": secrets,
+                    "keys": keys,
                     "strings": strings
                 }
 

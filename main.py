@@ -11,7 +11,6 @@ from percival.helpers import folders as fld, runtime as rnt
 
 
 # [to-do](2) exception handling in sdetector, rengine (+ protected methods)
-# [to-do](2.1) check why sdetect report has None files for every secret/string
 # [to-do](3) add filters to report to shorten it
 # [to-do](3.1) speedup file choice in report
 # [to-do](4) parallelyze

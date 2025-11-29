@@ -139,7 +139,7 @@ def report_sdetector(image_tag):
 
                 break
 
-    no_results = "No secrets found\n"
+    no_results = "No API keys found\n"
 
     lines = [
         "## Secret Detection Report",

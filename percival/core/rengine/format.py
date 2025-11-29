@@ -108,6 +108,8 @@ def format_ccheck_report(report):
 def get_file_name(file_path):
     filename = os.path.basename(file_path)
 
+    return filename
+
 
 def sanitize(text):
     return base64.b64encode(text.encode("utf-8", errors="ignore")).decode()
@@ -122,6 +124,9 @@ def format_keys_report(report):
     for entry in report:
         file_path = entry.get("file", "")   
         keys = entry.get("keys", [])
+
+        if not keys:
+            return ""
 
         file = get_file_name(file_path)
 
@@ -143,6 +148,9 @@ def format_strings_table(report):
     for entry in report:
         file_path = entry.get("file", "")   
         strings = entry.get("strings", [])
+
+        if not strings:
+            return ""
 
         file = get_file_name(file_path)
 
