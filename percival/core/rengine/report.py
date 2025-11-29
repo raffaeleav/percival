@@ -1,9 +1,9 @@
 import os
-import re
 import json
 
 from percival.helpers import shell as sh, folders as fld
 from percival.core.rengine import format as fmt, score as scr, filter as flt
+
 
 def report_vscanner(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)

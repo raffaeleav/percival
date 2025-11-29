@@ -19,7 +19,7 @@ def setup():
 def get_module_dir(module):
     file_path = os.path.dirname(os.path.abspath(__file__))
     project_path = os.path.abspath(os.path.join(file_path, "..", ".."))
-    module_dir = os.path.abspath(os.path.join(project_path, "percival", module))
+    module_dir = os.path.abspath(os.path.join(project_path, "percival", "core", module))
 
     return module_dir
 

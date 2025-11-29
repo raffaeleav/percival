@@ -56,10 +56,10 @@ class Percival(cmd2.Cmd):
             print("[Failure] To analyze an image, it should be fetched first")
             return
 
-        rnt.run_with_spinner("Updating Trivy db", scn.scan.update_trivy)
-        rnt.run_with_spinner("Scanning for vulnerabilities with Trivy", scn.scan.trivy, image_tag)
-        rnt.run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan.scan_os_packages, image_tag)
-        rnt.run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan.scan_language_dependencies, image_tag)
+        rnt.run_with_spinner("Updating Trivy db", scn.update_trivy)
+        rnt.run_with_spinner("Scanning for vulnerabilities with Trivy", scn.trivy, image_tag)
+        rnt.run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan_os_packages, image_tag)
+        rnt.run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan_language_dependencies, image_tag)
 
         rnt.run_with_spinner("Reconstructing Dockerfile", chk.reconstruct_docker_file, image_tag)
         rnt.run_with_spinner("Running image efficiency check with dive", chk.dive, image_tag)
@@ -77,10 +77,10 @@ class Percival(cmd2.Cmd):
         Args:
             image_tag (str): The Docker image tag to scan.
         """
-        rnt.run_with_spinner("Updating Trivy db", scn.scan.update_trivy)
-        rnt.run_with_spinner("Scanning for vulnerabilities with Trivy", scn.scan.trivy, image_tag)
-        rnt.run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan.scan_os_packages, image_tag)
-        rnt.run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan.scan_language_dependencies, image_tag)
+        rnt.run_with_spinner("Updating Trivy db", scn.update_trivy)
+        rnt.run_with_spinner("Scanning for vulnerabilities with Trivy", scn.trivy, image_tag)
+        rnt.run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan_os_packages, image_tag)
+        rnt.run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan_language_dependencies, image_tag)
 
 
     def do_ccheck(self, image_tag):
