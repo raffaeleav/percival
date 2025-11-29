@@ -79,13 +79,8 @@ def list_files(root_dir):
     return files
 
 
-def remove_temp_files(image_tag):
-    dirs = [
-        os.path.join(get_images_dir(), image_tag),
-        os.path.join(get_reports_dir(), image_tag),
-        os.path.join(get_temp_dir(), image_tag),
-    ]
-
-    for dir in dirs:
-        if os.path.exists(dir):
-            shutil.rmtree(dir)
+def remove_temp_files():
+    data_dir = get_data_dir()
+    
+    if os.path.exists(data_dir):
+        shutil.rmtree(data_dir)

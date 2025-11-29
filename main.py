@@ -123,7 +123,7 @@ class Percival(cmd2.Cmd):
         Args:
             image_tag (str): The Docker image tag related to temporary files.
         """
-        rnt.run_with_spinner("Deleting temp files", fld.remove_temp_files, image_tag)
+        rnt.run_with_spinner("Deleting temp files", fld.remove_temp_files)
 
     def do_clear(self, arg):
         """
