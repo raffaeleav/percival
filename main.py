@@ -62,7 +62,7 @@ class Percival(cmd2.Cmd):
         rnt.run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan_language_dependencies, image_tag)
 
         rnt.run_with_spinner("Reconstructing Dockerfile", chk.reconstruct_docker_file, image_tag)
-        rnt.run_with_spinner("Running image efficiency check with dive", chk.dive, image_tag)
+        rnt.run_with_spinner("Running image efficiency check with Dive", chk.dive, image_tag)
         rnt.run_with_spinner("Checking Dockerfile best practices", chk.check_config, image_tag)
 
         rnt.run_with_spinner("Finding secrets", det.detect_secrets, image_tag)
@@ -86,7 +86,7 @@ class Percival(cmd2.Cmd):
         Check for insecure practices in a Docker image.
         """
         rnt.run_with_spinner("Reconstructing Dockerfile", chk.reconstruct_docker_file, image_tag)
-        rnt.run_with_spinner("Running image efficiency check with dive", chk.dive, image_tag)
+        rnt.run_with_spinner("Running image efficiency check with Dive", chk.dive, image_tag)
         rnt.run_with_spinner("Checking Dockerfile best practices", chk.check_config, image_tag)
 
 

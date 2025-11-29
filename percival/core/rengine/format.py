@@ -105,6 +105,9 @@ def format_ccheck_report(report):
 
 
 def sanitize(text):
+    if not isinstance(text, str):
+        text = str(text)
+
     text = base64.b64encode(text.encode("utf-8", errors="ignore")).decode()
 
     return text
