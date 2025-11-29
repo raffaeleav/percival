@@ -4,43 +4,67 @@ body {
     line-height: 1.6;
     margin: 1.5cm;
     color: #222;
-    background-color: #f9f9f9;
+    background-color: #f4f6f8;
 }
 
-/* Main headings */
 h1 {
-    font-size: 1.8em;
+    font-size: 2em;
     color: rgb(0,122,204);
     border-bottom: 3px solid rgb(0,122,204);
     padding-bottom: 6px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
-/* Section headings (subsections like Vulnerability, Config, Secrets) */
 h2 {
     font-size: 1.4em;
     color: rgb(0,122,204);
     border-bottom: 2px solid rgba(0,122,204,0.5);
     padding-bottom: 4px;
     margin-top: 30px;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
 }
 
-/* Table containers to separate visually each section */
-h2 + table {
-    margin-top: 12px;
-    margin-bottom: 24px;
-    border-radius: 6px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+details {
+    background-color: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 5px;
+    padding: 4px 6px 6px 6px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-/* Table styling */
+details[open] {
+    background-color: #f9f9f9;
+}
+
+details summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1em;
+    color: #fff;
+    background-color: rgb(0,122,204);
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    user-select: none;
+    list-style: none;
+    transition: background-color 0.2s ease;
+}
+
+details[open] summary {
+    background-color: rgb(0,102,150); /* slightly darker */
+}
+
 table {
     border-collapse: collapse;
     width: 100%;
     table-layout: fixed;
+    margin-top: 8px;
+    margin-bottom: 12px;
     background-color: #fff;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 th {
@@ -48,13 +72,13 @@ th {
     color: #fff;
     font-weight: 600;
     text-align: left;
-    border-bottom: 2px solid rgb(0,92,153);
     padding: 10px;
+    border-bottom: 2px solid rgb(0,92,153);
 }
 
 td {
-    border-bottom: 1px solid #ddd;
     padding: 10px;
+    border-bottom: 1px solid #ddd;
     vertical-align: top;
     word-wrap: break-word;
     white-space: pre-line;
@@ -69,29 +93,6 @@ tr:hover td {
     transition: background-color 0.2s ease;
 }
 
-/* Collapsible details */
-details summary {
-    cursor: pointer;
-    font-weight: 600;
-    background-color: rgb(0,122,204);
-    color: #fff;
-    padding: 8px 12px;
-    border-radius: 4px;
-    margin-bottom: 6px;
-    user-select: none;
-    list-style: none;
-}
-
-details[open] summary {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-}
-
-details table {
-    margin-top: 6px;
-}
-
-/* Links */
 a {
     color: rgb(0,122,204);
     text-decoration: none;
@@ -99,4 +100,13 @@ a {
 
 a:hover {
     text-decoration: underline;
+}
+
+code {
+    font-family: "Courier New", monospace;
+    background-color: #f0f0f0;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 0.95em;
+    word-break: break-all;
 }

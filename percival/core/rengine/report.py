@@ -55,14 +55,21 @@ def report_vscanner(image_tag):
 
     lines = [
         "## Vulnerability Report",
-        "### Trivy OS packages findings",
-        tables["trivy_pkgs"] or no_results,
-        "### Trivy language dependencies findings",
-        tables["trivy_lngs"] or no_results,
-        "### PerCIVAl OS packages findings",
-        tables["percival_pkgs"] or no_results,
-        "### PerCIVAl language dependencies findings",
-        tables["percival_lngs"] or no_results
+        "<details><summary>Trivy OS packages findings (click to open)</summary>\n\n" +
+        (tables["trivy_pkgs"] or no_results) +
+        "\n</details>",
+
+        "<details><summary>Trivy language dependencies findings (click to open)</summary>\n\n" +
+        (tables["trivy_lngs"] or no_results) +
+        "\n</details>",
+
+        "<details><summary>PerCIVAl OS packages findings (click to open)</summary>\n\n" +
+        (tables["percival_pkgs"] or no_results) +
+        "\n</details>",
+
+        "<details><summary>PerCIVAl language dependencies findings (click to open)</summary>\n\n" +
+        (tables["percival_lngs"] or no_results) +
+        "\n</details>"
     ]
 
     vreport = "\n".join(lines)
@@ -104,10 +111,13 @@ def report_cchecker(image_tag):
 
     lines = [
         "## Configuration Report",
-        "### Image Efficiency",
-        tables["dive"] or no_results,
-        "### Configuration Errors",
-        tables["dockerfile"] or no_results,
+        "<details><summary>Image Efficiency (click to open)</summary>\n\n" +
+        (tables["dive"] or no_results) +
+        "\n</details>",
+
+        "<details><summary>Configuration Errors (click to open)</summary>\n\n" +
+        (tables["dockerfile"] or no_results) +
+        "\n</details>"
     ]
 
     creport = "\n".join(lines)
@@ -144,10 +154,13 @@ def report_sdetector(image_tag):
 
     lines = [
         "## Secret Detection Report",
-        "### API Keys",
-        keys_table or no_results,
-        "### High-Entropy Strings",
-        strings_table or no_results,
+        "<details><summary>API Keys (click to open)</summary>\n\n" +
+        (keys_table or no_results) +
+        "\n</details>",
+
+        "<details><summary>High-Entropy Strings (click to open)</summary>\n\n" +
+        (strings_table or no_results) +
+        "\n</details>"
     ]
 
     sreport = "\n".join(lines)
