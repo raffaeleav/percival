@@ -34,12 +34,12 @@ def check_config(image_tag):
     if not rnt.is_fetched(image_tag):
         raise RuntimeError("An unexpected error occurred while checking configuration, please fetch the image and try again")
     
-    module_dir = fld.get_module_dir("cchecker")
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
     ccheck_file = fld.get_file_path(image_temp_dir, "ccheck.json")
     
     docker_file = fld.get_file_path(image_temp_dir, "Dockerfile")
-    rules_file = fld.get_file_path(module_dir, "rules.yaml")
+    cchecker_config_dir = fld.get_dir(fld.get_config_dir(), "cchecker")
+    rules_file = fld.get_file_path(cchecker_config_dir, "rules.yaml")
 
     report = []
 
