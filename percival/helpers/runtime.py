@@ -1,4 +1,5 @@
 import os
+import sys
 
 from yaspin import yaspin
 from yaspin.spinners import Spinners
@@ -37,4 +38,9 @@ def run_with_spinner(desc, func, *args, **kwargs):
 
 def clear():
     print("\033c", end="")
+
+
+def restart():
+    python = sys.executable
+    os.execl(python, python, *sys.argv)
     

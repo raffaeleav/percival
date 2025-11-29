@@ -10,6 +10,10 @@ from percival.core.dloader import extract as ext, fetch as ftc
 from percival.helpers import folders as fld, runtime as rnt
 
 
+# [to-do](2) exception handling in sdetector, rengine (+ protected methods)
+# [to-do](2.5) check why sdetect report has None files for every secret/string
+# [to-do](3) add filters to report to shorten it
+# [to-do](4) parallelyze
 class Percival(cmd2.Cmd):
     intro = "Welcome to perCIVAl shell, type help to list commands or exit to quit"
     prompt = "perCIVAl > "
@@ -34,9 +38,6 @@ class Percival(cmd2.Cmd):
     def do_fetch(self, image_tag):
         """
         Pull a Docker image from the registry.
-
-        Args:
-            image_tag (str): The Docker image tag to pull.
         """
         if not rnt.is_docker_running():
             print("[Failure] To fetch an image, Docker daemon should be running")
@@ -70,12 +71,10 @@ class Percival(cmd2.Cmd):
         rnt.run_with_spinner("Generating report", rpt.report_all, image_tag)
 
 
+    # [to-do](1) check why when trivy lng report is empty final report is still not empty
     def do_vscan(self, image_tag):
         """
         Check for OS packages and language dependency vulnerabilities in a Docker image.
-
-        Args:
-            image_tag (str): The Docker image tag to scan.
         """
         rnt.run_with_spinner("Updating Trivy db", scn.update_trivy)
         rnt.run_with_spinner("Scanning for vulnerabilities with Trivy", scn.trivy, image_tag)
@@ -86,22 +85,15 @@ class Percival(cmd2.Cmd):
     def do_ccheck(self, image_tag):
         """
         Check for insecure practices in a Docker image.
-
-        Args:
-            image_tag (str): The Docker image tag to check.
         """
         rnt.run_with_spinner("Reconstructing Dockerfile", chk.reconstruct_docker_file, image_tag)
         rnt.run_with_spinner("Running image efficiency check with dive", chk.dive, image_tag)
         rnt.run_with_spinner("Checking Dockerfile best practices", chk.check_config, image_tag)
 
-    
 
     def do_sdetect(self, image_tag):
         """
         Finds common secrets in a Docker image.
-
-        Args:
-            image_tag (str): The Docker image tag to analyze.
         """
         rnt.run_with_spinner("Finding secrets", det.detect_secrets, image_tag)
 
@@ -109,19 +101,13 @@ class Percival(cmd2.Cmd):
     def do_report(self, image_tag):
         """
         Generate a vulnerability report for a Docker image.
-
-        Args:
-            image_tag (str): The Docker image tag to generate the report for.
         """
         rnt.run_with_spinner("Generating report", rpt.report_all, image_tag)
 
 
-    def do_cleanup(self, image_tag):
+    def do_cleanup(self, _):
         """
         Remove temporary files created during fetching and scanning.
-
-        Args:
-            image_tag (str): The Docker image tag related to temporary files.
         """
         rnt.run_with_spinner("Deleting temp files", fld.remove_temp_files)
 
@@ -132,13 +118,16 @@ class Percival(cmd2.Cmd):
         """
         rnt.clear()
 
+    def do_restart(self, _):
+        """
+        Reload the CLI.
+        """
+        rnt.restart()
 
-    def do_exit(self, arg):
+
+    def do_exit(self, _):
         """
         Exit the PerCIVAl shell.
-
-        Returns:
-            bool: True to signal the shell to exit.
         """
         return True
 
