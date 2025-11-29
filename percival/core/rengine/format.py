@@ -110,7 +110,7 @@ def sanitize(text):
     return text
 
 
-def wrap_column(column, max_len=50):
+def wrap_column(column, max_len=60):
     column = "<br>".join([column[i:i+max_len] for i in range(0, len(column), max_len)])
 
     return column
@@ -122,12 +122,16 @@ def format_keys_report(report):
         "|-|-|\n"
     )
 
+    empty = True
+
     for entry in report:
         file_path = entry.get("file", "")   
         keys = entry.get("keys", [])
 
         if not keys:
             continue
+
+        empty = False
 
         file_path = wrap_column(file_path)
 
@@ -139,6 +143,9 @@ def format_keys_report(report):
 
             md_lines += f"| | {key} |\n"
 
+    if empty:
+        md_lines = ""
+
     return md_lines
 
 
@@ -147,6 +154,8 @@ def format_strings_table(report):
         "| File | Secrets |\n"
         "|-|-|\n"
     )
+    
+    empty = True
 
     for entry in report:
         file_path = entry.get("file", "")   
@@ -154,6 +163,8 @@ def format_strings_table(report):
 
         if not strings:
             continue
+
+        empty = False
 
         file_path = wrap_column(file_path)
 
@@ -164,5 +175,8 @@ def format_strings_table(report):
             string = wrap_column(string)
 
             md_lines += f"| | {string} |\n"
+
+    if empty:
+        md_lines = ""
 
     return md_lines
