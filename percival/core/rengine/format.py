@@ -1,4 +1,3 @@
-import os
 import base64
 
 
@@ -111,7 +110,7 @@ def sanitize(text):
     return text
 
 
-def wrap_column(column, max_len=35):
+def wrap_column(column, max_len=50):
     column = "<br>".join([column[i:i+max_len] for i in range(0, len(column), max_len)])
 
     return column

@@ -1,48 +1,102 @@
 body {
-    font-family: "Times New Roman", serif;
-    font-size: 10pt;
-    line-height: 1.5;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 11pt;
+    line-height: 1.6;
     margin: 1.5cm;
-    color: #333;
+    color: #222;
+    background-color: #f9f9f9;
 }
 
+/* Main headings */
+h1 {
+    font-size: 1.8em;
+    color: rgb(0,122,204);
+    border-bottom: 3px solid rgb(0,122,204);
+    padding-bottom: 6px;
+    margin-bottom: 20px;
+}
+
+/* Section headings (subsections like Vulnerability, Config, Secrets) */
+h2 {
+    font-size: 1.4em;
+    color: rgb(0,122,204);
+    border-bottom: 2px solid rgba(0,122,204,0.5);
+    padding-bottom: 4px;
+    margin-top: 30px;
+    margin-bottom: 12px;
+}
+
+/* Table containers to separate visually each section */
+h2 + table {
+    margin-top: 12px;
+    margin-bottom: 24px;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Table styling */
 table {
     border-collapse: collapse;
     width: 100%;
-    margin-bottom: 1em;
     table-layout: fixed;
+    background-color: #fff;
 }
 
 th {
-    background-color: #f2f2f2;
-    font-weight: bold;
+    background-color: rgb(0,122,204);
+    color: #fff;
+    font-weight: 600;
     text-align: left;
-    border: 1px solid #333;
-    padding: 6px;
+    border-bottom: 2px solid rgb(0,92,153);
+    padding: 10px;
 }
 
 td {
-    border: 1px solid #333;
-    padding: 6px;
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
     vertical-align: top;
     word-wrap: break-word;
     white-space: pre-line;
 }
 
-tr:hover {
-    background-color: #fafafa;
+tr:nth-child(even) td {
+    background-color: #f7f7f7;
 }
 
+tr:hover td {
+    background-color: #e6f0fb;
+    transition: background-color 0.2s ease;
+}
+
+/* Collapsible details */
 details summary {
     cursor: pointer;
-    font-weight: bold;
-    background-color: #e6e6e6;
-    padding: 4px 6px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    margin-bottom: 4px;
+    font-weight: 600;
+    background-color: rgb(0,122,204);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    user-select: none;
+    list-style: none;
+}
+
+details[open] summary {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 details table {
-    margin-top: 4px;
+    margin-top: 6px;
+}
+
+/* Links */
+a {
+    color: rgb(0,122,204);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
