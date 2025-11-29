@@ -10,6 +10,9 @@ from percival.core.dloader import lngs_dict
 def _group_trivy_pkgs_findings(report):
     if not isinstance(report, list):
         raise TypeError("Report should be a list")
+    
+    if not report: 
+        return []
 
     grouped = defaultdict(lambda: {"package": None, "version": None, "cves": []})
 
@@ -29,6 +32,10 @@ def _group_trivy_lngs_findings(report):
         raise TypeError("Report should be a list")
     
     result = []
+
+    if not report: 
+        return result
+
     item = {"language": "?", "file_type": "?", "dependencies": []}
 
     grouped = defaultdict(lambda: {"dependency": None, "version": None, "cves": []})

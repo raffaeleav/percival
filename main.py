@@ -25,6 +25,7 @@ class Percival(cmd2.Cmd):
         and perform initial setup.
         """
         super().__init__()
+        rnt.clear()
         fld.setup()
         self.params = {"image": None}
 
@@ -71,7 +72,6 @@ class Percival(cmd2.Cmd):
         rnt.run_with_spinner("Generating report", rpt.report_all, image_tag)
 
 
-    # [to-do](1) check why when trivy lng report is empty final report is still not empty
     def do_vscan(self, image_tag):
         """
         Check for OS packages and language dependency vulnerabilities in a Docker image.
@@ -117,6 +117,7 @@ class Percival(cmd2.Cmd):
         Clear the shell screen.
         """
         rnt.clear()
+
 
     def do_restart(self, _):
         """
