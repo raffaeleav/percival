@@ -5,11 +5,16 @@ excluded_files = {
     ".zip", ".tar", ".gz", ".tgz", ".bz2", ".xz", ".rar", ".7z",
     ".exe", ".dll", ".so", ".dylib", ".bin", ".class", ".o", ".a",
     ".pdf", ".sqlite", ".db", ".psd", ".ico",
+    ".dat", ".dat-old", ".ttf", 
+    ".po", ".pot", ".mo", ".strings", ".ts", ".qm", 
+    ".model", ".pb", ".npy", ".npz", ".ckpt", ".h5", 
+    ".state", ".lock", ".idx", ".sig", ".log", ".trace", ".debug", ".bak", ".old", ".tmp",
+    ".gpg", ".svgz",
 }
 
 excluded_dirs = {
     "/usr/bin", "/usr/sbin", "/bin", "/sbin", "/lib", "/lib64",
-    "/usr/lib", "/usr/lib64",
+    "/usr/lib", "/usr/lib64", "/usr/share/zoneinfo",
 }
 
 key_patterns = {

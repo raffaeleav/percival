@@ -71,27 +71,31 @@ def detect_secrets(image_tag):
 
     report = []
     min_length = 20
-    # 4.0 is a entropy value that is commonly associated to a "probable" secret
-    treshold = 4.0
+    # 5.0 is a entropy value that is commonly associated to a secret with medium probability
+    treshold = 5.0
 
     for file in files: 
         if is_excluded(file):
             continue
-
-        with open(file, "r", errors="ignore") as f:
-            lines = f.readlines()
+        
+        try:
+            with open(file, "r", errors="ignore") as f:
+                lines = f.readlines()
+        except Exception:
+            continue
 
         if lines:
             secrets = get_keys(lines)
             strings = get_high_entropy_strings(lines, min_length, treshold)
 
-            entry = {
-                "file": file,
-                "secrets": secrets,
-                "strings": strings
-            }
+            if secrets or strings:
+                entry = {
+                    "file": file,
+                    "secrets": secrets,
+                    "strings": strings
+                }
 
-            report.append(entry)
+                report.append(entry)
 
     with open(secrets_file, "w") as f:
         json.dump(report, f, indent=2)

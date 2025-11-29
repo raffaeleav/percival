@@ -22,7 +22,7 @@ def get_manifest(self, image_tag):
         tar.extract("manifest.json", path=image_temp_dir)
 
 
-# this is needed to avoid dangerous that could overwrite files
+# this is needed to avoid dangerous write operations that could overwrite files on the host filesystem
 def _get_all_members(layer_tar, layer_dir):
     if not isinstance(layer_tar, tarfile.TarFile):
         raise TypeError(f"layer_tar must be a tarfile.TarFile instance, got {type(layer_tar).__name__} instead")
@@ -87,6 +87,11 @@ def get_all_files(image_tag):
 
         for file in layer_files:
             file_path = fld.get_file_path(layer_path, file)
+
+            if os.path.islink(file_path):
+                continue
+
+            file_path = fld.get_file_path(layer_path, file)
             files.append(file_path)
 
     return files
@@ -108,6 +113,11 @@ def get_pkg_files(image_tag):
         files = fld.list_files(layer_path)
 
         for file in files:
+            file_path = fld.get_file_path(layer_path, file)
+
+            if os.path.islink(file_path):
+                continue
+    
             norm_file = os.path.normpath(file)
 
             if any(pkg_file in norm_file for pkg_file in norm_pkgs_dict):
@@ -136,6 +146,11 @@ def get_lng_files(image_tag):
         files = fld.list_files(layer_path)
 
         for file in files:
+            file_path = fld.get_file_path(layer_path, file)
+
+            if os.path.islink(file_path):
+                continue
+
             norm_file = os.path.normpath(file)
 
             if any(lng_file in norm_file for lng_file in norm_lngs_dict):

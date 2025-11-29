@@ -125,6 +125,7 @@ class Percival(cmd2.Cmd):
         """
         rnt.run_with_spinner("Deleting temp files", fld.remove_temp_files)
 
+
     def do_clear(self, arg):
         """
         Clear the shell screen.
