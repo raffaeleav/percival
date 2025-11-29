@@ -11,12 +11,13 @@ from percival.helpers import folders as fld, runtime as rnt
 
 
 # [to-do](2) exception handling in sdetector, rengine (+ protected methods)
-# [to-do](2.5) check why sdetect report has None files for every secret/string
+# [to-do](2.1) check why sdetect report has None files for every secret/string
 # [to-do](3) add filters to report to shorten it
+# [to-do](3.1) speedup file choice in report
 # [to-do](4) parallelyze
 class Percival(cmd2.Cmd):
-    intro = "Welcome to perCIVAl shell, type help to list commands or exit to quit"
-    prompt = "perCIVAl > "
+    intro = "Welcome to perCIVAl shell, type \033[1mhelp\033[0m to list commands or \033[1mexit\033[0m to quit"
+    prompt = "\033[38;2;0;122;204mperCIVAl >\033[0m "
 
 
     def __init__(self):
