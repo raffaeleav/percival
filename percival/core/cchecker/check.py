@@ -1,11 +1,13 @@
 import json
 import yaml
 
-from percival.helpers import shell as sh
-from percival.helpers import folders as fld
+from percival.helpers import folders as fld, runtime as rnt, shell as sh
 
 
 def reconstruct_docker_file(image_tag): 
+    if not rnt.is_fetched(image_tag):
+        raise RuntimeError("An unexpected error occurred while checking configuration, please fetch the image and try again")
+    
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
     docker_file = fld.get_file_path(image_temp_dir, "Dockerfile")
 
@@ -15,7 +17,10 @@ def reconstruct_docker_file(image_tag):
     return output
 
 
-def dive(image_tag): 
+def dive(image_tag):
+    if not rnt.is_fetched(image_tag):
+        raise RuntimeError("An unexpected error occurred while executing Dive, please fetch the image and try again")
+    
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
     dive_report = fld.get_file_path(image_temp_dir, "dive_report.json")
 
@@ -26,11 +31,13 @@ def dive(image_tag):
 
 
 def check_config(image_tag):
+    if not rnt.is_fetched(image_tag):
+        raise RuntimeError("An unexpected error occurred while checking configuration, please fetch the image and try again")
+    
     module_dir = fld.get_module_dir("cchecker")
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
     ccheck_file = fld.get_file_path(image_temp_dir, "ccheck.json")
     
-
     docker_file = fld.get_file_path(image_temp_dir, "Dockerfile")
     rules_file = fld.get_file_path(module_dir, "rules.yaml")
 
