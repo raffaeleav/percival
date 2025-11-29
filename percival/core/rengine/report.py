@@ -120,6 +120,9 @@ def report_sdetector(image_tag):
     files = fld.list_files(image_temp_dir)
     files = [file for file in files if file.endswith(".json")]
 
+    keys_table = ""
+    strings_table = ""
+
     for file in files:
         with open(os.path.join(image_temp_dir, file), "r") as f:
             content = f.read()
