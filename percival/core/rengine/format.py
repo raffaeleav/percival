@@ -105,14 +105,16 @@ def format_ccheck_report(report):
     return md_lines
 
 
-def get_file_name(file_path):
-    filename = os.path.basename(file_path)
-
-    return filename
-
-
 def sanitize(text):
-    return base64.b64encode(text.encode("utf-8", errors="ignore")).decode()
+    text = base64.b64encode(text.encode("utf-8", errors="ignore")).decode()
+
+    return text
+
+
+def wrap_column(column, max_len=35):
+    column = "<br>".join([column[i:i+max_len] for i in range(0, len(column), max_len)])
+
+    return column
 
 
 def format_keys_report(report):
@@ -126,14 +128,16 @@ def format_keys_report(report):
         keys = entry.get("keys", [])
 
         if not keys:
-            return ""
+            continue
 
-        file = get_file_name(file_path)
+        file_path = wrap_column(file_path)
 
-        md_lines += f"| {file} |  |\n"
+        md_lines += f"| {file_path} |  |\n"
 
         for key in keys:
             key = sanitize(key)
+            key = wrap_column(key)
+
             md_lines += f"| | {key} |\n"
 
     return md_lines
@@ -150,14 +154,16 @@ def format_strings_table(report):
         strings = entry.get("strings", [])
 
         if not strings:
-            return ""
+            continue
 
-        file = get_file_name(file_path)
+        file_path = wrap_column(file_path)
 
-        md_lines += f"| {file} |  |\n"
+        md_lines += f"| {file_path} |  |\n"
 
         for string in strings:
             string = sanitize(string)
+            string = wrap_column(string)
+
             md_lines += f"| | {string} |\n"
 
     return md_lines

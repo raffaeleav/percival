@@ -27,7 +27,6 @@ termcolor==2.3.0
 tinycss2==1.4.0
 tinyhtml5==2.0.0
 tqdm==4.67.1
-urllib3==2.5.0
 wcwidth==0.2.13
 webencodings==0.5.1
 wheel==0.45.1

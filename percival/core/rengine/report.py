@@ -155,9 +155,10 @@ def report_sdetector(image_tag):
 
 
 def report_all(image_tag):
+    rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
     md_file = fld.get_file_path(image_report_dir, "report.md")
-    pdf_file = fld.get_file_path(image_report_dir, "report.pdf")
+    html_file = fld.get_file_path(image_report_dir, "report.html")
 
     vreport = report_vscanner(image_tag)
     creport = report_cchecker(image_tag)
@@ -176,15 +177,7 @@ def report_all(image_tag):
         f.write(report)
 
     sh.run_command(
-        f"pandoc {md_file} -o {pdf_file} "
-        "--pdf-engine=xelatex "
-        "-V geometry:margin=1.5cm "
-        "-V fontsize=12pt "
-        "-V mainfont='Times New Roman' "
-        "-V monofont='Courier New' "
-        "-V colorlinks=true "  
-        "-V linkcolor=blue "
-        "-V urlcolor=cyan "
-        "-V title='Vulnerability Assessment Report' "  
-        "-V lang=en "
+        f"pandoc {md_file} "
+        f"-o {html_file} "
+        f"-c {rengine_config_dir}/styles.css "
     )

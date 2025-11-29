@@ -16,6 +16,14 @@ def setup():
     os.makedirs(reports_dir, exist_ok=True)
 
 
+def get_config_dir():
+    file_path = os.path.dirname(os.path.abspath(__file__))
+    project_path = os.path.abspath(os.path.join(file_path, "..", ".."))
+    config_dir = os.path.abspath(os.path.join(project_path, "config"))
+
+    return config_dir
+
+
 def get_module_dir(module):
     file_path = os.path.dirname(os.path.abspath(__file__))
     project_path = os.path.abspath(os.path.join(file_path, "..", ".."))

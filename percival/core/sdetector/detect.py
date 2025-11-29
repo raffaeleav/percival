@@ -31,7 +31,7 @@ def shannon_entropy(string):
     return entropy
 
 
-def get_high_entropy_strings(lines, min_length, treshold):
+def get_high_entropy_strings(lines, min_length, treshold=4.5):
     strings = []
 
     for line in lines:
