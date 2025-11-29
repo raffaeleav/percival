@@ -6,7 +6,7 @@ from percival.helpers import shell as sh, folders as fld
 from percival.core.rengine import format as fmt, score as scr, filter as flt
 
 
-def report_vscanner(image_tag):
+def get_vscanner_report(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
 
     files = fld.list_files(image_temp_dir)
@@ -54,7 +54,7 @@ def report_vscanner(image_tag):
     no_results = "No vulnerabilities found\n"
 
     lines = [
-        "## Vulnerability Report",
+        "## Vulnerability Scanner Findings",
         "<details><summary>Trivy OS packages findings (click to open)</summary>\n\n" +
         (tables["trivy_pkgs"] or no_results) +
         "\n</details>",
@@ -72,12 +72,12 @@ def report_vscanner(image_tag):
         "\n</details>"
     ]
 
-    vreport = "\n".join(lines)
+    vscanner_report = "\n".join(lines)
 
-    return vreport
+    return vscanner_report
 
 
-def report_cchecker(image_tag):
+def get_cchecker_report(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
 
     files = fld.list_files(image_temp_dir)
@@ -110,7 +110,7 @@ def report_cchecker(image_tag):
     no_results = "No configuration errors found\n"
 
     lines = [
-        "## Configuration Report",
+        "## Configuration Checker Findings",
         "<details><summary>Image Efficiency (click to open)</summary>\n\n" +
         (tables["dive"] or no_results) +
         "\n</details>",
@@ -120,12 +120,12 @@ def report_cchecker(image_tag):
         "\n</details>"
     ]
 
-    creport = "\n".join(lines)
+    cchecker_report = "\n".join(lines)
 
-    return creport
+    return cchecker_report
 
 
-def report_sdetector(image_tag):
+def get_sdetector_report(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
 
     files = fld.list_files(image_temp_dir)
@@ -153,7 +153,7 @@ def report_sdetector(image_tag):
     no_results = "No API keys found\n"
 
     lines = [
-        "## Secret Detection Report",
+        "## Secret Detector Findings",
         "<details><summary>API Keys (click to open)</summary>\n\n" +
         (keys_table or no_results) +
         "\n</details>",
@@ -163,28 +163,28 @@ def report_sdetector(image_tag):
         "\n</details>"
     ]
 
-    sreport = "\n".join(lines)
+    sdetector_report = "\n".join(lines)
 
-    return sreport
+    return sdetector_report
 
 
-def report_all(image_tag):
+def get_all_findings_report(image_tag):
     rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
     styles_file = fld.get_file_path(rengine_config_dir, "styles.css")
 
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
-    md_file = fld.get_file_path(image_report_dir, "report.md")
-    html_file = fld.get_file_path(image_report_dir, "report.html")
+    md_file = fld.get_file_path(image_report_dir, "findings.md")
+    html_file = fld.get_file_path(image_report_dir, "findings.html")
 
-    vreport = report_vscanner(image_tag)
-    creport = report_cchecker(image_tag)
-    sreport = report_sdetector(image_tag)
+    vscanner_report = get_vscanner_report(image_tag)
+    cchecker_report = get_cchecker_report(image_tag)
+    sdetector_report = get_sdetector_report(image_tag)
 
     lines = [
-        "# perCIVAl Report",
-        vreport, 
-        creport, 
-        sreport,
+        "# perCIVAl Findings",
+        vscanner_report, 
+        cchecker_report, 
+        sdetector_report,
     ]
 
     report = "\n".join(lines)
@@ -204,9 +204,9 @@ def report_all(image_tag):
     return output
 
 
-def view_report(image_tag):
+def view_all_findings_report(image_tag):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
-    html_file = fld.get_file_path(image_report_dir, "report.html")
+    html_file = fld.get_file_path(image_report_dir, "findings.html")
 
     os_name = platform.system()
 
@@ -214,6 +214,44 @@ def view_report(image_tag):
         cmd = f"xdg-open {html_file}"
     elif os_name == "Darwin":
         cmd = f"open {html_file}"
+
+    output = sh.run_command(cmd)
+
+    return output
+
+
+def report(image_tag):
+    rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
+    index_file = fld.get_file_path(rengine_config_dir, "index.tex")
+
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+    md_file = fld.get_file_path(image_report_dir, "report.md")
+    pdf_file = fld.get_file_path(image_report_dir, "report.pdf")
+
+    # e_summary = get_executive_summary(image_tag)
+    # e_highlights = get_engagement_highlights(image_tag)
+    # v_report = get_vulnerability_report(image_tag)
+    # f_summary = get_findings_summary(image_tag)
+    # d_summary = get_detailed_summary(image_tag)
+
+    lines = [
+        "# perCIVAl Report",
+        # e_summary, 
+        # e_highlights, 
+        # v_report,
+        # f_summary,
+        # d_summary,
+    ]
+
+    report = "\n".join(lines)
+
+    with open(md_file, "w") as f:
+        f.write(report)
+
+    cmd = (
+        f"pandoc {md_file} "
+        f"-o {pdf_file} "
+    )
 
     output = sh.run_command(cmd)
 
