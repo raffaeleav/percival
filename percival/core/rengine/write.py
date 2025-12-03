@@ -1,6 +1,6 @@
-
-from percival.helpers import api, folders as fld
 from percival.core.rengine import prompts
+from percival.helpers import api, folders as fld
+
 
 def get_prompt(section):
     prompt = prompts.get(section)
@@ -10,15 +10,23 @@ def get_prompt(section):
 
 def get_vulnerability_report(image_tag, api_token):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
-    findings = fld.get_file_path(image_report_dir, "findings.md")    
+    md_file = fld.get_file_path(image_report_dir, "findings.md")    
 
-    prompt = None
+    prompt = get_prompt("vulnerability_report")
 
-    section = api.query_hf(api_token, prompt, findings)
+    with open(md_file, "r", encoding="utf-8") as f:
+        findings = f.read()
+
+    try:
+        section = api.query_hf(api_token, prompt, findings)
+    except Exception:
+        section = None
+
+    no_results = "An error occurred with the text generation API while generating this section. Please retry generating the report."
 
     lines = [
         "\\section{Vulnerability Report}", 
-        section
+        section or no_results,
     ]
 
     text = "\n\n".join(lines)

@@ -79,40 +79,6 @@ class Percival(cmd2.Cmd):
         rnt.run_with_spinner("Opening findings", rpt.view_all_findings, image_tag)
 
 
-    def do_vscan(self, image_tag):
-        """
-        Check for OS packages and language dependency vulnerabilities in a Docker image.
-        """
-        rnt.run_with_spinner("Updating Trivy db", scn.update_trivy)
-        rnt.run_with_spinner("Scanning for vulnerabilities with Trivy", scn.trivy, image_tag)
-        rnt.run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan_os_packages, image_tag)
-        rnt.run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan_language_dependencies, image_tag)
-
-
-    def do_ccheck(self, image_tag):
-        """
-        Check for insecure practices in a Docker image.
-        """
-        rnt.run_with_spinner("Reconstructing Dockerfile", chk.reconstruct_docker_file, image_tag)
-        rnt.run_with_spinner("Running image efficiency check with Dive", chk.dive, image_tag)
-        rnt.run_with_spinner("Checking Dockerfile best practices", chk.check_config, image_tag)
-
-
-    def do_sdetect(self, image_tag):
-        """
-        Find common secrets in a Docker image.
-        """
-        rnt.run_with_spinner("Finding secrets", det.detect_secrets, image_tag)
-
-
-    def do_report(self, image_tag):
-        """
-        Generate a vulnerability report for a Docker image.
-        """
-        rnt.run_with_spinner("Generating report", rpt.get_all_findings_report, image_tag)
-        rnt.run_with_spinner("Opening report in browser", rpt.view_all_findings_report, image_tag)
-
-
     def do_token(self, token):
         """
         Set Huggingface API Token for report generation

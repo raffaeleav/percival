@@ -81,31 +81,27 @@ def get_hf_token():
 
 
 def query_hf(api_token, prompt, findings):
-    url = "https://api-inference.huggingface.co/models/TheBloke/Falcon-7B-Instruct-GGUF"
+    url = "https://api.huggingface-apis.com/v1/chat/completions"
 
     headers = {
-        "Authorization": f"Bearer {api_token}"
+        "Authorization": f"Bearer {api_token}",
+        "Content-Type": "application/json"
     }
 
     full_prompt = f"{prompt}\n\n{findings}"
 
-    payload = {
-        "inputs": full_prompt,
-        "parameters": {
-            "max_new_tokens": 1000
-        }
-    }
-
-    try:
-        response = requests.post(
-            url,
-            json=payload,
-            headers=headers
-        )
-
-        response.raise_for_status()
-
-    except requests.RequestException as e:
-        return {"error": str(e)}
+    response = requests.post(url, headers=headers, json={
+        "model": "meta-llama/Llama-2-7b-chat-hf",
+        "messages": [
+            {
+                "role": "system",
+                "content": "You are a helpful assistant that summarizes vulnerability findings from Markdown tables in plain text suitable for LaTeX."
+            },
+            {
+                "role": "user",
+                "content": f"{full_prompt}"
+            }
+        ],
+    })
     
     return response.json()
