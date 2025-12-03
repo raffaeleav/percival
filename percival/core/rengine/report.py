@@ -221,15 +221,13 @@ def view_all_findings(image_tag):
 
 
 def report(image_tag):
-    rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
-    index_file = fld.get_file_path(rengine_config_dir, "index.tex")
-
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
     tex_file = fld.get_file_path(image_report_dir, "report.tex")
-    pdf_file = fld.get_file_path(image_report_dir, "report.pdf")
 
-    api_token = api.get_hf_token()
+    api_token = None
 
+    index = wrt.get_index()
+    title_page = wrt.get_title_page()
     # exe_summary = wrt.get_executive_summary(image_tag, api_token)
     vul_report = wrt.get_vulnerability_report(image_tag, api_token)
     # con_report = wrt.get_configuration_report(image_tag, api_token)
@@ -239,6 +237,9 @@ def report(image_tag):
     det_summary = wrt.get_detailed_summary()
 
     lines = [
+        index,
+        r"\begin{document}",
+        title_page,
         # exe_summary, 
         vul_report,
         # con_report,
@@ -246,6 +247,7 @@ def report(image_tag):
         # rem_report,
         # fin_summary,
         det_summary,
+        r"\end{document}"
     ]
 
     report = "\n".join(lines)
@@ -253,12 +255,8 @@ def report(image_tag):
     with open(tex_file, "w") as f:
         f.write(report)
 
-    cmd = (
-        f"pandoc {tex_file} "
-        f"-o {pdf_file} "
-        f" --include-in-header={index_file}"
-    )
-
+    cmd = f"latexmk -pdf -outdir={image_report_dir} {tex_file}"
+    
     output = sh.run_command(cmd)
 
     return output

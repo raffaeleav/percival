@@ -104,4 +104,4 @@ def query_hf(api_token, prompt, findings):
         ],
     })
     
-    return response.json()
+    return response.json()["choices"][0]["message"]["content"]
