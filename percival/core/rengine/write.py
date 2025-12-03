@@ -30,6 +30,33 @@ def get_title_page():
     return text
 
 
+def get_executive_summary(image_tag, api_token):
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+    md_file = fld.get_file_path(image_report_dir, "findings.md")  
+
+    prompt = get_prompt("executive_summary")
+
+    with open(md_file, "r", encoding="utf-8") as f:
+        findings = f.read()
+
+    try:
+        section = api.query_hf(api_token, prompt, findings)
+    except Exception as e:
+        print(e)
+        section = None
+
+    no_results = "An error occurred with the text generation API while generating this section. Please retry generating the report."
+
+    lines = [
+        r"\section{Executive Summary}", 
+        section or no_results,
+    ]
+
+    text = "\n\n".join(lines)
+
+    return text
+
+
 def get_vulnerability_report(image_tag, api_token):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
     md_file = fld.get_file_path(image_report_dir, "findings.md")    
@@ -49,6 +76,87 @@ def get_vulnerability_report(image_tag, api_token):
 
     lines = [
         r"\section{Vulnerability Report}", 
+        section or no_results,
+    ]
+
+    text = "\n\n".join(lines)
+
+    return text
+
+
+def get_configuration_report(image_tag, api_token):
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+    md_file = fld.get_file_path(image_report_dir, "findings.md")    
+
+    prompt = get_prompt("configuration_report")
+
+    with open(md_file, "r", encoding="utf-8") as f:
+        findings = f.read()
+
+    try:
+        section = api.query_hf(api_token, prompt, findings)
+    except Exception as e:
+        print(e)
+        section = None
+
+    no_results = "An error occurred with the text generation API while generating this section. Please retry generating the report."
+
+    lines = [
+        r"\section{Configuration Report}", 
+        section or no_results,
+    ]
+
+    text = "\n\n".join(lines)
+
+    return text
+
+
+def get_secrets_report(image_tag, api_token):
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+    md_file = fld.get_file_path(image_report_dir, "findings.md")    
+
+    prompt = get_prompt("secrets_report")
+
+    with open(md_file, "r", encoding="utf-8") as f:
+        findings = f.read()
+
+    try:
+        section = api.query_hf(api_token, prompt, findings)
+    except Exception as e:
+        print(e)
+        section = None
+
+    no_results = "An error occurred with the text generation API while generating this section. Please retry generating the report."
+
+    lines = [
+        r"\section{Secrets Report}", 
+        section or no_results,
+    ]
+
+    text = "\n\n".join(lines)
+
+    return text
+
+
+def get_remediation_report(image_tag, api_token):
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+    md_file = fld.get_file_path(image_report_dir, "findings.md")    
+
+    prompt = get_prompt("remediation_report")
+
+    with open(md_file, "r", encoding="utf-8") as f:
+        findings = f.read()
+
+    try:
+        section = api.query_hf(api_token, prompt, findings)
+    except Exception as e:
+        print(e)
+        section = None
+
+    no_results = "An error occurred with the text generation API while generating this section. Please retry generating the report."
+
+    lines = [
+        r"\section{Remediation Report}", 
         section or no_results,
     ]
 
