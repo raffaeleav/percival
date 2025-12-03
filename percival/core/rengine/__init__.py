@@ -1,9 +1,7 @@
 CVE_PATTERN = r"(CVE-\d{4}-\d{4,})"
 
-PROMPTS = {
+prompts = {
     "executive_summary": (
-        ""
-        ""
         ""
     ),
     "vulnerability_report": (

@@ -68,8 +68,15 @@ class Percival(cmd2.Cmd):
 
         rnt.run_with_spinner("Finding secrets", det.detect_secrets, image_tag)
 
-        rnt.run_with_spinner("Generating report", rpt.get_all_findings_report, image_tag)
-        rnt.run_with_spinner("Opening report in browser", rpt.view_all_findings_report, image_tag)
+        rnt.run_with_spinner("Generating findings", rpt.get_all_findings, image_tag)
+        rnt.run_with_spinner("Generating report", rpt.report, image_tag)
+
+
+    def do_findings(self, image_tag):
+        """
+        View detailed summary of findings for the analysis conducted on the given Docker image. 
+        """
+        rnt.run_with_spinner("Opening findings", rpt.view_all_findings, image_tag)
 
 
     def do_vscan(self, image_tag):
@@ -93,7 +100,7 @@ class Percival(cmd2.Cmd):
 
     def do_sdetect(self, image_tag):
         """
-        Finds common secrets in a Docker image.
+        Find common secrets in a Docker image.
         """
         rnt.run_with_spinner("Finding secrets", det.detect_secrets, image_tag)
 

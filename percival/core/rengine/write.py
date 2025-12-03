@@ -1,3 +1,31 @@
+
+from percival.helpers import api, folders as fld
+from percival.core.rengine import prompts
+
+def get_prompt(section):
+    prompt = prompts.get(section)
+
+    return prompt
+
+
+def get_vulnerability_report(image_tag, api_token):
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+    findings = fld.get_file_path(image_report_dir, "findings.md")    
+
+    prompt = None
+
+    section = api.query_hf(api_token, prompt, findings)
+
+    lines = [
+        "\\section{Vulnerability Report}", 
+        section
+    ]
+
+    text = "\n\n".join(lines)
+
+    return text
+
+
 def get_detailed_summary():
     lines = [
         "\\section{Detailed Summary}",
@@ -15,6 +43,6 @@ def get_detailed_summary():
         )
     ]
 
-    text = "".join(lines)
+    text = "\n\n".join(lines)
 
     return text

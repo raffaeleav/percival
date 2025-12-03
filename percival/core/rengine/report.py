@@ -168,7 +168,7 @@ def get_sdetector_report(image_tag):
     return sdetector_report
 
 
-def get_all_findings_report(image_tag):
+def get_all_findings(image_tag):
     rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
     styles_file = fld.get_file_path(rengine_config_dir, "styles.css")
 
@@ -204,7 +204,7 @@ def get_all_findings_report(image_tag):
     return output
 
 
-def view_all_findings_report(image_tag):
+def view_all_findings(image_tag):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
     html_file = fld.get_file_path(image_report_dir, "findings.html")
 
@@ -230,17 +230,19 @@ def report(image_tag):
 
     api_token = api.get_hf_token()
 
-    # exe_summary = get_executive_summary(image_tag, api_token)
-    # vul_report = get_vulnerability_report(image_tag, api_token)
-    # con_report = get_configuration_report(image_tag, api_token)
-    # sec_report = get_secrets_report(image_tag, api_token)
-    # rem_report = get_remediation_report(image_tag, api_token)
-    # fin_summary = get_findings_summary(image_tag, api_token)
+    # exe_summary = wrt.get_executive_summary(image_tag, api_token)
+    vul_report = wrt.get_vulnerability_report(image_tag, api_token)
+    # con_report = wrt.get_configuration_report(image_tag, api_token)
+    # sec_report = wrt.get_secrets_report(image_tag, api_token)
+    # rem_report = wrt.get_remediation_report(image_tag, api_token)
+    # fin_summary = wrt.get_findings_summary(image_tag, api_token)
     det_summary = wrt.get_detailed_summary()
 
     lines = [
         # exe_summary, 
-        # vul_report,
+        vul_report,
+        # con_report,
+        # sec_report,
         # rem_report,
         # fin_summary,
         det_summary,

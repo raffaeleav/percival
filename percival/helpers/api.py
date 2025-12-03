@@ -80,16 +80,20 @@ def get_hf_token():
     return token
 
 
-def query_hf(api_token, prompt, json_files):
+def query_hf(api_token, prompt, findings):
     url = "https://api-inference.huggingface.co/models/TheBloke/Falcon-7B-Instruct-GGUF"
 
     headers = {
         "Authorization": f"Bearer {api_token}"
     }
 
+    full_prompt = f"{prompt}\n\n{findings}"
+
     payload = {
-        "prompt": prompt,
-        "files": json_files or {}
+        "inputs": full_prompt,
+        "parameters": {
+            "max_new_tokens": 1000
+        }
     }
 
     try:
