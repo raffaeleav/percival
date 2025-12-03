@@ -1,3 +1,4 @@
+import os
 import time
 import requests
 
@@ -74,6 +75,9 @@ def get_hf_token():
     rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
     token_file = fld.get_file_path(rengine_config_dir, "token.txt")
 
+    if not os.path.isfile(token_file):
+        return None
+
     with open(token_file, "r") as f:
         token = f.read().strip()
 
@@ -102,6 +106,7 @@ def query_hf(api_token, prompt, findings):
                 "content": f"{full_prompt}"
             }
         ],
+        "max_new_tokens": 150
     })
     
     return response.json()["choices"][0]["message"]["content"]

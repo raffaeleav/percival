@@ -72,6 +72,14 @@ class Percival(cmd2.Cmd):
         rnt.run_with_spinner("Generating report", rpt.report, image_tag)
 
 
+    def do_report(self, image_tag):
+        """
+        Generate findings and report for the analysis conducted on the given Docker image. 
+        """
+        rnt.run_with_spinner("Generating findings", rpt.get_all_findings, image_tag)
+        rnt.run_with_spinner("Generating report", rpt.report, image_tag)
+
+
     def do_findings(self, image_tag):
         """
         View detailed summary of findings for the analysis conducted on the given Docker image. 
