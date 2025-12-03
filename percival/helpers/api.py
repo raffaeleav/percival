@@ -63,29 +63,14 @@ def query_nvd(batch):
     return response.json()["vulnerabilities"]
 
 
-def set_hf_token(token):
-    rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
-    token_file = fld.get_file_path(rengine_config_dir, "token.txt")
-
-    with open(token_file, "w") as f:
-        f.write(token.strip())
-
-
 def get_hf_token():
-    rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
-    token_file = fld.get_file_path(rengine_config_dir, "token.txt")
-
-    if not os.path.isfile(token_file):
-        return None
-
-    with open(token_file, "r") as f:
-        token = f.read().strip()
+    token = os.getenv("HF_TOKEN")
 
     return token
 
 
 def query_hf(api_token, prompt, findings):
-    url = "https://api.huggingface-apis.com/v1/chat/completions"
+    url = "https://router.huggingface.co/featherless-ai/v1/completions"
 
     headers = {
         "Authorization": f"Bearer {api_token}",
@@ -94,19 +79,25 @@ def query_hf(api_token, prompt, findings):
 
     full_prompt = f"{prompt}\n\n{findings}"
 
-    response = requests.post(url, headers=headers, json={
-        "model": "meta-llama/Llama-2-7b-chat-hf",
-        "messages": [
-            {
-                "role": "system",
-                "content": "You are a helpful assistant that summarizes vulnerability findings from Markdown tables in plain text suitable for LaTeX."
-            },
-            {
-                "role": "user",
-                "content": f"{full_prompt}"
-            }
-        ],
-        "max_new_tokens": 150
-    })
-    
-    return response.json()["choices"][0]["message"]["content"]
+    json = {
+        "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+        "prompt": full_prompt,
+        "max_new_tokens": 1024,
+        "stream": True
+    }
+
+    try:
+        response = requests.post(
+            url, 
+            headers=headers, 
+            json=json
+        )
+    except Exception:
+        raise
+
+    completion = response.json()
+
+    texts = [choice['text'] for choice in completion['choices']]
+    text = "\n".join(texts)
+
+    return text

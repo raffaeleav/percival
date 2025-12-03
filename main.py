@@ -86,13 +86,6 @@ class Percival(cmd2.Cmd):
         rnt.run_with_spinner("Opening findings", rpt.view_all_findings, image_tag)
 
 
-    def do_token(self, token):
-        """
-        Set Huggingface API Token for report generation
-        """
-        rnt.run_with_spinner("Setting API token", api.set_hf_token, token)
-
-
     def do_cleanup(self, _):
         """
         Remove temporary files created during fetching and scanning.
@@ -100,7 +93,7 @@ class Percival(cmd2.Cmd):
         rnt.run_with_spinner("Deleting temp files", fld.remove_temp_files)
 
 
-    def do_clear(self, arg):
+    def do_clear(self, _):
         """
         Clear the shell screen.
         """

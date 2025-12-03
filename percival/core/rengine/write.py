@@ -41,7 +41,8 @@ def get_vulnerability_report(image_tag, api_token):
 
     try:
         section = api.query_hf(api_token, prompt, findings)
-    except Exception:
+    except Exception as e:
+        print(e)
         section = None
 
     no_results = "An error occurred with the text generation API while generating this section. Please retry generating the report."

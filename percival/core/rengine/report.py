@@ -227,7 +227,7 @@ def report(image_tag):
     api_token = api.get_hf_token()
 
     if not api_token: 
-        raise RuntimeError("No HuggingFace API token found, please set your token with the 'token' command")
+        raise RuntimeError("No HuggingFace API token found, please set your token with 'export HF_TOKEN=<your_token>'")
 
     index = wrt.get_index()
     title_page = wrt.get_title_page()
