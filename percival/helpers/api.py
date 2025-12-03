@@ -1,6 +1,8 @@
 import time
 import requests
 
+from percival.helpers import folders as fld
+
 
 def query_osv(batch):
     delay = 30
@@ -60,8 +62,30 @@ def query_nvd(batch):
     return response.json()["vulnerabilities"]
 
 
-def query_openai(prompt, json_files):
-    url = ""
+def set_hf_token(token):
+    rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
+    token_file = fld.get_file_path(rengine_config_dir, "token.txt")
+
+    with open(token_file, "w") as f:
+        f.write(token.strip())
+
+
+def get_hf_token():
+    rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
+    token_file = fld.get_file_path(rengine_config_dir, "token.txt")
+
+    with open(token_file, "r") as f:
+        token = f.read().strip()
+
+    return token
+
+
+def query_hf(api_token, prompt, json_files):
+    url = "https://api-inference.huggingface.co/models/TheBloke/Falcon-7B-Instruct-GGUF"
+
+    headers = {
+        "Authorization": f"Bearer {api_token}"
+    }
 
     payload = {
         "prompt": prompt,
@@ -72,6 +96,7 @@ def query_openai(prompt, json_files):
         response = requests.post(
             url,
             json=payload,
+            headers=headers
         )
 
         response.raise_for_status()

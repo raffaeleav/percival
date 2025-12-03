@@ -2,8 +2,8 @@ import os
 import json
 import platform
 
-from percival.helpers import shell as sh, folders as fld
-from percival.core.rengine import format as fmt, score as scr, filter as flt
+from percival.helpers import api, folders as fld, shell as sh
+from percival.core.rengine import  filter as flt, format as fmt, score as scr, write as wrt
 
 
 def get_vscanner_report(image_tag):
@@ -220,48 +220,6 @@ def view_all_findings_report(image_tag):
     return output
 
 
-def get_detailed_summary():
-    lines = [
-        "# Detailed Summary",
-        "All the findings are organized in the findings.html file. "
-        "This document provides a structured overview of all identified issues, and relevant "
-        "metadata gathered during the analysis. "
-        "Package and Language findings include CVSS scores (when available) of the CVEs related to each package / language "
-        "depency installed in the container image. These findings also include an analysis performed using the "
-        "Trivy tool."
-        "Configuration findings highlight bad practices in Dockerfiles and include an efficiency check conducted with the "
-        "Dive tool. "
-        "Secret detection findings report high-entropy strings and plausible API keys. "
-        "You can use the fview command to quickly open and inspect the file in your web browser. "
-    ]
-
-    text = "\n".join(lines)
-
-    return text
-
-
-def get_detailed_summary():
-    lines = [
-        "\\section{Detailed Summary}",
-        (
-            "All the findings are organized in the findings.html file. "
-            "This document provides a structured overview of all identified issues and the "
-            "metadata collected during the analysis. "
-            "Package and language findings include CVSS scores (when available) for CVEs "
-            "associated with each package or dependency installed in the container image, "
-            "together with results derived from the Trivy scanner. "
-            "Configuration findings highlight bad practices in Dockerfiles and include an "
-            "efficiency assessment performed using the Dive tool. "
-            "Secret detection findings report high-entropy strings and potential API keys. "
-            "You can use the fview command to quickly open and inspect the file in your web browser."
-        )
-    ]
-
-    text = "".join(lines)
-
-    return text
-
-
 def report(image_tag):
     rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
     index_file = fld.get_file_path(rengine_config_dir, "index.tex")
@@ -270,11 +228,15 @@ def report(image_tag):
     tex_file = fld.get_file_path(image_report_dir, "report.tex")
     pdf_file = fld.get_file_path(image_report_dir, "report.pdf")
 
-    # exe_summary = get_executive_summary(image_tag)
-    # vul_report = get_vulnerability_report(image_tag)
-    # rem_report = get_remediation_report(image_tag)
-    # fin_summary = get_findings_summary(image_tag)
-    det_summary = get_detailed_summary()
+    api_token = api.get_hf_token()
+
+    # exe_summary = get_executive_summary(image_tag, api_token)
+    # vul_report = get_vulnerability_report(image_tag, api_token)
+    # con_report = get_configuration_report(image_tag, api_token)
+    # sec_report = get_secrets_report(image_tag, api_token)
+    # rem_report = get_remediation_report(image_tag, api_token)
+    # fin_summary = get_findings_summary(image_tag, api_token)
+    det_summary = wrt.get_detailed_summary()
 
     lines = [
         # exe_summary, 

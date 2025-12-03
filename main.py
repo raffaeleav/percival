@@ -5,7 +5,7 @@ from percival.core.cchecker import check as chk
 from percival.core.sdetector import detect as det 
 from percival.core.rengine import report as rpt 
 from percival.core.dloader import extract as ext, fetch as ftc 
-from percival.helpers import folders as fld, runtime as rnt
+from percival.helpers import api, folders as fld, runtime as rnt
 
 
 # [to-do](1) ptr with llm queries
@@ -30,7 +30,9 @@ class Percival(cmd2.Cmd):
         rnt.check_support()
 
         fld.setup()
-        self.params = {"image": None}
+        self.params = {
+            "image": None,
+        }
 
 
     def do_fetch(self, image_tag):
@@ -102,6 +104,13 @@ class Percival(cmd2.Cmd):
         """
         rnt.run_with_spinner("Generating report", rpt.get_all_findings_report, image_tag)
         rnt.run_with_spinner("Opening report in browser", rpt.view_all_findings_report, image_tag)
+
+
+    def do_token(self, token):
+        """
+        Set Huggingface API Token for report generation
+        """
+        rnt.run_with_spinner("Setting API token", api.set_hf_token, token)
 
 
     def do_cleanup(self, _):
