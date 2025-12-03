@@ -220,37 +220,79 @@ def view_all_findings_report(image_tag):
     return output
 
 
+def get_detailed_summary():
+    lines = [
+        "# Detailed Summary",
+        "All the findings are organized in the findings.html file. "
+        "This document provides a structured overview of all identified issues, and relevant "
+        "metadata gathered during the analysis. "
+        "Package and Language findings include CVSS scores (when available) of the CVEs related to each package / language "
+        "depency installed in the container image. These findings also include an analysis performed using the "
+        "Trivy tool."
+        "Configuration findings highlight bad practices in Dockerfiles and include an efficiency check conducted with the "
+        "Dive tool. "
+        "Secret detection findings report high-entropy strings and plausible API keys. "
+        "You can use the fview command to quickly open and inspect the file in your web browser. "
+    ]
+
+    text = "\n".join(lines)
+
+    return text
+
+
+def get_detailed_summary():
+    lines = [
+        "\\section{Detailed Summary}",
+        (
+            "All the findings are organized in the findings.html file. "
+            "This document provides a structured overview of all identified issues and the "
+            "metadata collected during the analysis. "
+            "Package and language findings include CVSS scores (when available) for CVEs "
+            "associated with each package or dependency installed in the container image, "
+            "together with results derived from the Trivy scanner. "
+            "Configuration findings highlight bad practices in Dockerfiles and include an "
+            "efficiency assessment performed using the Dive tool. "
+            "Secret detection findings report high-entropy strings and potential API keys. "
+            "You can use the fview command to quickly open and inspect the file in your web browser."
+        )
+    ]
+
+    text = "".join(lines)
+
+    return text
+
+
 def report(image_tag):
     rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
     index_file = fld.get_file_path(rengine_config_dir, "index.tex")
 
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
-    md_file = fld.get_file_path(image_report_dir, "report.md")
+    tex_file = fld.get_file_path(image_report_dir, "report.tex")
     pdf_file = fld.get_file_path(image_report_dir, "report.pdf")
 
-    # e_summary = get_executive_summary(image_tag)
-    # e_highlights = get_engagement_highlights(image_tag)
-    # v_report = get_vulnerability_report(image_tag)
-    # f_summary = get_findings_summary(image_tag)
-    # d_summary = get_detailed_summary(image_tag)
+    # exe_summary = get_executive_summary(image_tag)
+    # vul_report = get_vulnerability_report(image_tag)
+    # rem_report = get_remediation_report(image_tag)
+    # fin_summary = get_findings_summary(image_tag)
+    det_summary = get_detailed_summary()
 
     lines = [
-        "# perCIVAl Report",
-        # e_summary, 
-        # e_highlights, 
-        # v_report,
-        # f_summary,
-        # d_summary,
+        # exe_summary, 
+        # vul_report,
+        # rem_report,
+        # fin_summary,
+        det_summary,
     ]
 
     report = "\n".join(lines)
 
-    with open(md_file, "w") as f:
+    with open(tex_file, "w") as f:
         f.write(report)
 
     cmd = (
-        f"pandoc {md_file} "
+        f"pandoc {tex_file} "
         f"-o {pdf_file} "
+        f" --include-in-header={index_file}"
     )
 
     output = sh.run_command(cmd)

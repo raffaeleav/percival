@@ -12,7 +12,10 @@ def query_osv(batch):
 
     while True:
         try:
-            response = requests.post(url, json={"queries": queries})
+            response = requests.post(
+                url, 
+                json={"queries": queries}
+            )
 
             if response.status_code == 429:
                 retry_after = int(response.headers.get("Retry-After", delay))
@@ -36,7 +39,11 @@ def query_nvd(batch):
 
     while True:
         try:
-            response = requests.get(url, params=params, timeout=10)
+            response = requests.get(
+                url, 
+                params=params, 
+                timeout=10
+            )
 
             if response.status_code == 429:
                 retry_after = int(response.headers.get("Retry-After", delay))
@@ -51,3 +58,25 @@ def query_nvd(batch):
             time.sleep(delay)
 
     return response.json()["vulnerabilities"]
+
+
+def query_openai(prompt, json_files):
+    url = ""
+
+    payload = {
+        "prompt": prompt,
+        "files": json_files or {}
+    }
+
+    try:
+        response = requests.post(
+            url,
+            json=payload,
+        )
+
+        response.raise_for_status()
+
+    except requests.RequestException as e:
+        return {"error": str(e)}
+    
+    return response.json()

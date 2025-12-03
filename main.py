@@ -66,8 +66,8 @@ class Percival(cmd2.Cmd):
 
         rnt.run_with_spinner("Finding secrets", det.detect_secrets, image_tag)
 
-        # rnt.run_with_spinner("Generating report", rpt.report_all, image_tag)
-        # rnt.run_with_spinner("Opening report in browser", rpt.view_report, image_tag)
+        rnt.run_with_spinner("Generating report", rpt.get_all_findings_report, image_tag)
+        rnt.run_with_spinner("Opening report in browser", rpt.view_all_findings_report, image_tag)
 
 
     def do_vscan(self, image_tag):
@@ -100,8 +100,8 @@ class Percival(cmd2.Cmd):
         """
         Generate a vulnerability report for a Docker image.
         """
-        # rnt.run_with_spinner("Generating report", rpt.report_all, image_tag)
-        # rnt.run_with_spinner("Opening report in browser", rpt.view_report, image_tag)
+        rnt.run_with_spinner("Generating report", rpt.get_all_findings_report, image_tag)
+        rnt.run_with_spinner("Opening report in browser", rpt.view_all_findings_report, image_tag)
 
 
     def do_cleanup(self, _):
