@@ -2,7 +2,10 @@ CVE_PATTERN = r"(CVE-\d{4}-\d{4,})"
 
 prompts = {
     "executive_summary": (
-        ""
+        "Read the findings provided in the following Markdown table and write "
+        "a concise general overview summarizing them. This overview is for the management, so it must be non technical." 
+        "The response must be in plain text, suitable for direct use in a LaTeX section. Focus on key patterns, trends, "
+        "and important observations rather than repeating individual table entries."
     ),
     "vulnerability_report": (
         "Read the findings provided in the following Markdown table (Only the 'Vulnerability Scanner' section) and write "
@@ -11,14 +14,20 @@ prompts = {
         "and important observations rather than repeating individual table entries."
     ),
     "configuration_report": (
-        ""
+        "Read the findings provided in the following Markdown table (Only the 'Configuration Checker' section) and write "
+        "a concise general overview summarizing them. " 
+        "The response must be in plain text, suitable for direct use in a LaTeX section. Focus on key patterns, trends, "
+        "and important observations rather than repeating individual table entries."
     ),
     "secrets_report": (
-        ""
+        "Read the findings provided in the following Markdown table (Only the 'Secret Detection' section) and write "
+        "a concise general overview summarizing them. " 
+        "The response must be in plain text, suitable for direct use in a LaTeX section. Focus on key patterns, trends, "
+        "and important observations rather than repeating individual table entries."
     ),
     "remediation_report": (
-        ""
-    ),
-    "findings_summary": (
+        "Read the findings provided in the following Markdown table and summarize the recommended actions to address them. "
+        "The response must be in plain text, suitable for direct use in a LaTeX section. "
+        "Focus on common remediation themes, priority areas, and general guidance rather than listing every individua recommendation."
     ),
 }

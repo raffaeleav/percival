@@ -236,7 +236,6 @@ def report(image_tag):
     # con_report = wrt.get_configuration_report(image_tag, api_token)
     # sec_report = wrt.get_secrets_report(image_tag, api_token)
     # rem_report = wrt.get_remediation_report(image_tag, api_token)
-    # fin_summary = wrt.get_findings_summary(image_tag, api_token)
     det_summary = wrt.get_detailed_summary()
 
     lines = [
@@ -248,7 +247,6 @@ def report(image_tag):
         # con_report,
         # sec_report,
         # rem_report,
-        # fin_summary,
         det_summary,
         r"\end{document}"
     ]
