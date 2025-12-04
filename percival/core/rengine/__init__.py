@@ -1,5 +1,11 @@
 CVE_PATTERN = r"(CVE-\d{4}-\d{4,})"
 
+vscanner_files = {"trivy_pkgs_vulns", "trivy_lngs_vulns", "pkgs_vulns", "lngs_vulns"}
+
+cchecker_files = {"dive_report.json", "ccheck.json"}
+
+sdetector_files = {"secrets.json"}
+
 prompts = {
     "executive_summary": (
         "Read the findings provided in the following Markdown table and write "

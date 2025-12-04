@@ -2,16 +2,15 @@ import cmd2
 
 from percival.core.vscanner import scan as scn 
 from percival.core.cchecker import check as chk 
-from percival.core.sdetector import detect as det 
 from percival.core.rengine import report as rpt 
-from percival.core.dloader import extract as ext, fetch as ftc 
+from percival.core.sdetector import detect as det 
 from percival.helpers import folders as fld, runtime as rnt
+from percival.core.dloader import extract as ext, fetch as ftc 
+
 
 
 # [to-do](2) exception handling in rengine, helpers (+ protected methods)
 # [to-do](3) add filters to report to shorten it
-# [to-do](3.1) speedup file choice in report
-# [to-do](4) parallelyze
 class Percival(cmd2.Cmd):
     intro = "Welcome to perCIVAl shell, type \033[1mhelp\033[0m to list commands or \033[1mexit\033[0m to quit"
     prompt = "\033[38;2;0;122;204mperCIVAl >\033[0m "

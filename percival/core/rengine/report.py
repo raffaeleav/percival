@@ -3,14 +3,15 @@ import json
 import platform
 
 from percival.helpers import api, folders as fld, shell as sh
-from percival.core.rengine import  filter as flt, format as fmt, score as scr, write as wrt
+from percival.core.rengine import vscanner_files, cchecker_files, sdetector_files
+from percival.core.rengine import filter as flt, format as fmt, score as scr, write as wrt
 
 
-def get_vscanner_report(image_tag):
+def _get_vscanner_report(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
 
     files = fld.list_files(image_temp_dir)
-    files = [file for file in files if file.endswith(".json")]
+    files = [file for file in files if file in vscanner_files]
 
     tables = {
         "trivy_pkgs": "",
@@ -77,11 +78,11 @@ def get_vscanner_report(image_tag):
     return vscanner_report
 
 
-def get_cchecker_report(image_tag):
+def _get_cchecker_report(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
 
     files = fld.list_files(image_temp_dir)
-    files = [file for file in files if file.endswith(".json")]
+    files = [file for file in files if file in cchecker_files]
 
     tables = {
         "dive": "",
@@ -125,11 +126,11 @@ def get_cchecker_report(image_tag):
     return cchecker_report
 
 
-def get_sdetector_report(image_tag):
+def _get_sdetector_report(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
 
     files = fld.list_files(image_temp_dir)
-    files = [file for file in files if file.endswith(".json")]
+    [file for file in files if file in sdetector_files]
 
     keys_table = ""
     strings_table = ""
@@ -144,11 +145,10 @@ def get_sdetector_report(image_tag):
                 report = None
 
         if report: 
-            if "secrets" in file:
-                keys_table = fmt.format_keys_report(report)
-                strings_table = fmt.format_strings_table(report)
+            keys_table = fmt.format_keys_report(report)
+            strings_table = fmt.format_strings_table(report)
 
-                break
+            break
 
     no_results = "No API keys found\n"
 
@@ -176,9 +176,9 @@ def get_all_findings(image_tag):
     md_file = fld.get_file_path(image_report_dir, "findings.md")
     html_file = fld.get_file_path(image_report_dir, "findings.html")
 
-    vscanner_report = get_vscanner_report(image_tag)
-    cchecker_report = get_cchecker_report(image_tag)
-    sdetector_report = get_sdetector_report(image_tag)
+    vscanner_report = _get_vscanner_report(image_tag)
+    cchecker_report = _get_cchecker_report(image_tag)
+    sdetector_report = _get_sdetector_report(image_tag)
 
     lines = [
         "# perCIVAl Findings",
@@ -231,14 +231,11 @@ def report(image_tag):
 
     index = wrt.get_index()
     title_page = wrt.get_title_page()
-    try:
-        # exe_summary = wrt.get_executive_summary(image_tag, api_token)
-        vul_report = wrt.get_vulnerability_report(image_tag, api_token)
-        con_report = wrt.get_configuration_report(image_tag, api_token)
-        sec_report = wrt.get_secrets_report(image_tag, api_token)
-        # rem_report = wrt.get_remediation_report(image_tag, api_token)
-    except Exception:
-        raise
+    # exe_summary = wrt.get_executive_summary(image_tag, api_token)
+    vul_report = wrt.get_vulnerability_report(image_tag, api_token)
+    con_report = wrt.get_configuration_report(image_tag, api_token)
+    sec_report = wrt.get_secrets_report(image_tag, api_token)
+    # rem_report = wrt.get_remediation_report(image_tag, api_token)
     det_summary = wrt.get_detailed_summary()
 
     lines = [
