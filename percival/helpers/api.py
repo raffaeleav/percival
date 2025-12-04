@@ -82,8 +82,8 @@ def query_hf(api_token, prompt, findings):
     json = {
         "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
         "prompt": full_prompt,
-        "max_new_tokens": 1024,
-        "stream": True
+        "max_new_tokens": 600,
+        "stream": False,
     }
 
     try:
@@ -92,6 +92,9 @@ def query_hf(api_token, prompt, findings):
             headers=headers, 
             json=json
         )
+
+        if response.status_code == 402:
+            raise RuntimeError("Your Huggingface Inference Providers credits are expired! It is not possible to generate a written report, you can still check all findings with findings command")
     except Exception:
         raise
 

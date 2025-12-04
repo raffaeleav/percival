@@ -8,7 +8,6 @@ from percival.core.dloader import extract as ext, fetch as ftc
 from percival.helpers import api, folders as fld, runtime as rnt
 
 
-# [to-do](1) ptr with llm queries
 # [to-do](2) exception handling in sdetector, rengine, helpers (+ protected methods)
 # [to-do](3) add filters to report to shorten it
 # [to-do](3.1) speedup file choice in report
@@ -68,14 +67,13 @@ class Percival(cmd2.Cmd):
         rnt.run_with_spinner("Finding secrets", det.detect_secrets, image_tag)
 
         rnt.run_with_spinner("Generating findings", rpt.get_all_findings, image_tag)
-        rnt.run_with_spinner("Generating report", rpt.report, image_tag)
 
 
     def do_report(self, image_tag):
         """
-        Generate findings and report for the analysis conducted on the given Docker image. 
+        Generate report for the analysis conducted on the given Docker image. 
         """
-        rnt.run_with_spinner("Generating findings", rpt.get_all_findings, image_tag)
+        # check with if is analyzed
         rnt.run_with_spinner("Generating report", rpt.report, image_tag)
 
 

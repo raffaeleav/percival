@@ -1,3 +1,5 @@
+import re
+
 from percival.core.rengine import prompts
 from percival.helpers import api, folders as fld
 
@@ -6,6 +8,41 @@ def get_prompt(section):
     prompt = prompts.get(section)
 
     return prompt
+
+
+def extract_md_section(table, heading):
+    lines = table.splitlines()
+
+    heading_text = heading.strip().lstrip("#").strip()
+    pattern = re.compile(r"^(##+)\s+" + re.escape(heading_text) + r"\s*$", re.IGNORECASE)
+
+    start_idx = None
+    start_level = None
+
+    for i, line in enumerate(lines):
+        m = pattern.match(line)
+        if m:
+            start_idx = i + 1
+            start_level = len(m.group(1))
+            break
+
+    if start_idx is None:
+        return None
+
+    collected = []
+
+    for line in lines[start_idx:]:
+        m = re.match(r"^(##+)\s+", line)
+        if m and len(m.group(1)) <= start_level:
+            break
+        collected.append(line)
+
+    while collected and collected[-1].strip() == "":
+        collected.pop()
+
+    section_table = "\n".join(collected)
+
+    return section_table
 
 
 def get_index():
@@ -42,7 +79,6 @@ def get_executive_summary(image_tag, api_token):
     try:
         section = api.query_hf(api_token, prompt, findings)
     except Exception as e:
-        print(e)
         section = None
 
     no_results = "An error occurred with the text generation API while generating this section. Please retry generating the report."
@@ -66,10 +102,11 @@ def get_vulnerability_report(image_tag, api_token):
     with open(md_file, "r", encoding="utf-8") as f:
         findings = f.read()
 
+    section_table = (findings, "Vulnerability Scanner Findings")
+
     try:
-        section = api.query_hf(api_token, prompt, findings)
+        section = api.query_hf(api_token, prompt, section_table)
     except Exception as e:
-        print(e)
         section = None
 
     no_results = "An error occurred with the text generation API while generating this section. Please retry generating the report."
@@ -93,10 +130,11 @@ def get_configuration_report(image_tag, api_token):
     with open(md_file, "r", encoding="utf-8") as f:
         findings = f.read()
 
+    section_table = (findings, "Configuration Checker Findings")
+
     try:
-        section = api.query_hf(api_token, prompt, findings)
+        section = api.query_hf(api_token, prompt, section_table)
     except Exception as e:
-        print(e)
         section = None
 
     no_results = "An error occurred with the text generation API while generating this section. Please retry generating the report."
@@ -120,10 +158,11 @@ def get_secrets_report(image_tag, api_token):
     with open(md_file, "r", encoding="utf-8") as f:
         findings = f.read()
 
+    section_table = (findings, "Secret Detector Findings")
+
     try:
-        section = api.query_hf(api_token, prompt, findings)
+        section = api.query_hf(api_token, prompt, section_table)
     except Exception as e:
-        print(e)
         section = None
 
     no_results = "An error occurred with the text generation API while generating this section. Please retry generating the report."
@@ -149,8 +188,7 @@ def get_remediation_report(image_tag, api_token):
 
     try:
         section = api.query_hf(api_token, prompt, findings)
-    except Exception as e:
-        print(e)
+    except Exception:
         section = None
 
     no_results = "An error occurred with the text generation API while generating this section. Please retry generating the report."

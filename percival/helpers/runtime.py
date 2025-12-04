@@ -42,8 +42,8 @@ def run_with_spinner(desc, func, *args, **kwargs):
         except Exception as e:
             spinner.fail("[Failure]")
             print(f"{e}")
-            
-            raise 
+
+            raise
 
 
 def clear():
