@@ -73,7 +73,10 @@ class Percival(cmd2.Cmd):
         """
         Generate report for the analysis conducted on the given Docker image. 
         """
-        # check with if is analyzed
+        if not rnt.is_analyzed(image_tag):
+            print("[Failure] To generate a report for an image, it should be analyzed first")
+            return
+        
         rnt.run_with_spinner("Generating report", rpt.report, image_tag)
 
 

@@ -94,7 +94,7 @@ def query_hf(api_token, prompt, findings):
         )
 
         if response.status_code == 402:
-            raise RuntimeError("Your Huggingface Inference Providers credits are expired! It is not possible to generate a written report, you can still check all findings with findings command")
+            raise RuntimeError("Your Huggingface Inference Providers credits are expired! It is not possible to generate a written report")
     except Exception:
         raise
 
