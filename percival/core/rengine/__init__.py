@@ -8,8 +8,8 @@ sdetector_files = {"secrets.json"}
 
 prompts = {
     "executive_summary": (
-        "Read the findings provided in the following Markdown table and write "
-        "a concise general overview summarizing them. This overview is for the management, so it must be non technical." 
+        "I will provide three LaTeX sections that contain an overview about security issues of a Docker container image, provide "
+        "a concise general overview summarizing them. This overview is for the management staff, so it must be non technical." 
         "The response must be in plain text, suitable for direct use in a LaTeX section. Focus on key patterns, trends, "
         "and important observations rather than repeating individual table entries."
     ),
@@ -32,7 +32,8 @@ prompts = {
         "and important observations rather than repeating individual table entries."
     ),
     "remediation_report": (
-        "Read the findings provided in the following Markdown table and summarize the recommended actions to address them. "
+        "I will provide three LaTeX sections that contain an overview about security issues of a Docker container image, summarize "
+        "the recommended actions to address them. "
         "The response must be in plain text, suitable for direct use in a LaTeX section. "
         "Focus on common remediation themes, priority areas, and general guidance rather than listing every individua recommendation."
     ),

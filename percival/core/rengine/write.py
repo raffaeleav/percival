@@ -4,13 +4,19 @@ from percival.core.rengine import prompts
 from percival.helpers import api, folders as fld
 
 
-def get_prompt(section):
+def _get_prompt(section):
+    if not isinstance(section, str):
+        return None
+
     prompt = prompts.get(section)
 
     return prompt
 
 
-def extract_md_section(table, heading):
+def _extract_md_section(table, heading):
+    if not isinstance(table, str) or not isinstance(heading, str):
+        return None
+    
     lines = table.splitlines()
 
     heading_text = heading.strip().lstrip("#").strip()
@@ -67,16 +73,17 @@ def get_title_page():
     return text
 
 
-def get_executive_summary(image_tag, api_token):
-    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
-    md_file = fld.get_file_path(image_report_dir, "findings.md")  
+def get_executive_summary(sections, api_token):
+    prompt = _get_prompt("executive_summary")
 
-    prompt = get_prompt("executive_summary")
+    if not prompt:
+        return None
 
-    with open(md_file, "r", encoding="utf-8") as f:
-        findings = f.read()
+    findings = "\n\n".join(sections)
 
     try:
+        findings = "\n\n".join(sections)
+
         section = api.query_hf(api_token, prompt, findings)
     except Exception as e:
         section = None
@@ -97,12 +104,15 @@ def get_vulnerability_report(image_tag, api_token):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
     md_file = fld.get_file_path(image_report_dir, "findings.md")    
 
-    prompt = get_prompt("vulnerability_report")
+    prompt = _get_prompt("vulnerability_report")
+
+    if not prompt:
+        return None
 
     with open(md_file, "r", encoding="utf-8") as f:
         findings = f.read()
 
-    section_table = (findings, "Vulnerability Scanner Findings")
+    section_table = _extract_md_section(findings, "Vulnerability Scanner Findings")
 
     try:
         section = api.query_hf(api_token, prompt, section_table)
@@ -125,12 +135,15 @@ def get_configuration_report(image_tag, api_token):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
     md_file = fld.get_file_path(image_report_dir, "findings.md")    
 
-    prompt = get_prompt("configuration_report")
+    prompt = _get_prompt("configuration_report")
+
+    if not prompt:
+        return None
 
     with open(md_file, "r", encoding="utf-8") as f:
         findings = f.read()
 
-    section_table = (findings, "Configuration Checker Findings")
+    section_table = _extract_md_section(findings, "Configuration Checker Findings")
 
     try:
         section = api.query_hf(api_token, prompt, section_table)
@@ -153,12 +166,15 @@ def get_secrets_report(image_tag, api_token):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
     md_file = fld.get_file_path(image_report_dir, "findings.md")    
 
-    prompt = get_prompt("secrets_report")
+    prompt = _get_prompt("secrets_report")
+
+    if not prompt:
+        return None
 
     with open(md_file, "r", encoding="utf-8") as f:
         findings = f.read()
 
-    section_table = (findings, "Secret Detector Findings")
+    section_table = _extract_md_section(findings, "Secret Detector Findings")
 
     try:
         section = api.query_hf(api_token, prompt, section_table)
@@ -177,14 +193,13 @@ def get_secrets_report(image_tag, api_token):
     return text
 
 
-def get_remediation_report(image_tag, api_token):
-    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
-    md_file = fld.get_file_path(image_report_dir, "findings.md")    
+def get_remediation_report(sections, api_token):
+    prompt = _get_prompt("remediation_report")
 
-    prompt = get_prompt("remediation_report")
+    if not prompt:
+        return None
 
-    with open(md_file, "r", encoding="utf-8") as f:
-        findings = f.read()
+    findings = "\n\n".join(sections)
 
     try:
         section = api.query_hf(api_token, prompt, findings)

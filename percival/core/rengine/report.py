@@ -231,11 +231,16 @@ def report(image_tag):
 
     index = wrt.get_index()
     title_page = wrt.get_title_page()
-    # exe_summary = wrt.get_executive_summary(image_tag, api_token)
+    
     vul_report = wrt.get_vulnerability_report(image_tag, api_token)
     con_report = wrt.get_configuration_report(image_tag, api_token)
     sec_report = wrt.get_secrets_report(image_tag, api_token)
-    # rem_report = wrt.get_remediation_report(image_tag, api_token)
+
+    sections = [vul_report, con_report, sec_report]
+
+    # exe_summary = wrt.get_executive_summary(sections, api_token)
+    # rem_report = wrt.get_remediation_report(sections, api_token)
+
     det_summary = wrt.get_detailed_summary()
 
     lines = [
