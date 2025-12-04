@@ -5,10 +5,10 @@ from percival.core.cchecker import check as chk
 from percival.core.sdetector import detect as det 
 from percival.core.rengine import report as rpt 
 from percival.core.dloader import extract as ext, fetch as ftc 
-from percival.helpers import api, folders as fld, runtime as rnt
+from percival.helpers import folders as fld, runtime as rnt
 
 
-# [to-do](2) exception handling in sdetector, rengine, helpers (+ protected methods)
+# [to-do](2) exception handling in rengine, helpers (+ protected methods)
 # [to-do](3) add filters to report to shorten it
 # [to-do](3.1) speedup file choice in report
 # [to-do](4) parallelyze

@@ -2,12 +2,15 @@ import re
 import math
 import json
 
-from percival.helpers import folders as fld
 from percival.core.dloader import extract as ext
+from percival.helpers import folders as fld, runtime as rnt
 from percival.core.sdetector import excluded_files, excluded_dirs, key_patterns
 
 
-def is_excluded(file):
+def _is_excluded(file):
+    if not isinstance(file, str):
+        return False
+    
     for excluded_file in excluded_files:
         if excluded_file in file:
             return True
@@ -19,8 +22,8 @@ def is_excluded(file):
     return False
 
 
-def shannon_entropy(string):
-    if not string:
+def _shannon_entropy(string):
+    if not isinstance(string, str):
         return 0.0
 
     freq = {ch: string.count(ch) for ch in set(string)}
@@ -31,13 +34,16 @@ def shannon_entropy(string):
     return entropy
 
 
-def get_high_entropy_strings(lines, min_length, treshold=4.5):
+def _get_high_entropy_strings(lines, min_length, treshold=4.5):
+    if not lines or not min_length:
+        return []
+
     strings = []
 
     for line in lines:
         for word in line.split():
             if len(word) >= min_length:
-                entropy = shannon_entropy(word)
+                entropy = _shannon_entropy(word)
 
                 if entropy >= treshold:
                     strings.append(word)
@@ -45,7 +51,10 @@ def get_high_entropy_strings(lines, min_length, treshold=4.5):
     return strings
 
 
-def get_keys(lines):
+def _get_keys(lines):
+    if not lines:
+        return []
+    
     keys = []
     
     for line in lines:
@@ -64,6 +73,9 @@ def get_keys(lines):
 
 
 def detect_secrets(image_tag):
+    if not rnt.is_fetched(image_tag):
+        raise RuntimeError("An unexpected error occurred during secret detection, please fetch the image and try again")
+    
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
     secrets_file = fld.get_file_path(image_temp_dir, "secrets.json")
 
@@ -75,7 +87,7 @@ def detect_secrets(image_tag):
     treshold = 5.0
 
     for file in files: 
-        if is_excluded(file):
+        if _is_excluded(file):
             continue
         
         try:
@@ -85,8 +97,8 @@ def detect_secrets(image_tag):
             continue
 
         if lines:
-            keys = get_keys(lines)
-            strings = get_high_entropy_strings(lines, min_length, treshold)
+            keys = _get_keys(lines)
+            strings = _get_high_entropy_strings(lines, min_length, treshold)
 
             if keys or strings:
                 entry = {
