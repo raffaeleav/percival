@@ -50,6 +50,11 @@ class Percival(cmd2.Cmd):
         """
         Analyze a Docker image with all the components.
         """
+        if not rnt.is_docker_running():
+            print("[Failure] To analyze an image, Docker daemon should be running")
+            
+            return
+
         if not rnt.is_fetched(image_tag):
             print("[Failure] To analyze an image, it should be fetched first")
             return
