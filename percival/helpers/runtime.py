@@ -44,11 +44,11 @@ def run_with_spinner(desc, func, *args, **kwargs):
     with yaspin(Spinners.arc, text=desc) as spinner:
         try:
             result = func(*args, **kwargs)
-            spinner.ok("[Success]")
+            spinner.ok("\033[38;2;76;241;76m[Success]\033[0m")
 
             return result
         except Exception as e:
-            spinner.fail("[Failure]")
+            spinner.fail("\033[38;2;241;76;76m[Failure]\033[0m")
             print(f"{e}")
 
             raise

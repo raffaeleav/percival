@@ -11,7 +11,10 @@ def _get_vscanner_report(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
 
     files = fld.list_files(image_temp_dir)
-    files = [file for file in files if file in vscanner_files]
+    files = [
+        file for file in files
+        if os.path.basename(file) in vscanner_files
+    ]
 
     tables = {
         "trivy_pkgs": "",
@@ -82,7 +85,10 @@ def _get_cchecker_report(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
 
     files = fld.list_files(image_temp_dir)
-    files = [file for file in files if file in cchecker_files]
+    files = [
+        file for file in files
+        if os.path.basename(file) in cchecker_files
+    ]
 
     tables = {
         "dive": "",
@@ -130,7 +136,10 @@ def _get_sdetector_report(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
 
     files = fld.list_files(image_temp_dir)
-    [file for file in files if file in sdetector_files]
+    files = [
+        file for file in files
+        if os.path.basename(file) in sdetector_files
+    ]
 
     keys_table = ""
     strings_table = ""

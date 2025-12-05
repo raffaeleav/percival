@@ -1,6 +1,6 @@
 CVE_PATTERN = r"(CVE-\d{4}-\d{4,})"
 
-vscanner_files = {"trivy_pkgs_vulns", "trivy_lngs_vulns", "pkgs_vulns", "lngs_vulns"}
+vscanner_files = {"trivy_pkgs_vulns.json", "trivy_lngs_vulns.json", "pkgs_vulns.json", "lngs_vulns.json"}
 
 cchecker_files = {"dive_report.json", "ccheck.json"}
 
