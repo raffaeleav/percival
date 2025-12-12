@@ -1,4 +1,5 @@
 import cmd2
+import argparse
 
 from percival.core.vscanner import scan as scn 
 from percival.core.cchecker import check as chk 
@@ -12,6 +13,14 @@ from percival.core.dloader import extract as ext, fetch as ftc
 class Percival(cmd2.Cmd):
     intro = "Welcome to perCIVAl shell, type \033[1mhelp\033[0m to list commands or \033[1mexit\033[0m to quit"
     prompt = "\033[38;2;0;122;204mperCIVAl >\033[0m "
+
+    analyze_parser = argparse.ArgumentParser()
+    analyze_parser.add_argument("image_tag", help="Docker image tag to analyze")
+    analyze_parser.add_argument(
+            "--with-trivy",
+            action="store_true",
+            help="Run additional Trivy vulnerability scanning"
+        )
 
 
     def __init__(self):
@@ -43,8 +52,9 @@ class Percival(cmd2.Cmd):
         rnt.run_with_spinner("Extracting manifest", ext.get_manifest, self, image_tag)
         rnt.run_with_spinner("Extracting layers", ext.get_layers, self, image_tag)
 
-
-    def do_analyze(self, image_tag):
+        
+    @cmd2.with_argparser(analyze_parser)
+    def do_analyze(self, args):
         """
         Analyze a Docker image with all the components.
         """
@@ -52,13 +62,18 @@ class Percival(cmd2.Cmd):
             print("[Failure] To analyze an image, Docker daemon should be running")
             
             return
+        
+        image_tag = args.image_tag
+        with_trivy = args.with_trivy
 
         if not rnt.is_fetched(image_tag):
             print("[Failure] To analyze an image, it should be fetched first")
             return
+        
+        if with_trivy:
+            rnt.run_with_spinner("Updating Trivy db", scn.update_trivy)
+            rnt.run_with_spinner("Scanning for vulnerabilities with Trivy", scn.trivy, image_tag)
 
-        rnt.run_with_spinner("Updating Trivy db", scn.update_trivy)
-        rnt.run_with_spinner("Scanning for vulnerabilities with Trivy", scn.trivy, image_tag)
         rnt.run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan_os_packages, image_tag)
         rnt.run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan_language_dependencies, image_tag)
 
