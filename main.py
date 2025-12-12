@@ -8,9 +8,7 @@ from percival.helpers import folders as fld, runtime as rnt
 from percival.core.dloader import extract as ext, fetch as ftc 
 
 
-
-# [to-do](2) exception handling in rengine, helpers (+ protected methods)
-# [to-do](3) add filters to report to shorten it
+# [to-do](4) use syft for vscanning
 class Percival(cmd2.Cmd):
     intro = "Welcome to perCIVAl shell, type \033[1mhelp\033[0m to list commands or \033[1mexit\033[0m to quit"
     prompt = "\033[38;2;0;122;204mperCIVAl >\033[0m "
@@ -18,7 +16,7 @@ class Percival(cmd2.Cmd):
 
     def __init__(self):
         """
-        Initialize the PerCIVAl shell, check the operating system,
+        Initialize the perCIVAl shell, check the operating system,
         and perform initial setup.
         """
         super().__init__()
