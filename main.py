@@ -63,7 +63,7 @@ class Percival(cmd2.Cmd):
             return
 
         rnt.run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan_os_packages, image_tag)
-        # rnt.run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan_language_dependencies, image_tag)
+        rnt.run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan_language_dependencies, image_tag)
 
         
     @cmd2.with_argparser(analyze_parser)
@@ -101,7 +101,7 @@ class Percival(cmd2.Cmd):
 
     def do_report(self, image_tag):
         """
-        Generate report for the analysis conducted on the given Docker image. 
+        Generate LLM report for the analysis conducted on the given Docker image. 
         """
         if not rnt.is_analyzed(image_tag):
             print("[Failure] To generate a report for an image, it should be analyzed first")
