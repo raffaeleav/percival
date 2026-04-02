@@ -1,0 +1,15 @@
+[
+    {{- range $i, $a := .artifacts}}
+    {{- if $i}},{{end}}
+    {
+        "name":"{{$a.name}}",
+        "version":"{{$a.version}}",
+        "layer":"{{(index $a.locations 0).layerID}}",
+        "type":"{{$a.type}}",
+        "purl":"{{$a.purl}}",
+        "cpes":[
+            {{range $j, $c := $a.cpes}}{{if $j}},{{end}}"{{$c.cpe | replace "\\" "\\\\"}}"{{end}}
+        ]
+    }
+    {{- end}}
+]

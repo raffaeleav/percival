@@ -2,7 +2,6 @@ import os
 import json
 import tarfile
 
-from percival.core.dloader import pkgs_dict, lngs_dict
 from percival.helpers import folders as fld, runtime as rnt
 
 
@@ -95,65 +94,3 @@ def get_all_files(image_tag):
             files.append(file_path)
 
     return files
-
-
-def get_pkg_files(image_tag):
-    if not rnt.is_fetched(image_tag):
-        raise RuntimeError("An unexpected error occurred while extracting package files, please fetch the image and try again")
-    
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
-    layers_dir = fld.get_dir(image_temp_dir, "blobs")
-    layers_dir = fld.get_dir(layers_dir, "sha256")
-
-    pkg_files = []
-    norm_pkgs_dict = [os.path.normpath(p).lstrip(os.sep) for p in pkgs_dict.values()]
-
-    for layer_dir in os.listdir(layers_dir):
-        layer_path = os.path.join(layers_dir, layer_dir)
-        files = fld.list_files(layer_path)
-
-        for file in files:
-            file_path = fld.get_file_path(layer_path, file)
-
-            if os.path.islink(file_path):
-                continue
-    
-            norm_file = os.path.normpath(file)
-
-            if any(pkg_file in norm_file for pkg_file in norm_pkgs_dict):
-                pkg_files.append(os.path.join(layers_dir, layer_dir, file))
-
-    return pkg_files
-
-
-def get_lng_files(image_tag):
-    if not rnt.is_fetched(image_tag):
-        raise RuntimeError("An unexpected error occurred while extracting language files, please fetch the image and try again")
-    
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
-    layers_dir = fld.get_dir(image_temp_dir, "blobs")
-    layers_dir = fld.get_dir(layers_dir, "sha256")
-
-    lng_files = []
-    norm_lngs_dict = [
-        os.path.normpath(p).lstrip(os.sep)
-        for v in lngs_dict.values()
-        for p in (v if isinstance(v, list) else [v])
-    ]
-
-    for layer_dir in os.listdir(layers_dir):
-        layer_path = os.path.join(layers_dir, layer_dir)
-        files = fld.list_files(layer_path)
-
-        for file in files:
-            file_path = fld.get_file_path(layer_path, file)
-
-            if os.path.islink(file_path):
-                continue
-
-            norm_file = os.path.normpath(file)
-
-            if any(lng_file in norm_file for lng_file in norm_lngs_dict):
-                lng_files.append(os.path.join(layers_dir, layer_dir, file))
-
-    return lng_files

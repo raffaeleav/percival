@@ -1,10 +1,11 @@
 import os
 import re
+import csv
 import json
 import xml.etree.ElementTree as et
 
 from collections import defaultdict
-from percival.core.dloader import lngs_dict
+from percival.core.vscanner import lngs_dict
 
 
 def _group_trivy_pkgs_findings(report):
@@ -91,68 +92,6 @@ def parse_trivy_file(trivy_file):
     lngs_report = _group_trivy_lngs_findings(lngs_report)
 
     return pkgs_report, lngs_report
-
-
-def parse_pkg_file(pkg_file):
-    if not isinstance(pkg_file, (str, bytes, os.PathLike)):
-        raise TypeError(f"pkg_file must be a path-like object, got {type(pkg_file).__name__} instead")
-    
-    if "dpkg" in pkg_file:
-        return _parse_dpkg_pkgs(pkg_file)
-    elif "pacman" in pkg_file:
-        return _parse_pacman_pkgs(pkg_file)
-    elif "rpm" in pkg_file:
-        return _parse_rpm_pkgs(pkg_file)
-    else:
-        raise ValueError("Unknown package file type: expected 'dpkg', 'pacman', or 'rpm' in filename")
-
-
-def _extract_blocks(pkg_file):
-    if not isinstance(pkg_file, (str, bytes, os.PathLike)):
-        raise TypeError(f"pkg_file must be a path-like object, got {type(pkg_file).__name__} instead")
-    
-    with open(pkg_file, "r") as f:
-        contents = f.read()
-
-    blocks = []
-
-    if contents:
-        blocks = contents.strip().split("\n\n")
-
-    return blocks
-
-
-def _parse_dpkg_pkgs(pkg_file):
-    if not isinstance(pkg_file, (str, bytes, os.PathLike)):
-        raise TypeError(f"pkg_file must be a path-like object, got {type(pkg_file).__name__} instead")
-    
-    pkgs = []
-    blocks = _extract_blocks(pkg_file)
-
-    for block in blocks:
-        pkg = {"version": None, "name": None}
-
-        lines = block.split("\n")
-
-        for line in lines:
-            if line.startswith("Package: "):
-                pkg["name"] = line.split("Package: ")[1]
-
-            if line.startswith("Version: "):
-                pkg["version"] = line.split("Version: ")[1]
-                break
-
-        pkgs.append(pkg)
-
-    return pkgs
-
-
-def _parse_pacman_pkgs(pkg_file):
-    raise ValueError("Not supported yet")
-
-
-def _parse_rpm_pkgs(pkg_file):
-    raise ValueError("Not supported yet")
 
 
 def parse_lng_file(lng_file):
