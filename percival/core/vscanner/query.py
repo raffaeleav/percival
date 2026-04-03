@@ -1,6 +1,16 @@
+import os
+import time
+import percival.helpers.folders as fld
+
 from vdb.lib import search
 from vdb.lib import config, db6 as db_lib
 from vdb.lib.orasclient import download_image
+
+
+def get_db_file():
+    db_file = fld.get_file_path(config.DATA_DIR, "data.vdb6")
+
+    return db_file
 
 
 def download_db():
@@ -9,12 +19,27 @@ def download_db():
     download_image(db_url, config.DATA_DIR)
 
 
+def is_downloaded():
+    db_file = get_db_file()
+
+    return db_file is not None
+
+
 def is_updated():
-    return db_lib.needs_update(days=1)
+    db_file = get_db_file()
+
+    if not db_file:
+        return False
+    
+    days = 7
+    current_time = time.time()
+    last_modified = os.path.getmtime(db_file)
+
+    return current_time - last_modified < 86400 * days
 
 
 def init_db():
-    if not is_updated():
+    if not is_downloaded or not is_updated():
         download_db()
 
 

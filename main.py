@@ -1,15 +1,14 @@
 import cmd2
 import argparse
 
-from percival.core.vscanner import scan as scn 
 from percival.core.cchecker import check as chk 
 from percival.core.rengine import report as rpt 
 from percival.core.sdetector import detect as det 
 from percival.helpers import folders as fld, runtime as rnt
+from percival.core.vscanner import scan as scn, query as qry
 from percival.core.dloader import extract as ext, fetch as ftc 
 
 
-# [to-do](4) use syft for vscanning
 class Percival(cmd2.Cmd):
     intro = "Welcome to perCIVAl shell, type \033[1mhelp\033[0m to list commands or \033[1mexit\033[0m to quit"
     prompt = "\033[38;2;0;122;204mperCIVAl >\033[0m "
@@ -32,8 +31,8 @@ class Percival(cmd2.Cmd):
 
         rnt.clear()
         rnt.check_support()
-
         fld.setup()
+
         self.params = {
             "image": None,
         }
@@ -87,6 +86,7 @@ class Percival(cmd2.Cmd):
             rnt.run_with_spinner("Updating Trivy db", scn.update_trivy)
             rnt.run_with_spinner("Scanning for vulnerabilities with Trivy", scn.trivy, image_tag)
 
+        rnt.run_with_spinner("Updating db", qry.init_db)
         rnt.run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan_os_packages, image_tag)
         rnt.run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan_language_dependencies, image_tag)
 
