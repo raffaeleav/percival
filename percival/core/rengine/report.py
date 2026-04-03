@@ -3,8 +3,8 @@ import json
 import platform
 
 from percival.helpers import api, folders as fld, shell as sh
+from percival.core.rengine import format as fmt, write as wrt
 from percival.core.rengine import vscanner_files, cchecker_files, sdetector_files
-from percival.core.rengine import filter as flt, format as fmt, score as scr, write as wrt
 
 
 def _get_vscanner_report(image_tag):
@@ -33,23 +33,15 @@ def _get_vscanner_report(image_tag):
                 report = None
 
         if report:
+            table = fmt.format_report(report)
+            
             if "pkgs" in file:
-                report = flt.filter_pkgs_report(report)
-                report = scr.get_pkgs_cvss_scores(report)
-
-                table = fmt.format_pkgs_report(report)
-
                 if "trivy" in file:
                     tables["trivy_pkgs"] = table
                 else:
                     tables["percival_pkgs"] = table
                 
             elif "lngs" in file:
-                report = flt.filter_lngs_report(report)
-                report = scr.get_lngs_cvss_scores(report)
-
-                table = fmt.format_lngs_report(report)
-
                 if "trivy" in file:
                     tables["trivy_lngs"] = table
                 else:

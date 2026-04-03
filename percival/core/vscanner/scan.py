@@ -1,8 +1,8 @@
 import os
 import json
 
-from percival.core.vscanner import pkgs_catalogers, lngs_catalogers
 from percival.core.vscanner import parse as prs, query as qry
+from percival.core.vscanner import pkgs_catalogers, lngs_catalogers
 from percival.helpers import folders as fld, runtime as rnt, shell as sh
 
 

@@ -1,71 +1,33 @@
 import base64
 
 
-def format_pkgs_report(report):
+def format_report(report):
     md_lines = (
-        "| Package | Version | CVE ID | CVSS v2.0 | CVSS v3.0 | CVSS v3.1 |\n"
-        "|-|-|-|-|-|-|\n"
+        "| Package | Version | Layer | Type | CVE ID | Severity | Base Score | Vector String |\n"
+        "|-|-|-|-|-|-|-|-|\n"
     )
 
-    for pkg in report:
-        package = pkg.get("package", "")
-        version = pkg.get("version", "")
-        cves = pkg.get("cves", [])
+    for item in report:
+        name = item.get("name", "")
+        version = item.get("version", "")
+        layer = item.get("layer", "")
+        type = item.get("type", "")
+        cves = item.get("cves", [])
 
         if not isinstance(cves, list):
             continue
 
-        md_lines += f"| {package} | {version} |  |  |  |  |\n"
+        md_lines += f"| {name} | {version} | {layer} | {type} |  |  |  |  |\n"
 
         for cve in cves:
-            cve_id = cve.get("id", "")
-            cvss = cve.get("cvss", {})
+            id = cve.get("id", "")
+            severity = cve.get("severity", "")
+            base_score = cve.get("cvss_base_score", "")
+            vector_string =  cve.get("cvss_vector", "")
 
-            v2 = cvss.get("2.0") or "N/A"
-            v3 = cvss.get("3.0") or "N/A"
-            v31 = cvss.get("3.1") or "N/A"
+            md_lines += f"|  |  |  |  | {id} | {severity} | {base_score} | {vector_string} |\n"
 
-            md_lines += f"|  |  | {cve_id} | {v2} | {v3} | {v31} |\n"
-
-        md_lines += "|---|---|---|---|---|---|\n"
-
-    return md_lines
-
-
-def format_lngs_report(report):
-    md_lines = (
-        "| Language | Filetype | Dependency | CVE ID | CVSS v2.0 | CVSS v3.0 | CVSS v3.1 |\n"
-        "|-|-|-|-|-|-|-|\n"
-    )
-
-    for lng in report:
-        language = lng.get("language", "")
-        file = lng.get("file_type", "")
-        dependencies = lng.get("dependencies", [])
-
-        if not isinstance(dependencies, list):
-            continue
-
-        md_lines += f"| {language} | {file} |  |  |  |  |  |\n"
-
-        for dependency in dependencies:
-            name = dependency.get("name", "")
-            cves = dependency.get("cves", [])
-
-            md_lines += f"|  |  | {name} |  |  |  |  |\n"
-
-            for cve in cves:
-                cve_id = cve.get("id", "")
-                cvss = cve.get("cvss", {})
-
-                v2 = cvss.get("2.0", "N/A")
-                v3 = cvss.get("3.0", "N/A")
-                v31 = cvss.get("3.1", "N/A")
-
-                md_lines += f"|  |  |  | {cve_id} | {v2} | {v3} | {v31} |\n"
-                md_lines += "|---|---|---|---|---|---|---|\n"
-
-        md_lines += "|---|---|---|---|---|---|---|\n"
+        md_lines += "|---|---|---|---|---|---|---|---|\n"
 
     return md_lines
 
