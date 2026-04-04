@@ -51,19 +51,6 @@ class Percival(cmd2.Cmd):
         rnt.run_with_spinner("Extracting manifest", ext.get_manifest, self, image_tag)
         rnt.run_with_spinner("Extracting layers", ext.get_layers, self, image_tag)
 
-
-    def do_vscan(self, image_tag):
-        """
-        Test method.
-        """
-        if not rnt.is_docker_running():
-            print("[Failure] To fetch an image, Docker daemon should be running")
-            
-            return
-
-        rnt.run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan_os_packages, image_tag)
-        rnt.run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan_language_dependencies, image_tag)
-
         
     @cmd2.with_argparser(analyze_parser)
     def do_analyze(self, args):
