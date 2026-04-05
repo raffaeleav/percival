@@ -51,6 +51,28 @@ def _extract_md_section(table, heading):
     return section_table
 
 
+def _compress_md_section(table):
+    lines = table.splitlines()
+    
+    rows = []
+
+    for line in lines:
+        line = line.strip()
+
+        if not line or line.startswith("|---") or line.startswith("| ---") or set(line) <= set("|- "):
+            continue
+        
+        cells = [c.strip() for c in line.strip("|").split("|")]
+        cells = [c for c in cells if c]
+        
+        if not cells:
+            continue
+
+        rows.append(",".join(cells))
+
+    return "\n".join(rows)
+
+
 def get_index():
     rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
     index_file = fld.get_file_path(rengine_config_dir, "index.tex")
@@ -78,7 +100,7 @@ def get_executive_summary(sections, api_token):
 
     if not prompt:
         return None
-
+    
     findings = "\n\n".join(sections)
 
     try:
@@ -113,6 +135,7 @@ def get_vulnerability_report(image_tag, api_token):
         findings = f.read()
 
     section_table = _extract_md_section(findings, "Vulnerability Scanner Findings")
+    section_table = _compress_md_section(section_table)
 
     try:
         section = api.query_hf(api_token, prompt, section_table)
@@ -144,6 +167,7 @@ def get_configuration_report(image_tag, api_token):
         findings = f.read()
 
     section_table = _extract_md_section(findings, "Configuration Checker Findings")
+    section_table = _compress_md_section(section_table)
 
     try:
         section = api.query_hf(api_token, prompt, section_table)
@@ -175,6 +199,7 @@ def get_secrets_report(image_tag, api_token):
         findings = f.read()
 
     section_table = _extract_md_section(findings, "Secret Detector Findings")
+    section_table = _compress_md_section(section_table)
 
     try:
         section = api.query_hf(api_token, prompt, section_table)

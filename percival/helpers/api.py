@@ -8,8 +8,8 @@ def get_hf_token():
     return token
 
 
-def query_hf(api_token, prompt, findings):
-    url = "https://router.huggingface.co/featherless-ai/v1/completions"
+def query_hf(api_token, prompt, findings, max_tokens=400):
+    url = "https://router.huggingface.co/featherless-ai/v1/chat/completions"
 
     headers = {
         "Authorization": f"Bearer {api_token}",
@@ -18,10 +18,10 @@ def query_hf(api_token, prompt, findings):
 
     full_prompt = f"{prompt}\n\n{findings}"
 
-    json = {
+    payload = {
         "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
         "prompt": full_prompt,
-        "max_new_tokens": 600,
+        "max_tokens": max_tokens,
         "stream": False,
     }
 
@@ -29,7 +29,7 @@ def query_hf(api_token, prompt, findings):
         response = requests.post(
             url, 
             headers=headers, 
-            json=json
+            json=payload
         )
 
         if response.status_code == 402:
