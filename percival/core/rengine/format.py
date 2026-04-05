@@ -83,8 +83,8 @@ def wrap_column(column, max_len=60):
 
 def format_keys_report(report):
     md_lines = (
-        "| File | Keys |\n"
-        "|-|-|\n"
+        "| File | Keys | Pattern |\n"
+        "|-|-|-|\n"
     )
 
     empty = True
@@ -103,10 +103,12 @@ def format_keys_report(report):
         md_lines += f"| {file_path} |  |\n"
 
         for key in keys:
-            key = sanitize(key)
-            key = wrap_column(key)
+            pattern = key["key_type"]
 
-            md_lines += f"| | {key} |\n"
+            value = sanitize(key["value"])
+            value = wrap_column(value)
+
+            md_lines += f"| | {value} | {pattern} |\n"
 
     if empty:
         md_lines = ""
@@ -116,7 +118,7 @@ def format_keys_report(report):
 
 def format_strings_table(report):
     md_lines = (
-        "| File | Secrets |\n"
+        "| File | High-Entropy Strings |\n"
         "|-|-|\n"
     )
     

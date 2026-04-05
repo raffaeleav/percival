@@ -49,7 +49,6 @@ key_patterns = {
     "EC Private Key": r"-----BEGIN EC PRIVATE KEY-----[\s\S]+?-----END EC PRIVATE KEY-----",
     "OpenSSH Private Key": r"-----BEGIN OPENSSH PRIVATE KEY-----[\s\S]+?-----END OPENSSH PRIVATE KEY-----",
 
-    "Heroku API Key": r"[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}",
     "SendGrid API Key": r"SG\.[A-Za-z0-9_-]{16,32}\.[A-Za-z0-9_-]{16,64}",
     "MailChimp API Key": r"[0-9a-f]{32}-us[0-9]{1,2}",
     "Discord Token": r"[MN][A-Za-z0-9]{23}\.[A-Za-z0-9_-]{6}\.[A-Za-z0-9_-]{27}",
