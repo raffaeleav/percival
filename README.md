@@ -1,7 +1,6 @@
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/ed4cd4e6-eae1-4e3a-b18e-c97c2be8d2ab" width="512" heigth="120">
+  <img src="https://github.com/user-attachments/assets/5ea818fe-6457-4052-96d6-74e74e8e3f73" width="512" heigth="120">
 </p>
-
 
 <p align="center">
   A Python CLI that scans for vulnerabilities in Docker container images, developed as a project for the Penetration Testing and Ethical Hacking course, part of the Computer Science Master's Degree program at the University of Salerno
