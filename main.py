@@ -84,6 +84,7 @@ class Percival(cmd2.Cmd):
         rnt.run_with_spinner("Finding secrets", det.detect_secrets, image_tag)
 
         rnt.run_with_spinner("Generating findings", rpt.get_all_findings, image_tag)
+        rnt.run_with_spinner("Opening findings", rpt.view_all_findings, image_tag)
 
 
     def do_report(self, image_tag):

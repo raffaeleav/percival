@@ -34,15 +34,17 @@ def _shannon_entropy(string):
     return entropy
 
 
-def _get_high_entropy_strings(lines, min_length, treshold=4.5):
-    if not lines or not min_length:
+def _get_high_entropy_strings(lines, min_length, max_length, treshold=4.5):
+    if not lines or not min_length or not max_length:
         return []
 
     strings = []
 
     for line in lines:
         for word in line.split():
-            if len(word) >= min_length:
+            length = len(word)
+
+            if length >= min_length or length <= max_length:
                 entropy = _shannon_entropy(word)
 
                 if entropy >= treshold:
@@ -83,6 +85,7 @@ def detect_secrets(image_tag):
 
     report = []
     min_length = 20
+    max_length = 4096
     # 5.0 is a entropy value that is commonly associated to a secret with medium probability
     treshold = 5.0
 
@@ -98,7 +101,7 @@ def detect_secrets(image_tag):
 
         if lines:
             keys = _get_keys(lines)
-            strings = _get_high_entropy_strings(lines, min_length, treshold)
+            strings = _get_high_entropy_strings(lines, min_length, max_length, treshold)
 
             if keys or strings:
                 entry = {
