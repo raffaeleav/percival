@@ -12,16 +12,9 @@ prompts = {
         "a concise general overview summarizing them. This overview is for the management staff, so it must be non technical." 
         "Focus on key patterns, trends, and important observations rather than repeating individual table entries."
     ),
-    "vulnerability_report": (
-        "Read the provided findings and write a concise and general overview summarizing them. " 
-        "Focus on key patterns, trends, and important observations rather than repeating individual table entries."
-    ),
-    "configuration_report": (
-        "Read the provided findings and write a concise and general overview summarizing them. " 
-        "Focus on key patterns, trends, and important observations rather than repeating individual table entries."
-    ),
-    "secrets_report": (
-        "Read the provided findings and write a concise and general overview summarizing them. " 
+    "intermediate_report": (
+        "I'm conducting a Container Image Vulnerability Assessment on a Docker container image with the perCIVAl tool (that also leverages Trivy)."
+        "Read the provided findings and write an overview in natural language." 
         "Focus on key patterns, trends, and important observations rather than repeating individual table entries."
     ),
     "remediation_report": (

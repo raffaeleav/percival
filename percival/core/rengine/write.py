@@ -126,7 +126,8 @@ def get_vulnerability_report(image_tag, api_token):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
     md_file = fld.get_file_path(image_report_dir, "findings.md")    
 
-    prompt = _get_prompt("vulnerability_report")
+    max_tokens = 900
+    prompt = _get_prompt("intermediate_report")
 
     if not prompt:
         return None
@@ -138,7 +139,7 @@ def get_vulnerability_report(image_tag, api_token):
     section_table = _compress_md_section(section_table)
 
     try:
-        section = api.query_hf(api_token, prompt, section_table)
+        section = api.query_hf(api_token, prompt, section_table, max_tokens)
     except Exception as e:
         section = None
 
@@ -158,7 +159,8 @@ def get_configuration_report(image_tag, api_token):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
     md_file = fld.get_file_path(image_report_dir, "findings.md")    
 
-    prompt = _get_prompt("configuration_report")
+    max_tokens = 900
+    prompt = _get_prompt("intermediate_report")
 
     if not prompt:
         return None
@@ -170,7 +172,7 @@ def get_configuration_report(image_tag, api_token):
     section_table = _compress_md_section(section_table)
 
     try:
-        section = api.query_hf(api_token, prompt, section_table)
+        section = api.query_hf(api_token, prompt, section_table, max_tokens)
     except Exception as e:
         section = None
 
@@ -190,7 +192,8 @@ def get_secrets_report(image_tag, api_token):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
     md_file = fld.get_file_path(image_report_dir, "findings.md")    
 
-    prompt = _get_prompt("secrets_report")
+    max_tokens = 900
+    prompt = _get_prompt("intermediate_report")
 
     if not prompt:
         return None
@@ -202,7 +205,7 @@ def get_secrets_report(image_tag, api_token):
     section_table = _compress_md_section(section_table)
 
     try:
-        section = api.query_hf(api_token, prompt, section_table)
+        section = api.query_hf(api_token, prompt, section_table, max_tokens)
     except Exception as e:
         section = None
 
