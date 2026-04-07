@@ -239,8 +239,8 @@ def report(image_tag):
 
     sections = [vul_report, con_report, sec_report]
 
-    # exe_summary = wrt.get_executive_summary(sections, api_token)
-    # rem_report = wrt.get_remediation_report(sections, api_token)
+    exe_summary = wrt.get_executive_summary(sections, api_token)
+    rem_report = wrt.get_remediation_report(sections, api_token)
 
     det_summary = wrt.get_detailed_summary()
 
@@ -248,11 +248,11 @@ def report(image_tag):
         index,
         r"\begin{document}",
         title_page,
-        # exe_summary, 
+        exe_summary, 
         vul_report,
         con_report,
         sec_report,
-        # rem_report,
+        rem_report,
         det_summary,
         r"\end{document}"
     ]
