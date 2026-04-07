@@ -225,7 +225,7 @@ def report(image_tag):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
     tex_file = fld.get_file_path(image_report_dir, "report.tex")
 
-    api_token = api.get_hf_token()
+    api_token = api.get_token()
 
     if not api_token: 
         raise RuntimeError("No HuggingFace API token found, please set your token with 'export HF_TOKEN=<your_token>'")

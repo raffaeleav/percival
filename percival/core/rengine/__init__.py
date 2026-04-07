@@ -10,6 +10,7 @@ prompts = {
     "executive_summary": (
         "I will provide three sections that contain an overview about security issues of a Docker container image, provide "
         "a concise general overview summarizing them. This overview is for the management staff, so it must be non technical." 
+        "Write the paragraph in natural language." 
         "Focus on key patterns, trends, and important observations rather than repeating individual table entries."
     ),
     "intermediate_report": (
@@ -20,6 +21,7 @@ prompts = {
     "remediation_report": (
         "I will provide three sections that contain an overview about security issues of a Docker container image, summarize "
         "the recommended actions to address them. "
+        "Write the paragraph in natural language." 
         "Focus on common remediation themes, priority areas, and general guidance rather than listing every individual recommendation."
     ),
 }

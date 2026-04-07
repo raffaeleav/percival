@@ -2,7 +2,7 @@ import os
 import requests
 
 
-def get_hf_token():
+def get_token():
     token = os.getenv("HF_TOKEN")
 
     return token

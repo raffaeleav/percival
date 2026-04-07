@@ -95,33 +95,6 @@ def get_title_page():
     return text
 
 
-def get_executive_summary(sections, api_token):
-    prompt = _get_prompt("executive_summary")
-
-    if not prompt:
-        return None
-    
-    findings = "\n\n".join(sections)
-
-    try:
-        findings = "\n\n".join(sections)
-
-        section = api.query_hf(api_token, prompt, findings)
-    except Exception as e:
-        section = None
-
-    no_results = "An error occurred with the text generation API while generating this section. Please retry generating the report."
-
-    lines = [
-        r"\section{Executive Summary}", 
-        section or no_results,
-    ]
-
-    text = "\n\n".join(lines)
-
-    return text
-
-
 def get_vulnerability_report(image_tag, api_token):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
     md_file = fld.get_file_path(image_report_dir, "findings.md")    
@@ -213,6 +186,33 @@ def get_secrets_report(image_tag, api_token):
 
     lines = [
         r"\section{Secrets Report}", 
+        section or no_results,
+    ]
+
+    text = "\n\n".join(lines)
+
+    return text
+
+
+def get_executive_summary(sections, api_token):
+    prompt = _get_prompt("executive_summary")
+
+    if not prompt:
+        return None
+    
+    findings = "\n\n".join(sections)
+
+    try:
+        findings = "\n\n".join(sections)
+
+        section = api.query_hf(api_token, prompt, findings)
+    except Exception as e:
+        section = None
+
+    no_results = "An error occurred with the text generation API while generating this section. Please retry generating the report."
+
+    lines = [
+        r"\section{Executive Summary}", 
         section or no_results,
     ]
 
