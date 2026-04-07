@@ -4,7 +4,7 @@ excluded_files = {
     ".mp4", ".mkv", ".mov", ".avi",
     ".zip", ".tar", ".gz", ".tgz", ".bz2", ".xz", ".rar", ".7z",
     ".exe", ".dll", ".so", ".dylib", ".bin", ".class", ".o", ".a",
-    ".pdf", ".sqlite", ".db", ".psd", ".ico",
+    ".pdf", ".psd", ".ico",
     ".dat", ".dat-old", ".ttf", 
     ".po", ".pot", ".mo", ".strings", ".ts", ".qm", 
     ".model", ".pb", ".npy", ".npz", ".ckpt", ".h5", 

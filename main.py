@@ -105,6 +105,13 @@ class Percival(cmd2.Cmd):
         rnt.run_with_spinner("Opening findings", rpt.view_all_findings, image_tag)
 
 
+    def do_update(self):
+        """
+        Update AppThreat Vulnerabilty Database.
+        """
+        rnt.run_with_spinner("Updating db", qry.download_db)
+
+
     def do_cleanup(self, _):
         """
         Remove temporary files created during fetching and scanning.
@@ -114,7 +121,7 @@ class Percival(cmd2.Cmd):
 
     def do_clear(self, _):
         """
-        Clear the shell screen.
+        Clear the shell output.
         """
         rnt.clear()
 
