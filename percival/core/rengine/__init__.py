@@ -14,7 +14,7 @@ prompts = {
         "Focus on key patterns, trends, and important observations rather than repeating individual table entries."
     ),
     "intermediate_report": (
-        "I'm conducting a Container Image Vulnerability Assessment on a Docker container image with the perCIVAl tool (that also leverages Trivy)."
+        "I'm conducting a Container Image Vulnerability Assessment on a Docker container image with the perCIVAl tool (that can also leverage if Trivy)."
         "Read the provided findings and write an overview in natural language." 
         "Focus on key patterns, trends, and important observations rather than repeating individual table entries."
     ),
