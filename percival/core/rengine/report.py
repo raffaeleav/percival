@@ -1,5 +1,6 @@
 import os
 import json
+import shutil
 import platform
 
 from percival.helpers import api, folders as fld, shell as sh
@@ -223,15 +224,20 @@ def view_all_findings(image_tag):
 
 def report(image_tag):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
-    tex_file = fld.get_file_path(image_report_dir, "report.tex")
+    tex_file = fld.get_file_path(image_report_dir, "report.tex")\
+    
+    rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
+    titlepage_file = fld.get_file_path(rengine_config_dir, "titlepage.tex")
 
+    # needed to avoid openout_any = p
+    shutil.copy(titlepage_file, image_report_dir)
+    
     api_token = api.get_token()
 
     if not api_token: 
         raise RuntimeError("No HuggingFace API token found, please set your token with 'export HF_TOKEN=<your_token>'")
 
     index = wrt.get_index()
-    title_page = wrt.get_title_page()
     
     vul_report = wrt.get_vulnerability_report(image_tag, api_token)
     con_report = wrt.get_configuration_report(image_tag, api_token)
@@ -241,18 +247,25 @@ def report(image_tag):
 
     exe_summary = wrt.get_executive_summary(sections, api_token)
     rem_report = wrt.get_remediation_report(sections, api_token)
-
     det_summary = wrt.get_detailed_summary()
 
     lines = [
         index,
+        r"\graphicspath{{./}{" + rengine_config_dir + "/}} ",
         r"\begin{document}",
-        title_page,
+        r"\include{titlepage}",
+        r"\tableofcontents",
+        r"\pagebreak",
         exe_summary, 
+        r"\pagebreak",
         vul_report,
+        r"\pagebreak",
         con_report,
+        r"\pagebreak",
         sec_report,
+        r"\pagebreak",
         rem_report,
+        r"\pagebreak",
         det_summary,
         r"\end{document}"
     ]
@@ -262,7 +275,7 @@ def report(image_tag):
     with open(tex_file, "w") as f:
         f.write(report)
 
-    cmd = f"latexmk -pdf -outdir={image_report_dir} {tex_file}"
+    cmd = f"latexmk -pdf -interaction=nonstopmode -outdir={image_report_dir} {tex_file}"
     
     output = sh.run_command(cmd)
 

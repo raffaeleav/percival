@@ -83,18 +83,6 @@ def get_index():
     return text
 
 
-def get_title_page():
-    lines = [
-        r"\maketitle",
-        r"\tableofcontents",
-        r"\newpage",
-    ]
-
-    text = "\n\n".join(lines)
-
-    return text
-
-
 def get_vulnerability_report(image_tag, api_token):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
     md_file = fld.get_file_path(image_report_dir, "findings.md")    
