@@ -20,6 +20,8 @@ class Percival(cmd2.Cmd):
             action="store_true",
             help="Run additional Trivy vulnerability scanning"
         )
+    analyze_parser.add_argument("--format", choices=["html", "json", "xml"], default="html", help="Report format")
+    analyze_parser.add_argument("--output", help="Path of the output file")
 
 
     def __init__(self):
@@ -64,6 +66,8 @@ class Percival(cmd2.Cmd):
         
         image_tag = args.image_tag
         with_trivy = args.with_trivy
+        format = args.format
+        output_file = args.output or None
 
         if not rnt.is_fetched(image_tag):
             print("[Failure] To analyze an image, it should be fetched first")
@@ -83,8 +87,10 @@ class Percival(cmd2.Cmd):
 
         rnt.run_with_spinner("Finding secrets", det.detect_secrets, image_tag)
 
-        rnt.run_with_spinner("Generating findings", rpt.get_findings, image_tag)
-        rnt.run_with_spinner("Opening findings", rpt.view_findings, image_tag)
+        rnt.run_with_spinner("Generating findings", rpt.get_findings, image_tag, format, output_file)
+
+        if format == "html":
+            rnt.run_with_spinner("Opening findings", rpt.view_findings_html, image_tag, output_file)
 
 
     def do_report(self, image_tag):
@@ -96,13 +102,6 @@ class Percival(cmd2.Cmd):
             return
         
         rnt.run_with_spinner("Generating report", rpt.report, image_tag)
-
-
-    def do_findings(self, image_tag):
-        """
-        View detailed summary of findings for the analysis conducted on the given Docker image. 
-        """
-        rnt.run_with_spinner("Opening findings", rpt.view_findings, image_tag)
 
 
     def do_update(self):
