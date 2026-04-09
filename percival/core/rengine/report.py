@@ -4,11 +4,12 @@ import shutil
 import platform
 
 from percival.helpers import api, folders as fld, shell as sh
-from percival.core.rengine import format as fmt, write as wrt
+from percival.core.rengine import write as wrt
 from percival.core.rengine import vscanner_files, cchecker_files, sdetector_files
+from percival.core.rengine import tabulate as tbt
 
 
-def _get_vscanner_report(image_tag):
+def _get_vscanner_findings(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
 
     files = fld.list_files(image_temp_dir)
@@ -29,12 +30,12 @@ def _get_vscanner_report(image_tag):
             content = f.read()
 
             try:
-                report = json.loads(content)
+                findings = json.loads(content)
             except json.JSONDecodeError:
-                report = None
+                findings = None
 
-        if report:
-            table = fmt.format_report(report)
+        if findings:
+            table = tbt.convert_vscanner_findings(findings)
             
             if "pkgs" in file:
                 if "trivy" in file:
@@ -69,12 +70,12 @@ def _get_vscanner_report(image_tag):
         "\n</details>"
     ]
 
-    vscanner_report = "\n".join(lines)
+    vscanner_findings = "\n".join(lines)
 
-    return vscanner_report
+    return vscanner_findings
 
 
-def _get_cchecker_report(image_tag):
+def _get_cchecker_findings(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
 
     files = fld.list_files(image_temp_dir)
@@ -93,17 +94,17 @@ def _get_cchecker_report(image_tag):
             content = f.read()
 
             try:
-                report = json.loads(content)
+                findings = json.loads(content)
             except json.JSONDecodeError:
-                report = None
+                findings = None
 
-        if report: 
+        if findings: 
             if "dive" in file:
-                table = fmt.format_dive_report(report)
+                table = tbt.convert_dive_findings(findings)
 
                 tables["dive"] = table
             elif "ccheck" in file: 
-                table = fmt.format_ccheck_report(report)
+                table = tbt.convert_cchecker_findings(findings)
 
                 tables["dockerfile"] = table
 
@@ -120,12 +121,12 @@ def _get_cchecker_report(image_tag):
         "\n</details>"
     ]
 
-    cchecker_report = "\n".join(lines)
+    cchecker_findings = "\n".join(lines)
 
-    return cchecker_report
+    return cchecker_findings
 
 
-def _get_sdetector_report(image_tag):
+def _get_sdetector_findings(image_tag):
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
 
     files = fld.list_files(image_temp_dir)
@@ -142,13 +143,13 @@ def _get_sdetector_report(image_tag):
             content = f.read()
 
             try:
-                report = json.loads(content)
+                findings = json.loads(content)
             except json.JSONDecodeError:
-                report = None
+                findings = None
 
-        if report: 
-            keys_table = fmt.format_keys_report(report)
-            strings_table = fmt.format_strings_table(report)
+        if findings: 
+            keys_table = tbt.convert_keys_findings(findings)
+            strings_table = tbt.convert_strings_findings(findings)
 
             break
 
@@ -165,12 +166,12 @@ def _get_sdetector_report(image_tag):
         "\n</details>"
     ]
 
-    sdetector_report = "\n".join(lines)
+    sdetector_findings = "\n".join(lines)
 
-    return sdetector_report
+    return sdetector_findings
 
 
-def get_all_findings(image_tag):
+def get_findings(image_tag):
     rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
     styles_file = fld.get_file_path(rengine_config_dir, "styles.css")
 
@@ -178,21 +179,21 @@ def get_all_findings(image_tag):
     md_file = fld.get_file_path(image_report_dir, "findings.md")
     html_file = fld.get_file_path(image_report_dir, "findings.html")
 
-    vscanner_report = _get_vscanner_report(image_tag)
-    cchecker_report = _get_cchecker_report(image_tag)
-    sdetector_report = _get_sdetector_report(image_tag)
+    vscanner_findings = _get_vscanner_findings(image_tag)
+    cchecker_findings = _get_cchecker_findings(image_tag)
+    sdetector_findings = _get_sdetector_findings(image_tag)
 
     lines = [
         "# perCIVAl Findings",
-        vscanner_report, 
-        cchecker_report, 
-        sdetector_report,
+        vscanner_findings, 
+        cchecker_findings, 
+        sdetector_findings,
     ]
 
-    report = "\n".join(lines)
+    findings = "\n".join(lines)
 
     with open(md_file, "w") as f:
-        f.write(report)
+        f.write(findings)
 
     cmd = (
         f"pandoc {md_file} "
@@ -206,7 +207,7 @@ def get_all_findings(image_tag):
     return output
 
 
-def view_all_findings(image_tag):
+def view_findings(image_tag):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
     html_file = fld.get_file_path(image_report_dir, "findings.html")
 
