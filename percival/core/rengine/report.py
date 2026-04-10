@@ -5,6 +5,7 @@ import platform
 
 from datetime import date
 from dicttoxml import dicttoxml
+from simple_sarif import SarifReport
 from percival.helpers import api, folders as fld, shell as sh
 from percival.core.rengine import format as fmt, write as wrt
 
@@ -102,8 +103,7 @@ def get_findings_xml(image_tag, output_file):
     if not output_file:
         output_file = fld.get_file_path(image_report_dir, "findings.xml")
 
-    findings_json = get_findings_json(image_tag, output_file)
-
+    findings_json = get_findings_json(image_tag, None)
     findings_xml = dicttoxml(findings_json, custom_root='percival_findings', attr_type=False).decode("utf-8")
 
     with open(output_file, "w") as f:
@@ -113,7 +113,26 @@ def get_findings_xml(image_tag, output_file):
 
 
 def get_findings_sarif(image_tag, output_file):
-    raise RuntimeError("This feature is not available yet, try again with another argument!") 
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+
+    if not output_file:
+        output_file = fld.get_file_path(image_report_dir, "findings.sarif")
+
+    findings_sarif = SarifReport(
+        tool_name="perCIVAl",
+        version="1.0.0"
+    )
+
+    findings_sarif.information_uri = "https://github.com/raffaeleav/percival"
+
+    findings_sarif = fmt.get_vscanner_findings_sarif(image_tag, findings_sarif)
+    # findings_sarif = fmt.get_cchecker_findings_sarif(image_tag, findings_sarif)
+    # findings_sarif = fmt.get_sdetector_findings_sarif(image_tag, findings_sarif)
+
+    with open(output_file, "w") as f:
+        f.write(findings_sarif)
+
+    return findings_sarif
 
 
 def get_findings_custom(image_tag, template, output_file):

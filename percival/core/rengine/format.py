@@ -261,3 +261,44 @@ def get_sdetector_findings_json(image_tag):
     sdetector_findings = findings
 
     return sdetector_findings
+
+
+def get_vscanner_findings_sarif(image_tag, findings_sarif):
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+
+    files = fld.list_files(image_temp_dir)
+    files = [
+        file for file in files
+        if os.path.basename(file) in vscanner_files
+    ]
+
+    for file in files:
+        with open(os.path.join(image_temp_dir, file), "r") as f:
+            content = f.read()
+
+            try:
+                findings = json.loads(content)
+            except json.JSONDecodeError:
+                findings = None
+
+        if findings:
+            for item in findings:
+                name = item.get("name", "unknown")
+                version = item.get("version", "unknown")
+                layer = item.get("layer", "unknown")
+
+                for cve in item.get("cves", []):
+                    cve_id = cve.get("id", "CVE-UNKNOWN")
+                    sev = cve.get("severity", "UNKNOWN")
+                    
+                    # sarif severity mapping
+                    severity = "error" if sev in ["CRITICAL", "HIGH"] else "warning"
+                    
+                    findings_sarif.add_result(
+                        rule_id=cve_id,
+                        message=f"Vulnerability {cve_id} in {name} ({version}). CVSS: {cve.get('cvss_base_score')}",
+                        file_path=f"File path: {layer}",
+                        level=severity
+                    )
+
+    return findings_sarif

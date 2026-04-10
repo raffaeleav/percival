@@ -52,6 +52,7 @@ rich==14.3.3
 rpds-py==0.30.0
 semver==3.0.4
 setuptools==78.1.1
+simple-sarif==1.0.2
 termcolor==2.3.0
 tinycss2==1.4.0
 tinyhtml5==2.0.0

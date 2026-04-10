@@ -54,7 +54,7 @@ def dive(image_tag):
         raise RuntimeError("An unexpected error occurred while executing Dive, please fetch the image and try again")
     
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
-    dive_report = fld.get_file_path(image_temp_dir, "dive_report.json")
+    dive_report = fld.get_file_path(image_temp_dir, "dive.json")
 
     cmd = f"dive {image_tag} --json {dive_report}"
     output = sh.run_command(cmd)
