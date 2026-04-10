@@ -5,7 +5,7 @@ import platform
 
 from datetime import date
 from dicttoxml import dicttoxml
-from simple_sarif import SarifReport
+from simple_sarif import Sarif
 from percival.helpers import api, folders as fld, shell as sh
 from percival.core.rengine import format as fmt, write as wrt
 
@@ -118,7 +118,7 @@ def get_findings_sarif(image_tag, output_file):
     if not output_file:
         output_file = fld.get_file_path(image_report_dir, "findings.sarif")
 
-    findings_sarif = SarifReport(
+    findings_sarif = Sarif(
         tool_name="perCIVAl",
         version="1.0.0"
     )

@@ -108,14 +108,12 @@ def detect_secrets(image_tag):
             strings = _get_high_entropy_strings(lines, min_length, max_length, max_strings, treshold)
 
             if keys or strings:
-                entry = {
+                report.append({
                     "file": file,
                     "keys": keys,
                     "strings": strings
-                }
-
-                report.append(entry)
-
+                })
+                
     with open(secrets_file, "w") as f:
         json.dump(report, f, indent=2)
 

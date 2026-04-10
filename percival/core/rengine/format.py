@@ -83,7 +83,7 @@ def get_cchecker_findings_html(image_tag):
 
     tables = {
         "dive": "",
-        "dockerfile": ""
+        "smells": ""
     }
 
     for file in files:
@@ -97,13 +97,9 @@ def get_cchecker_findings_html(image_tag):
 
         if findings: 
             if "dive" in file:
-                table = tbt.convert_dive_findings(findings)
-
-                tables["dive"] = table
+                tables["dive"] = tbt.convert_dive_findings(findings)
             elif "ccheck" in file: 
-                table = tbt.convert_cchecker_findings(findings)
-
-                tables["dockerfile"] = table
+                tables["smells"] = tbt.convert_cchecker_findings(findings)
 
     no_results = "No configuration errors found\n"
 
@@ -114,7 +110,7 @@ def get_cchecker_findings_html(image_tag):
         "\n</details>",
 
         "<details><summary>Configuration Errors (click to open)</summary>\n\n" +
-        (tables["dockerfile"] or no_results) +
+        (tables["smells"] or no_results) +
         "\n</details>"
     ]
 
@@ -219,7 +215,7 @@ def get_cchecker_findings_json(image_tag):
 
     cchecker_findings = {
         "dive": {},
-        "dockerfile": {}
+        "smells": []
     }
 
     for file in files:
@@ -233,9 +229,22 @@ def get_cchecker_findings_json(image_tag):
 
         if findings: 
             if "dive" in file:
-                cchecker_findings["dive"] = findings
+                image = findings.get("image", {})
+
+                cchecker_findings["dive"] = {
+                    "size": image.get("sizeBytes", ""),
+                    "bytes": image.get("inefficientBytes", ""), 
+                    "score": image.get("efficiencyScore", "")
+                }
             elif "ccheck" in file: 
-                cchecker_findings["dockerfile"] = findings
+                for entry in findings: 
+                    cchecker_findings["smells"].append({
+                    "line": entry.get("line", ""),
+                    "condition": entry.get("condition", ""),
+                    "description": entry.get("description", ""), 
+                    "severity": entry.get("severity", ""),
+                    "remediation": entry.get("remediation", "")
+                })
 
     return cchecker_findings
 
@@ -249,6 +258,11 @@ def get_sdetector_findings_json(image_tag):
         if os.path.basename(file) in sdetector_files
     ]
 
+    sdetector_findings = {
+        "keys": [],
+        "strings": []
+    }
+
     for file in files:
         with open(os.path.join(image_temp_dir, file), "r") as f:
             content = f.read()
@@ -258,7 +272,18 @@ def get_sdetector_findings_json(image_tag):
             except json.JSONDecodeError:
                 findings = None
 
-    sdetector_findings = findings
+            for entry in findings: 
+                file = entry.get("file", "")
+
+                sdetector_findings["keys"].append({
+                    "file": file,
+                    "keys": entry.get("keys", []),
+                })
+
+                sdetector_findings["strings"].append({
+                    "file": entry.get("file", ""),
+                    "strings": entry.get("strings", [])
+                })
 
     return sdetector_findings
 
@@ -282,12 +307,12 @@ def get_vscanner_findings_sarif(image_tag, findings_sarif):
                 findings = None
 
         if findings:
-            for item in findings:
-                name = item.get("name", "unknown")
-                version = item.get("version", "unknown")
-                layer = item.get("layer", "unknown")
+            for entry in findings:
+                name = entry.get("name", "unknown")
+                version = entry.get("version", "unknown")
+                layer = entry.get("layer", "unknown")
 
-                for cve in item.get("cves", []):
+                for cve in entry.get("cves", []):
                     cve_id = cve.get("id", "CVE-UNKNOWN")
                     sev = cve.get("severity", "UNKNOWN")
                     

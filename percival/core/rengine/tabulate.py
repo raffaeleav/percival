@@ -7,12 +7,12 @@ def convert_vscanner_findings(findings):
         "|-|-|-|-|-|-|-|-|\n"
     )
 
-    for item in findings:
-        name = item.get("name", "")
-        version = item.get("version", "")
-        layer = item.get("layer", "")
-        type = item.get("type", "")
-        cves = item.get("cves", [])
+    for entry in findings:
+        name = entry.get("name", "")
+        version = entry.get("version", "")
+        layer = entry.get("layer", "")
+        type = entry.get("type", "")
+        cves = entry.get("cves", [])
 
         if not isinstance(cves, list):
             continue
@@ -51,17 +51,18 @@ def convert_dive_findings(findings):
 
 def convert_cchecker_findings(findings):
     md_lines = (
-        "| Dockerfile Condition | Description | Severity | Remediation |\n"
-        "|-|-|-|-|\n"
+        "| Line | Dockerfile Condition | Description | Severity | Remediation |\n"
+        "|-|-|-|-|-|\n"
     )
 
     for entry in findings:
+        line = entry.get("line", "")
         condition = entry.get("condition", "")
         description = entry.get("description", "")
         severity = entry.get("severity", "")
         remediation = entry.get("remediation", "")
 
-        md_lines += f"| {condition} | {description} | {severity} | {remediation} |\n"
+        md_lines += f"| {line} | {condition} | {description} | {severity} | {remediation} |\n"
 
     return md_lines
 

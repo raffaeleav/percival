@@ -87,12 +87,13 @@ def check_config(image_tag):
 
         for line in lines:
             if condition in line:
-                report.append(
-                    rule["condition"],
-                    rule["description"],
-                    rule["severity"],
-                    rule["remediation"]
-                )
+                report.append({
+                    "line": line,
+                    "condition": rule["condition"],
+                    "description": rule["description"],
+                    "severity": rule["severity"],
+                    "remediation": rule["remediation"]
+                })
 
     with open(ccheck_file, "w") as f:
         json.dump(report, f, indent=2)
