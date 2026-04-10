@@ -14,14 +14,31 @@ class Percival(cmd2.Cmd):
     prompt = "\033[38;2;0;122;204mperCIVAl >\033[0m "
 
     analyze_parser = argparse.ArgumentParser()
-    analyze_parser.add_argument("image_tag", help="Docker image tag to analyze")
+    analyze_parser.add_argument(
+        "image_tag", 
+        help="Docker image tag to analyze"
+    )
     analyze_parser.add_argument(
             "--with-trivy",
             action="store_true",
-            help="Run additional Trivy vulnerability scanning"
-        )
-    analyze_parser.add_argument("--format", choices=["html", "json", "xml"], default="html", help="Report format")
-    analyze_parser.add_argument("--output", help="Path of the output file", default=None)
+            help="Run additional vulnerability scanning with Trivy"
+    )
+    analyze_parser.add_argument(
+        "--format", 
+        choices=["html", "json", "xml"], 
+        default="html", 
+        help="Findings format (default: html)"
+    )
+    analyze_parser.add_argument(
+        "--template",
+        default=None,
+        help="Custom Go template for findings formatting"
+    )
+    analyze_parser.add_argument(
+        "--output",
+        default=None,
+        help="Output file path"
+    )
 
 
     def __init__(self):

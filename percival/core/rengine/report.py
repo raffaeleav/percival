@@ -104,7 +104,7 @@ def get_findings_xml(image_tag, output_file):
 
     findings_json = get_findings_json(image_tag, output_file)
 
-    findings_xml = dicttoxml(findings_json, custom_root='percival_findings', attr_type=False)
+    findings_xml = dicttoxml(findings_json, custom_root='percival_findings', attr_type=False).decode("utf-8")
 
     with open(output_file, "w") as f:
         f.write(findings_xml)
@@ -112,11 +112,21 @@ def get_findings_xml(image_tag, output_file):
     return findings_xml
 
 
+def get_findings_sarif(image_tag, output_file):
+    raise RuntimeError("This feature is not available yet, try again with another argument!") 
+
+
+def get_findings_custom(image_tag, template, output_file):
+    raise RuntimeError("This feature is not available yet, try again with another argument!") 
+
+
 def get_findings(image_tag, format, output_file): 
     mode = {
             "html": get_findings_html,
             "json": get_findings_json,
-            "xml": get_findings_xml
+            "xml": get_findings_xml,
+            "sarif": get_findings_sarif, 
+            "custom": get_findings_custom
         }
 
     target = mode.get(format)
