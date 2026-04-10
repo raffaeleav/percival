@@ -1,7 +1,9 @@
 
+import json
 import shutil
 import platform
 
+from datetime import date
 from percival.helpers import api, folders as fld, shell as sh
 from percival.core.rengine import format as fmt, write as wrt
 
@@ -63,11 +65,38 @@ def view_findings_html(image_tag, output_file):
 
 
 def get_findings_json(image_tag, output_file):
-    raise RuntimeError("This function has not been implemented yet, please try again with another parameter!")
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+
+    if not output_file:
+        output_file = fld.get_file_path(image_report_dir, "findings.json")
+
+    vscanner_findings = fmt.get_vscanner_findings_json(image_tag)
+    cchecker_findings = fmt.get_cchecker_findings_json(image_tag)
+    sdetector_findings = fmt.get_sdetector_findings_json(image_tag)
+
+    timestamp = date.today()
+
+    findings = {
+        "metadata": {
+        "tool_name": "perCIVAl",
+        "image_tag": f"{image_tag}",
+        "timestamp": f"{timestamp}",
+        },
+        "findings": {
+            "vscanner": vscanner_findings, 
+            "cchecker": cchecker_findings,
+            "sdetector": sdetector_findings
+        }
+    }
+
+    with open(output_file, "w") as f:
+        json.dump(findings, f)
+
+    return findings
 
 
 def get_findings_xml(image_tag, output_file):
-    raise RuntimeError("This function has not been implemented yet, please try again with another parameter!")
+    raise RuntimeError("This function has not been implemented yet, please try again with another argument!")
 
 
 def get_findings(image_tag, format, output_file): 

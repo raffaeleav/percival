@@ -21,7 +21,7 @@ class Percival(cmd2.Cmd):
             help="Run additional Trivy vulnerability scanning"
         )
     analyze_parser.add_argument("--format", choices=["html", "json", "xml"], default="html", help="Report format")
-    analyze_parser.add_argument("--output", help="Path of the output file")
+    analyze_parser.add_argument("--output", help="Path of the output file", default=None)
 
 
     def __init__(self):
@@ -67,7 +67,7 @@ class Percival(cmd2.Cmd):
         image_tag = args.image_tag
         with_trivy = args.with_trivy
         format = args.format
-        output_file = args.output or None
+        output_file = args.output
 
         if not rnt.is_fetched(image_tag):
             print("[Failure] To analyze an image, it should be fetched first")

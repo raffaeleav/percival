@@ -132,8 +132,10 @@ def get_sdetector_findings_html(image_tag):
         if os.path.basename(file) in sdetector_files
     ]
 
-    keys_table = ""
-    strings_table = ""
+    tables = {
+        "keys": "",
+        "strings": ""
+    }
 
     for file in files:
         with open(os.path.join(image_temp_dir, file), "r") as f:
@@ -145,24 +147,117 @@ def get_sdetector_findings_html(image_tag):
                 findings = None
 
         if findings: 
-            keys_table = tbt.convert_keys_findings(findings)
-            strings_table = tbt.convert_strings_findings(findings)
-
-            break
+            tables["keys"] = tbt.convert_keys_findings(findings)
+            tables["strings"] = tbt.convert_strings_findings(findings)
 
     no_results = "No API keys found\n"
 
     lines = [
         "## Secret Detector Findings",
         "<details><summary>API Keys (click to open)</summary>\n\n" +
-        (keys_table or no_results) +
+        (tables["keys"] or no_results) +
         "\n</details>",
 
         "<details><summary>High-Entropy Strings (click to open)</summary>\n\n" +
-        (strings_table or no_results) +
+        (tables["strings"] or no_results) +
         "\n</details>"
     ]
 
     sdetector_findings = "\n".join(lines)
+
+    return sdetector_findings
+
+
+def get_vscanner_findings_json(image_tag):
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+
+    files = fld.list_files(image_temp_dir)
+    files = [
+        file for file in files
+        if os.path.basename(file) in vscanner_files
+    ]
+
+    vscanner_findings = {
+        "trivy_pkgs": {},
+        "trivy_lngs": {},
+        "percival_pkgs": {},
+        "percival_lngs": {}
+    }
+
+    for file in files:
+        with open(os.path.join(image_temp_dir, file), "r") as f:
+            content = f.read()
+
+            try:
+                findings = json.loads(content)
+            except json.JSONDecodeError:
+                findings = None
+            
+            if "pkgs" in file:
+                if "trivy" in file:
+                    vscanner_findings["trivy_pkgs"] = findings
+                else:
+                    vscanner_findings["percival_pkgs"] = findings
+                
+            elif "lngs" in file:
+                if "trivy" in file:
+                    vscanner_findings["trivy_lngs"] = findings
+                else:
+                    vscanner_findings["percival_lngs"] = findings
+
+    return vscanner_findings
+
+
+def get_cchecker_findings_json(image_tag):
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+
+    files = fld.list_files(image_temp_dir)
+    files = [
+        file for file in files
+        if os.path.basename(file) in cchecker_files
+    ]
+
+    cchecker_findings = {
+        "dive": {},
+        "dockerfile": {}
+    }
+
+    for file in files:
+        with open(os.path.join(image_temp_dir, file), "r") as f:
+            content = f.read()
+
+            try:
+                findings = json.loads(content)
+            except json.JSONDecodeError:
+                findings = None
+
+        if findings: 
+            if "dive" in file:
+                cchecker_findings["dive"] = findings
+            elif "ccheck" in file: 
+                cchecker_findings["dockerfile"] = findings
+
+    return cchecker_findings
+
+
+def get_sdetector_findings_json(image_tag):
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+
+    files = fld.list_files(image_temp_dir)
+    files = [
+        file for file in files
+        if os.path.basename(file) in sdetector_files
+    ]
+
+    for file in files:
+        with open(os.path.join(image_temp_dir, file), "r") as f:
+            content = f.read()
+
+            try:
+                findings = json.loads(content)
+            except json.JSONDecodeError:
+                findings = None
+
+    sdetector_findings = findings
 
     return sdetector_findings
