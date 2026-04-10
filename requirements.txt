@@ -13,6 +13,7 @@ click==8.2.1
 cmd2==2.6.1
 cssselect2==0.8.0
 cvss==3.4
+dicttoxml==1.7.16
 dnspython==2.8.0
 docker==7.1.0
 email-validator==2.3.0

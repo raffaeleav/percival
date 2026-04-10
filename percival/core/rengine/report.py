@@ -4,6 +4,7 @@ import shutil
 import platform
 
 from datetime import date
+from dicttoxml import dicttoxml
 from percival.helpers import api, folders as fld, shell as sh
 from percival.core.rengine import format as fmt, write as wrt
 
@@ -76,7 +77,7 @@ def get_findings_json(image_tag, output_file):
 
     timestamp = date.today()
 
-    findings = {
+    findings_json = {
         "metadata": {
         "tool_name": "perCIVAl",
         "image_tag": f"{image_tag}",
@@ -90,13 +91,25 @@ def get_findings_json(image_tag, output_file):
     }
 
     with open(output_file, "w") as f:
-        json.dump(findings, f)
+        json.dump(findings_json, f)
 
-    return findings
+    return findings_json
 
 
 def get_findings_xml(image_tag, output_file):
-    raise RuntimeError("This function has not been implemented yet, please try again with another argument!")
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+
+    if not output_file:
+        output_file = fld.get_file_path(image_report_dir, "findings.xml")
+
+    findings_json = get_findings_json(image_tag, output_file)
+
+    findings_xml = dicttoxml(findings_json, custom_root='percival_findings', attr_type=False)
+
+    with open(output_file, "w") as f:
+        f.write(findings_xml)
+
+    return findings_xml
 
 
 def get_findings(image_tag, format, output_file): 
