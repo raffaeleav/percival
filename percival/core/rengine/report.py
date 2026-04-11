@@ -118,19 +118,20 @@ def get_findings_sarif(image_tag, output_file):
     if not output_file:
         output_file = fld.get_file_path(image_report_dir, "findings.sarif")
 
-    findings_sarif = Sarif(
-        tool_name="perCIVAl",
-        version="1.0.0"
-    )
+    findings_sarif = Sarif(file=output_file, recreate=True)
 
-    findings_sarif.information_uri = "https://github.com/raffaeleav/percival"
+    # custom rules for smells and secrets
+    findings_sarif.add_rule("Dive efficiency analysis", "PCVL-CC-DIV", None, None, None)
+    findings_sarif.add_rule("Dockerfile smells", "PCVL-CC-SML", None, None, None)
 
-    findings_sarif = fmt.get_vscanner_findings_sarif(image_tag, findings_sarif)
-    # findings_sarif = fmt.get_cchecker_findings_sarif(image_tag, findings_sarif)
-    # findings_sarif = fmt.get_sdetector_findings_sarif(image_tag, findings_sarif)
+    findings_sarif.add_rule("Secrets", "PCVL-SD-KEY", None, None, None)
+    findings_sarif.add_rule("High entropy strings", "PCVL-SD-STR", None, None, None)
 
-    with open(output_file, "w") as f:
-        f.write(findings_sarif)
+    fmt.get_vscanner_findings_sarif(image_tag, findings_sarif)
+    fmt.get_cchecker_findings_sarif(image_tag, findings_sarif)
+    fmt.get_sdetector_findings_sarif(image_tag, findings_sarif)
+
+    findings_sarif.save()
 
     return findings_sarif
 

@@ -297,6 +297,8 @@ def get_vscanner_findings_sarif(image_tag, findings_sarif):
         if os.path.basename(file) in vscanner_files
     ]
 
+    added_rules = set()
+
     for file in files:
         with open(os.path.join(image_temp_dir, file), "r") as f:
             content = f.read()
@@ -308,22 +310,175 @@ def get_vscanner_findings_sarif(image_tag, findings_sarif):
 
         if findings:
             for entry in findings:
-                name = entry.get("name", "unknown")
-                version = entry.get("version", "unknown")
-                layer = entry.get("layer", "unknown")
+                name = entry.get("name", "")
+                version = entry.get("version", "")
+                layer = entry.get("layer", "")
 
                 for cve in entry.get("cves", []):
-                    cve_id = cve.get("id", "CVE-UNKNOWN")
-                    sev = cve.get("severity", "UNKNOWN")
-                    
+                    cve_id = cve.get("id", "")
+                    severity = cve.get("severity", "")
+
+                    if cve_id not in added_rules:
+                        findings_sarif.add_rule(
+                            name=cve_id,
+                            ruleId=cve_id,
+                            shortDescription=None,
+                            fullDescription=None,
+                            messageStrings=None
+                        )
+
+                        added_rules.add(cve_id)
+
                     # sarif severity mapping
-                    severity = "error" if sev in ["CRITICAL", "HIGH"] else "warning"
+                    severity = "error" if severity in ["CRITICAL", "HIGH"] else "note"
                     
                     findings_sarif.add_result(
-                        rule_id=cve_id,
-                        message=f"Vulnerability {cve_id} in {name} ({version}). CVSS: {cve.get('cvss_base_score')}",
-                        file_path=f"File path: {layer}",
-                        level=severity
+                        ruleId=cve_id,
+                        level=severity,
+                        message_id=None,
+                        arguments=[],
+                        locations=[{
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": layer
+                                }
+                            }
+                        }],
+                        properties={
+                            "package_name": name,
+                            "versione": version
+                        }
+                    )
+
+    return findings_sarif
+
+
+def get_cchecker_findings_sarif(image_tag, findings_sarif):
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    dockerfile = fld.get_file_path(image_temp_dir, "Dockerfile")
+
+    files = fld.list_files(image_temp_dir)
+    files = [
+        file for file in files
+        if os.path.basename(file) in cchecker_files
+    ]
+
+    for file in files:
+        with open(os.path.join(image_temp_dir, file), "r") as f:
+            content = f.read()
+
+            try:
+                findings = json.loads(content)
+            except json.JSONDecodeError:
+                findings = None
+
+        if findings: 
+            if "dive" in file:
+                image = findings.get("image", {})
+                score = image.get("efficiencyScore", "")
+
+                findings_sarif.add_result(
+                        ruleId="PCVL-CC-DIV",
+                        level=None,
+                        message_id=None,
+                        arguments=[],
+                        locations=[{
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": dockerfile
+                                }
+                            }
+                        }],
+                        properties={
+                            "score": score
+                        }
+                    )
+            elif "ccheck" in file: 
+                for entry in findings:
+                    line = entry.get("line", "")
+                    condition = entry.get("condition", "")
+                    severity = entry.get("severity", "")
+
+                    severity = "error" if severity in ["CRITICAL", "HIGH"] else "note"
+
+                    findings_sarif.add_result(
+                        ruleId="PCVL-CC-SML",
+                        level=severity,
+                        message_id=None,
+                        arguments=[],
+                        locations=[{
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": dockerfile
+                                }
+                            }
+                        }],
+                        properties={
+                            "line": line, 
+                            "condition": condition
+                        }
+                    )
+
+    return findings_sarif
+
+
+def get_sdetector_findings_sarif(image_tag, findings_sarif):
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+
+    files = fld.list_files(image_temp_dir)
+    files = [
+        file for file in files
+        if os.path.basename(file) in sdetector_files
+    ]
+
+    for file in files:
+        with open(os.path.join(image_temp_dir, file), "r") as f:
+            content = f.read()
+
+            try:
+                findings = json.loads(content)
+            except json.JSONDecodeError:
+                findings = None
+
+            for entry in findings: 
+                file_path = entry.get("file", "")
+                keys = entry.get("keys", [])
+                strings = entry.get("strings", [])
+
+                if keys:
+                    findings_sarif.add_result(
+                        ruleId="PCVL-SD-KEY",
+                        level=None,
+                        message_id=None,
+                        arguments=[],
+                        locations=[{
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": file_path
+                                }
+                            }
+                        }],
+                        properties={
+                            "keys": keys
+                        }
+                    )
+                
+                if strings:
+                    findings_sarif.add_result(
+                        ruleId="PCVL-SD-STR",
+                        level=None,
+                        message_id=None,
+                        arguments=[],
+                        locations=[{
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": file_path
+                                }
+                            }
+                        }],
+                        properties={
+                            "strings": strings
+                        }
                     )
 
     return findings_sarif

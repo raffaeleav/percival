@@ -25,7 +25,7 @@ class Percival(cmd2.Cmd):
     )
     analyze_parser.add_argument(
         "--format", 
-        choices=["html", "json", "xml"], 
+        choices=["html", "json", "xml", "sarif", "custom"], 
         default="html", 
         help="Findings format (default: html)"
     )
@@ -62,7 +62,7 @@ class Percival(cmd2.Cmd):
         Pull a Docker image from the registry.
         """
         if not rnt.is_docker_running():
-            print("[Failure] To fetch an image, Docker daemon should be running")
+            print("\033[38;2;241;76;76m[Failure]\033[0m To fetch an image, Docker daemon should be running")
             
             return
 
@@ -77,7 +77,7 @@ class Percival(cmd2.Cmd):
         Analyze a Docker image with all the components.
         """
         if not rnt.is_docker_running():
-            print("[Failure] To analyze an image, Docker daemon should be running")
+            print("\033[38;2;241;76;76m[Failure]\033[0m To analyze an image, Docker daemon should be running")
             
             return
         
@@ -87,7 +87,7 @@ class Percival(cmd2.Cmd):
         output_file = args.output
 
         if not rnt.is_fetched(image_tag):
-            print("[Failure] To analyze an image, it should be fetched first")
+            print("\033[38;2;241;76;76m[Failure]\033[0m To analyze an image, it should be fetched first")
             return
         
         if with_trivy:
@@ -115,7 +115,7 @@ class Percival(cmd2.Cmd):
         Generate LLM report for the analysis conducted on the given Docker image. 
         """
         if not rnt.is_analyzed(image_tag):
-            print("[Failure] To generate a report for an image, it should be analyzed first")
+            print("\033[38;2;241;76;76m[Failure]\033[0m To generate a report for an image, it should be analyzed first")
             return
         
         rnt.run_with_spinner("Generating report", rpt.report, image_tag)
