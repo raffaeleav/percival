@@ -84,6 +84,7 @@ class Percival(cmd2.Cmd):
         image_tag = args.image_tag
         with_trivy = args.with_trivy
         format = args.format
+        template = args.template
         output_file = args.output
 
         if not rnt.is_fetched(image_tag):
@@ -104,7 +105,7 @@ class Percival(cmd2.Cmd):
 
         rnt.run_with_spinner("Finding secrets", det.detect_secrets, image_tag)
 
-        rnt.run_with_spinner("Generating findings", rpt.get_findings, image_tag, format, output_file)
+        rnt.run_with_spinner("Generating findings", rpt.get_findings, image_tag, format, output_file, template=template)
 
         if format == "html":
             rnt.run_with_spinner("Opening findings", rpt.view_findings_html, image_tag, output_file)

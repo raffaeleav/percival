@@ -1,0 +1,48 @@
+# perCIVAl Security Report
+Tool: {{ result.metadata.tool_name }}
+Image: {{ result.metadata.image_tag }}
+Date: {{ result.metadata.timestamp }}
+
+---
+
+## Vulnerability Scanner (vscanner)
+{% for pkg in result.findings.vscanner.percival_pkgs %}
+    Package: {{ pkg.name }}@{{ pkg.version }}
+    Layer: {{ pkg.layer or "N/A" }}
+    Type: {{ pkg.type or "N/A" }}
+    CVEs:
+    {% for cve in pkg.cves %}
+    - ID: {{ cve.id }}
+        Severity: {{ cve.severity or "UNKNOWN" }}
+        CVSS Score: {{ cve.cvss_base_score or "N/A" }}
+        CVSS Vector: {{ cve.cvss_vector or "N/A" }}
+    {% endfor %}
+{% endfor %}
+
+---
+
+## Container Checker (cchecker)
+Image Size: {{ result.findings.cchecker.dive.size }} bytes
+Efficiency Score: {{ result.findings.cchecker.dive.score }}
+
+{% if result.findings.cchecker.smells %}
+    Smells: {{ result.findings.cchecker.smells | join(", ") }}
+{% else %}
+    Smells: None
+{% endif %}
+
+---
+
+## Secret Detector (sdetector)
+{% for item in result.findings.sdetector['keys'] %}
+    {% if item['keys'] %}
+        File: {{ item.file }}
+        Secrets Found:
+        {% for key in item['keys'] %}
+            - {{ key }}
+        {% endfor %}
+    {% endif %}
+{% endfor %}
+{% if result.findings.sdetector['keys'] | selectattr('keys') | list | length == 0 %}
+    No secrets detected.
+{% endif %}

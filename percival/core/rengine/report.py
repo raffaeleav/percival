@@ -4,6 +4,7 @@ import shutil
 import platform
 
 from datetime import date
+from jinja2 import Template
 from dicttoxml import dicttoxml
 from simple_sarif import Sarif
 from percival.helpers import api, folders as fld, shell as sh
@@ -137,10 +138,32 @@ def get_findings_sarif(image_tag, output_file):
 
 
 def get_findings_custom(image_tag, template, output_file):
-    raise RuntimeError("This feature is not available yet, try again with another argument!") 
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+    rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
+    default_template_file = fld.get_file_path(rengine_config_dir, "default.template")
+
+    if not output_file:
+        output_file = fld.get_file_path(image_report_dir, "findings_custom.md")
+
+    if not template:
+        with open(default_template_file, "r") as f:
+            template = f.read()
+    else:
+        with open(template, "r") as f:
+            template = f.read()
+
+    template = Template(template)
+    findings_json = get_findings_json(image_tag, None)
+
+    findings_custom = template.render(result=findings_json)
+
+    with open(output_file, "w") as f:
+        f.write(findings_custom)
+
+    return findings_custom
 
 
-def get_findings(image_tag, format, output_file): 
+def get_findings(image_tag, format, output_file, **kwargs): 
     mode = {
             "html": get_findings_html,
             "json": get_findings_json,
@@ -150,6 +173,9 @@ def get_findings(image_tag, format, output_file):
         }
 
     target = mode.get(format)
+
+    if format == "custom":
+        return target(image_tag, kwargs.get("template"), output_file)
 
     return target(image_tag, output_file)
 
