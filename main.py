@@ -55,20 +55,6 @@ class Percival(cmd2.Cmd):
         }
 
 
-    def do_fetch(self, image_tag):
-        """
-        Pull a Docker image from the registry.
-        """
-        if not rnt.is_docker_running():
-            print("\033[38;2;241;76;76m[Failure]\033[0m To fetch an image, Docker daemon should be running")
-            
-            return
-
-        rnt.run_with_spinner("Pulling image", ftc.pull, self, image_tag)
-        rnt.run_with_spinner("Extracting manifest", ext.get_manifest, self, image_tag)
-        rnt.run_with_spinner("Extracting layers", ext.get_layers, self, image_tag)
-
-
     def do_update(self):
         """
         Update AppThreat Vulnerabilty Database.
@@ -93,8 +79,9 @@ class Percival(cmd2.Cmd):
         output_file = args.output
 
         if not rnt.is_fetched(image_tag):
-            print("\033[38;2;241;76;76m[Failure]\033[0m To analyze an image, it should be fetched first")
-            return
+            rnt.run_with_spinner("Pulling image", ftc.pull, self, image_tag)
+            rnt.run_with_spinner("Extracting manifest", ext.get_manifest, self, image_tag)
+            rnt.run_with_spinner("Extracting layers", ext.get_layers, self, image_tag)
 
         rnt.run_with_spinner("Image setup", run.setup, image_tag, with_trivy)
         rnt.run_with_spinner("Analyzing image", run.analysis, image_tag, with_trivy)
