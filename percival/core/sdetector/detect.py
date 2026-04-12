@@ -34,32 +34,11 @@ def _shannon_entropy(string):
     return entropy
 
 
-def _get_high_entropy_strings(lines, min_length, max_length, max_strings, treshold=4.5):
+def _get_secrets(lines, min_length, max_length, max_strings, threshold=4.5):
     if not lines or not min_length or not max_length:
-        return []
-
-    strings = []
-
-    for line in lines:
-        if len(strings) >= max_strings:
-            break
-
-        for word in line.split():
-            length = len(word)
-
-            if length >= min_length or length <= max_length:
-                entropy = _shannon_entropy(word)
-
-                if entropy >= treshold:
-                    strings.append(word)
-
-    return strings
-
-
-def _get_keys(lines):
-    if not lines:
-        return []
+        return [], []
     
+    strings = []
     keys = []
     
     for line in lines:
@@ -67,14 +46,20 @@ def _get_keys(lines):
             match = re.search(pattern, line)
 
             if match:
-                entry = {
+                keys.append({
                     "key_type": key_type,
                     "value": match.group(0),
-                }
+                })
 
-                keys.append(entry)
+        if len(strings) < max_strings:
+            for word in line.split():
+                length = len(word)
 
-    return keys
+                if min_length <= length <= max_length:
+                    if _shannon_entropy(word) >= threshold:
+                        strings.append(word)
+        
+    return keys, strings
 
 
 def detect_secrets(image_tag):
@@ -90,7 +75,6 @@ def detect_secrets(image_tag):
     min_length = 20
     max_length = 500
     max_strings = 5
-    # 5.0 is a entropy value that is commonly associated to a secret with medium probability
     treshold = 5.0
 
     for file in files: 
@@ -104,8 +88,7 @@ def detect_secrets(image_tag):
             continue
 
         if lines:
-            keys = _get_keys(lines)
-            strings = _get_high_entropy_strings(lines, min_length, max_length, max_strings, treshold)
+            keys, strings = _get_secrets(lines, min_length, max_length, max_strings, treshold)
 
             if keys or strings:
                 findings.append({
