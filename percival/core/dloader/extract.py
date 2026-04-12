@@ -37,6 +37,23 @@ def _get_all_members(layer_tar, layer_dir):
         layer_tar.extract(member, path=layer_dir)
 
 
+def _extract_layer(layer, image_file, image_temp_dir):
+    layer_name = layer.replace(".tar", "")
+    layer_dir = fld.get_dir(image_temp_dir, layer_name)
+
+    os.makedirs(layer_dir, exist_ok=True)
+
+    with tarfile.open(image_file, "r") as tar:
+        layer_member = tar.getmember(layer)
+        layer_fileobj = tar.extractfile(layer_member)
+
+        if layer_fileobj:
+            with tarfile.open(fileobj=layer_fileobj) as layer_obj:
+                _get_all_members(layer_obj, layer_dir)
+        else:
+            print(f"Extraction failed for layer: {layer_name}")
+
+
 def get_layers(self, image_tag):
     if self.params["image"] is None:
         raise RuntimeError("An unexpected error occurred while extracting layers, please try fetching again")
@@ -51,21 +68,12 @@ def get_layers(self, image_tag):
 
     layers = manifest[0].get("Layers", [])
 
-    with tarfile.open(image_file, "r") as tar:
-        for layer in layers:
-            layer_name = layer.replace(".tar", "")
-
-            layer_dir = fld.get_dir(image_temp_dir, layer_name)
-            os.makedirs(layer_dir, exist_ok=True)
-
-            layer_member = tar.getmember(layer)
-            layer_fileobj = tar.extractfile(layer_member)
-
-            if layer_fileobj:
-                with tarfile.open(fileobj=layer_fileobj) as layer_obj:
-                    _get_all_members(layer_obj, layer_dir)
-            else:
-                print(f"Extraction failed for layer: {layer_name}")
+    pol.io_parallelize(
+        _extract_layer,
+        layers,
+        image_file=image_file,
+        image_temp_dir=image_temp_dir,
+    )
     
     self.params["image"] = None
 
