@@ -70,6 +70,13 @@ class Percival(cmd2.Cmd):
         rnt.run_with_spinner("Extracting manifest", ext.get_manifest, self, image_tag)
         rnt.run_with_spinner("Extracting layers", ext.get_layers, self, image_tag)
 
+
+    def do_update(self):
+        """
+        Update AppThreat Vulnerabilty Database.
+        """
+        rnt.run_with_spinner("Updating db", qry.download_db)
+
         
     @cmd2.with_argparser(analyze_parser)
     def do_analyze(self, args):
@@ -120,13 +127,6 @@ class Percival(cmd2.Cmd):
             return
         
         rnt.run_with_spinner("Generating report", rpt.report, image_tag)
-
-
-    def do_update(self):
-        """
-        Update AppThreat Vulnerabilty Database.
-        """
-        rnt.run_with_spinner("Updating db", qry.download_db)
 
 
     def do_cleanup(self, _):

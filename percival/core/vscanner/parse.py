@@ -18,16 +18,19 @@ def parse_trivy_file(trivy_file):
             entry = {
                 "name": vuln.get("PkgName"),
                 "version": vuln.get("InstalledVersion"),
-                "layer": None,
-                "type": None,
-                "cves": [],
+                "layer": vuln.get("Layer").get("DiffID"),
+                "type": result.get("Type"),
+                "cves": []
             }
+
+            cvss = vuln.get("CVSS", {})
+            cvss_source = cvss.get("nvd") or next(iter(cvss.values()), {})
 
             cve_entry = {
                 "id": vuln.get("VulnerabilityID"),
-                "severity": None,
-                "cvss_base_score": None,
-                "cvss_vector": None,
+                "severity": vuln.get("Severity"),
+                "cvss_base_score": cvss_source.get("V3Score"),
+                "cvss_vector": cvss_source.get("V3Vector")
             }
 
             entry["cves"].append(cve_entry)
