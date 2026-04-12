@@ -54,9 +54,9 @@ def dive(image_tag):
         raise RuntimeError("An unexpected error occurred while executing Dive, please fetch the image and try again")
     
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
-    dive_report = fld.get_file_path(image_temp_dir, "dive.json")
+    dive_findings = fld.get_file_path(image_temp_dir, "dive.json")
 
-    cmd = f"dive {image_tag} --json {dive_report}"
+    cmd = f"dive {image_tag} --json {dive_findings}"
     output = sh.run_command(cmd)
 
     return output
@@ -73,7 +73,7 @@ def check_config(image_tag):
     cchecker_config_dir = fld.get_dir(fld.get_config_dir(), "cchecker")
     rules_file = fld.get_file_path(cchecker_config_dir, "rules.yaml")
 
-    report = []
+    findings = []
 
     with open(dockerfile, "r") as f:
         lines = f.readlines()
@@ -87,7 +87,7 @@ def check_config(image_tag):
 
         for line in lines:
             if condition in line:
-                report.append({
+                findings.append({
                     "line": line,
                     "condition": rule["condition"],
                     "description": rule["description"],
@@ -96,6 +96,6 @@ def check_config(image_tag):
                 })
 
     with open(ccheck_file, "w") as f:
-        json.dump(report, f, indent=2)
+        json.dump(findings, f, indent=2)
 
-    return report
+    return findings

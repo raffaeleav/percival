@@ -25,12 +25,12 @@ def trivy(image_tag):
     cmd = f"trivy image --format json --output {vulns_file} {image_tag}"
     output = sh.run_command(cmd)
 
-    pkgs_report, lngs_report = prs.parse_trivy_file(vulns_file)
+    pkgs_findings, lngs_findings = prs.parse_trivy_file(vulns_file)
 
     with open(pkgs_vulns_file, "w") as f:
-        json.dump(pkgs_report, f, indent=2)
+        json.dump(pkgs_findings, f, indent=2)
     with open(lngs_vulns_file, "w") as f:
-        json.dump(lngs_report, f, indent=2)
+        json.dump(lngs_findings, f, indent=2)
 
     os.remove(vulns_file)
 
@@ -60,7 +60,7 @@ def scan_os_packages(image_tag):
     pkgs_file = fld.get_file_path(image_temp_dir, "pkgs.json")
     pkgs_vulns_file = fld.get_file_path(image_temp_dir, "pkgs_vulns.json")
 
-    report = []
+    findings = []
 
     syft(image_tag, "pkgs", pkgs_catalogers)
 
@@ -73,7 +73,7 @@ def scan_os_packages(image_tag):
         cves = qry.search_by_purl(purl)
             
         if cves:
-            report.append({
+            findings.append({
                 "name": pkg["name"],
                 "version": pkg["version"],
                 "layer": pkg["layer"],
@@ -82,9 +82,9 @@ def scan_os_packages(image_tag):
             })
     
     with open(pkgs_vulns_file, "w") as f:
-        json.dump(report, f, indent=2)
+        json.dump(findings, f, indent=2)
 
-    return report
+    return findings
 
 
 def scan_language_dependencies(image_tag):
@@ -95,7 +95,7 @@ def scan_language_dependencies(image_tag):
     lngs_file = fld.get_file_path(image_temp_dir, "lngs.json")
     lngs_vulns_file = fld.get_file_path(image_temp_dir, "lngs_vulns.json")
 
-    report = []
+    findings = []
     
     syft(image_tag, "lngs", lngs_catalogers)
 
@@ -108,7 +108,7 @@ def scan_language_dependencies(image_tag):
         cves = qry.search_by_purl(purl)
             
         if cves:
-            report.append({
+            findings.append({
                 "name": lng["name"],
                 "version": lng["version"],
                 "layer": lng["layer"],
@@ -117,6 +117,6 @@ def scan_language_dependencies(image_tag):
             })
     
     with open(lngs_vulns_file, "w") as f:
-        json.dump(report, f, indent=2)
+        json.dump(findings, f, indent=2)
 
-    return report
+    return findings

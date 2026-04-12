@@ -86,7 +86,7 @@ def detect_secrets(image_tag):
 
     files = ext.get_all_files(image_tag)
 
-    report = []
+    findings = []
     min_length = 20
     max_length = 500
     max_strings = 5
@@ -108,13 +108,13 @@ def detect_secrets(image_tag):
             strings = _get_high_entropy_strings(lines, min_length, max_length, max_strings, treshold)
 
             if keys or strings:
-                report.append({
+                findings.append({
                     "file": file,
                     "keys": keys,
                     "strings": strings
                 })
                 
     with open(secrets_file, "w") as f:
-        json.dump(report, f, indent=2)
+        json.dump(findings, f, indent=2)
 
-    return report
+    return findings
