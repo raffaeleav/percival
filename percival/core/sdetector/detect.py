@@ -2,6 +2,8 @@ import re
 import math
 import json
 
+
+from percival.helpers import pool as pol
 from percival.core.dloader import extract as ext
 from percival.helpers import folders as fld, runtime as rnt
 from percival.core.sdetector import excluded_files, excluded_dirs, key_patterns
@@ -62,6 +64,27 @@ def _get_secrets(lines, min_length, max_length, max_strings, threshold=4.5):
     return keys, strings
 
 
+def _process_file(file, min_length, max_length, max_strings, threshold):
+    if _is_excluded(file):
+        return None
+    
+    try:
+        with open(file, "r", errors="ignore") as f:
+            lines = f.readlines()
+    except Exception:
+        return None
+    
+    if not lines:
+        return None
+    
+    keys, strings = _get_secrets(lines, min_length, max_length, max_strings, threshold)
+
+    if keys or strings:
+        return {"file": file, "keys": keys, "strings": strings}
+    
+    return None
+
+
 def detect_secrets(image_tag):
     if not rnt.is_fetched(image_tag):
         raise RuntimeError("An unexpected error occurred during secret detection, please fetch the image and try again")
@@ -75,27 +98,16 @@ def detect_secrets(image_tag):
     min_length = 20
     max_length = 500
     max_strings = 5
-    treshold = 5.0
+    threshold = 5.0
 
-    for file in files: 
-        if _is_excluded(file):
-            continue
-        
-        try:
-            with open(file, "r", errors="ignore") as f:
-                lines = f.readlines()
-        except Exception:
-            continue
-
-        if lines:
-            keys, strings = _get_secrets(lines, min_length, max_length, max_strings, treshold)
-
-            if keys or strings:
-                findings.append({
-                    "file": file,
-                    "keys": keys,
-                    "strings": strings
-                })
+    findings = pol.cpu_parallelize(
+        _process_file, 
+        files,
+        min_length=min_length,
+        max_length=max_length,
+        max_strings=max_strings,
+        threshold=threshold,
+    )
                 
     with open(secrets_file, "w") as f:
         json.dump(findings, f, indent=2)

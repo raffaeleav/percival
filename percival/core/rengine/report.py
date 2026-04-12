@@ -93,7 +93,7 @@ def get_findings_json(image_tag, output_file):
     }
 
     with open(output_file, "w") as f:
-        json.dump(findings_json, f)
+        json.dump(findings_json, f, indent=2)
 
     return findings_json
 

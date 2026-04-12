@@ -2,7 +2,7 @@ import os
 import json
 import tarfile
 
-from percival.helpers import folders as fld, runtime as rnt
+from percival.helpers import folders as fld, pool as pol, runtime as rnt
 
 
 def get_manifest(self, image_tag):
@@ -70,6 +70,20 @@ def get_layers(self, image_tag):
     self.params["image"] = None
 
 
+def _get_layer_files(layer_path):
+    files = []
+
+    for file in fld.list_files(layer_path):
+        file_path = fld.get_file_path(layer_path, file)
+
+        if os.path.islink(file_path):
+            continue
+
+        files.append(file_path)
+
+    return files
+
+
 def get_all_files(image_tag):
     if not rnt.is_fetched(image_tag):
         raise RuntimeError("An unexpected error occurred while extracting files, please fetch the image and try again")
@@ -78,19 +92,17 @@ def get_all_files(image_tag):
     layers_dir = fld.get_dir(image_temp_dir, "blobs")
     layers_dir = fld.get_dir(layers_dir, "sha256")
 
+    layer_paths = [
+        os.path.join(layers_dir, layer_dir)
+        for layer_dir in os.listdir(layers_dir)
+    ]
+
     files = []
 
-    for layer_dir in os.listdir(layers_dir):
-        layer_path = os.path.join(layers_dir, layer_dir)
-        layer_files = fld.list_files(layer_path)
+    results = pol.io_parallelize(_get_layer_files, layer_paths)
 
+    for layer_files in results:
         for file in layer_files:
-            file_path = fld.get_file_path(layer_path, file)
-
-            if os.path.islink(file_path):
-                continue
-
-            file_path = fld.get_file_path(layer_path, file)
-            files.append(file_path)
+            files.append(file)
 
     return files

@@ -1,13 +1,11 @@
 import cmd2
 import argparse
 
-from percival.core.cchecker import check as chk 
+from percival.core.prunner import run
+from percival.core.vscanner import query as qry
 from percival.core.rengine import report as rpt 
-from percival.core.sdetector import detect as det 
 from percival.helpers import folders as fld, runtime as rnt
-from percival.core.vscanner import scan as scn, query as qry
 from percival.core.dloader import extract as ext, fetch as ftc 
-
 
 class Percival(cmd2.Cmd):
     intro = "Welcome to perCIVAl shell, type \033[1mhelp\033[0m to list commands or \033[1mexit\033[0m to quit"
@@ -97,21 +95,9 @@ class Percival(cmd2.Cmd):
         if not rnt.is_fetched(image_tag):
             print("\033[38;2;241;76;76m[Failure]\033[0m To analyze an image, it should be fetched first")
             return
-        
-        if with_trivy:
-            rnt.run_with_spinner("Updating Trivy db", scn.update_trivy)
-            rnt.run_with_spinner("Scanning for vulnerabilities with Trivy", scn.trivy, image_tag)
 
-        rnt.run_with_spinner("Updating db", qry.init_db)
-        rnt.run_with_spinner("Scanning for OS packages vulnerabilities", scn.scan_os_packages, image_tag)
-        rnt.run_with_spinner("Scanning for language dependencies vulnerabilites", scn.scan_language_dependencies, image_tag)
-
-        rnt.run_with_spinner("Reconstructing Dockerfile", chk.reconstruct_docker_file, image_tag)
-        rnt.run_with_spinner("Running image efficiency check with Dive", chk.dive, image_tag)
-        rnt.run_with_spinner("Checking Dockerfile best practices", chk.check_config, image_tag)
-
-        rnt.run_with_spinner("Finding secrets", det.detect_secrets, image_tag)
-
+        rnt.run_with_spinner("Image setup", run.setup, image_tag, with_trivy)
+        rnt.run_with_spinner("Analyzing image", run.analysis, image_tag, with_trivy)
         rnt.run_with_spinner("Generating findings", rpt.get_findings, image_tag, format, output_file, template=template)
 
         if format == "html":
