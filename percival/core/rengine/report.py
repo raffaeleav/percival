@@ -1,4 +1,4 @@
-
+import os
 import json
 import shutil
 import platform
@@ -100,11 +100,17 @@ def get_findings_json(image_tag, output_file):
 
 def get_findings_xml(image_tag, output_file):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+    findings_json_file = fld.get_file_path(image_report_dir, "findings.json")
 
     if not output_file:
         output_file = fld.get_file_path(image_report_dir, "findings.xml")
 
-    findings_json = get_findings_json(image_tag, None)
+    if os.path.isfile(findings_json_file): 
+        with open(findings_json_file, "r") as f:
+            findings_json = json.load(f)
+    else:
+        findings_json = get_findings_json(image_tag, None)
+
     findings_xml = dicttoxml(findings_json, custom_root='percival_findings', attr_type=False).decode("utf-8")
 
     with open(output_file, "w") as f:
@@ -139,6 +145,7 @@ def get_findings_sarif(image_tag, output_file):
 
 def get_findings_custom(image_tag, template, output_file):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+    findings_json_file = fld.get_file_path(image_report_dir, "findings.json")
     rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
     default_template_file = fld.get_file_path(rengine_config_dir, "default.template")
 
@@ -153,7 +160,12 @@ def get_findings_custom(image_tag, template, output_file):
             template = f.read()
 
     template = Template(template)
-    findings_json = get_findings_json(image_tag, None)
+
+    if os.path.isfile(findings_json_file): 
+        with open(findings_json_file, "r") as f:
+            findings_json = json.load(f)
+    else:
+        findings_json = get_findings_json(image_tag, None)
 
     findings_custom = template.render(result=findings_json)
 
@@ -182,7 +194,8 @@ def get_findings(image_tag, format, output_file, **kwargs):
 
 def report(image_tag):
     image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
-    tex_file = fld.get_file_path(image_report_dir, "report.tex")\
+    findings_json_file = fld.get_file_path(image_report_dir, "findings.json")
+    tex_file = fld.get_file_path(image_report_dir, "report.tex")
     
     rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
     titlepage_file = fld.get_file_path(rengine_config_dir, "titlepage.tex")
@@ -194,14 +207,20 @@ def report(image_tag):
 
     if not api_token: 
         raise RuntimeError("No HuggingFace API token found, please set your token with 'export HF_TOKEN=<your_token>'")
+    
+    if os.path.isfile(findings_json_file): 
+        with open(findings_json_file, "r") as f:
+            findings_json = json.load(f)
+    else:
+        findings_json = get_findings_json(image_tag, None)
 
     index = wrt.get_index()
     
-    vul_report = wrt.get_vulnerability_report(image_tag, api_token)
-    con_report = wrt.get_configuration_report(image_tag, api_token)
-    sec_report = wrt.get_secrets_report(image_tag, api_token)
+    vul_report = wrt.get_intermediate_report(findings_json, "vscanner", api_token)
+    con_report = wrt.get_intermediate_report(findings_json, "cchecker", api_token)
+    sec_report = wrt.get_intermediate_report(findings_json, "sdetector", api_token)
 
-    sections = [vul_report, con_report, sec_report]
+    sections = [ vul_report, con_report, sec_report ]
 
     exe_summary = wrt.get_executive_summary(sections, api_token)
     rem_report = wrt.get_remediation_report(sections, api_token)

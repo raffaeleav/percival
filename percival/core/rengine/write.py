@@ -13,66 +13,6 @@ def _get_prompt(section):
     return prompt
 
 
-def _extract_md_section(table, heading):
-    if not isinstance(table, str) or not isinstance(heading, str):
-        return None
-    
-    lines = table.splitlines()
-
-    heading_text = heading.strip().lstrip("#").strip()
-    pattern = re.compile(r"^(##+)\s+" + re.escape(heading_text) + r"\s*$", re.IGNORECASE)
-
-    start_idx = None
-    start_level = None
-
-    for i, line in enumerate(lines):
-        m = pattern.match(line)
-        if m:
-            start_idx = i + 1
-            start_level = len(m.group(1))
-            break
-
-    if start_idx is None:
-        return None
-
-    collected = []
-
-    for line in lines[start_idx:]:
-        m = re.match(r"^(##+)\s+", line)
-        if m and len(m.group(1)) <= start_level:
-            break
-        collected.append(line)
-
-    while collected and collected[-1].strip() == "":
-        collected.pop()
-
-    section_table = "\n".join(collected)
-
-    return section_table
-
-
-def _compress_md_section(table):
-    lines = table.splitlines()
-    
-    rows = []
-
-    for line in lines:
-        line = line.strip()
-
-        if not line or line.startswith("|---") or line.startswith("| ---") or set(line) <= set("|- "):
-            continue
-        
-        cells = [c.strip() for c in line.strip("|").split("|")]
-        cells = [c for c in cells if c]
-        
-        if not cells:
-            continue
-
-        rows.append(",".join(cells))
-
-    return "\n".join(rows)
-
-
 def get_index():
     rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
     index_file = fld.get_file_path(rengine_config_dir, "index.tex")
@@ -83,101 +23,30 @@ def get_index():
     return text
 
 
-def get_vulnerability_report(image_tag, api_token):
-    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
-    md_file = fld.get_file_path(image_report_dir, "findings.md")    
-
+def get_intermediate_report(findings_json, section, api_token):
     max_tokens = 900
     prompt = _get_prompt("intermediate_report")
 
     if not prompt:
         return None
 
-    with open(md_file, "r", encoding="utf-8") as f:
-        findings = f.read()
-
-    section_table = _extract_md_section(findings, "Vulnerability Scanner Findings")
-    section_table = _compress_md_section(section_table)
+    findings_json = findings_json.get("findings", {}).get(f"{section}", {})
 
     try:
-        section = api.query_hf(api_token, prompt, section_table, max_tokens)
+        section = api.query_hf(api_token, prompt, findings_json, max_tokens)
     except Exception as e:
         section = None
 
     no_results = "An error occurred with the text generation API while generating this section. Please retry generating the report."
 
     lines = [
-        r"\section{Vulnerability Report}", 
+        r"\section{Vulnerability Report}" if section == "vscanner" else None, 
+        r"\section{Configuration Report}" if section == "cchecker" else None, 
+        r"\section{Secrets Report}" if section == "sdetector" else None, 
         section or no_results,
     ]
 
-    text = "\n\n".join(lines)
-
-    return text
-
-
-def get_configuration_report(image_tag, api_token):
-    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
-    md_file = fld.get_file_path(image_report_dir, "findings.md")    
-
-    max_tokens = 900
-    prompt = _get_prompt("intermediate_report")
-
-    if not prompt:
-        return None
-
-    with open(md_file, "r", encoding="utf-8") as f:
-        findings = f.read()
-
-    section_table = _extract_md_section(findings, "Configuration Checker Findings")
-    section_table = _compress_md_section(section_table)
-
-    try:
-        section = api.query_hf(api_token, prompt, section_table, max_tokens)
-    except Exception as e:
-        section = None
-
-    no_results = "An error occurred with the text generation API while generating this section. Please retry generating the report."
-
-    lines = [
-        r"\section{Configuration Report}", 
-        section or no_results,
-    ]
-
-    text = "\n\n".join(lines)
-
-    return text
-
-
-def get_secrets_report(image_tag, api_token):
-    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
-    md_file = fld.get_file_path(image_report_dir, "findings.md")    
-
-    max_tokens = 900
-    prompt = _get_prompt("intermediate_report")
-
-    if not prompt:
-        return None
-
-    with open(md_file, "r", encoding="utf-8") as f:
-        findings = f.read()
-
-    section_table = _extract_md_section(findings, "Secret Detector Findings")
-    section_table = _compress_md_section(section_table)
-
-    try:
-        section = api.query_hf(api_token, prompt, section_table, max_tokens)
-    except Exception as e:
-        section = None
-
-    no_results = "An error occurred with the text generation API while generating this section. Please retry generating the report."
-
-    lines = [
-        r"\section{Secrets Report}", 
-        section or no_results,
-    ]
-
-    text = "\n\n".join(lines)
+    text = "\n\n".join(filter(None, lines))
 
     return text
 

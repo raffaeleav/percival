@@ -9,17 +9,15 @@ def get_token():
 
 
 def query_hf(api_token, prompt, findings, max_tokens=400):
-    url = "https://router.huggingface.co/featherless-ai/v1/chat/completions"
+    url = "https://router.huggingface.co/v1/chat/completions"
 
     headers = {
         "Authorization": f"Bearer {api_token}",
         "Content-Type": "application/json"
     }
 
-    full_prompt = f"{prompt}\n\n{findings}"
-
     payload = {
-        "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+        "model": "Qwen/Qwen2.5-7B-Instruct:featherless-ai",
         "messages": [
             {"role": "system", "content": prompt},
             {"role": "user", "content": findings}
