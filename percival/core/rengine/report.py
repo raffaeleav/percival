@@ -7,8 +7,8 @@ from datetime import date
 from jinja2 import Template
 from dicttoxml import dicttoxml
 from simple_sarif import Sarif
-from percival.helpers import api, folders as fld, shell as sh
 from percival.core.rengine import format as fmt, write as wrt
+from percival.helpers import api, folders as fld, pool as pol, shell as sh
 
 
 def get_findings_html(image_tag, output_file):
@@ -217,15 +217,17 @@ def report(image_tag):
     client = api.get_hf_client(api_token)
 
     index = wrt.get_index()
+
+    sections = ["vscanner", "cchecker", "sdetector"]
     
-    vul_report = wrt.get_intermediate_report(client, findings_json, "vscanner")
-    con_report = wrt.get_intermediate_report(client, findings_json, "cchecker")
-    sec_report = wrt.get_intermediate_report(client, findings_json, "sdetector")
+    reports = pol.io_parallelize(wrt.get_intermediate_report, sections, findings_json=findings_json, client=client)
+    vscanner_report, cchecker_report, sdetector_report = reports
 
-    sections = [ vul_report, con_report, sec_report ]
+    paragraphs = [vscanner_report, cchecker_report, sdetector_report]
 
-    exe_summary = wrt.get_executive_summary(client, sections)
-    rem_report = wrt.get_remediation_report(client, sections)
+    exe_summary = wrt.get_executive_summary(paragraphs, client)
+    rem_report = wrt.get_remediation_report(paragraphs, client)
+    
     det_summary = wrt.get_detailed_summary()
 
     lines = [
@@ -237,11 +239,11 @@ def report(image_tag):
         r"\pagebreak",
         exe_summary, 
         r"\pagebreak",
-        vul_report,
+        vscanner_report,
         r"\pagebreak",
-        con_report,
+        cchecker_report,
         r"\pagebreak",
-        sec_report,
+        sdetector_report,
         r"\pagebreak",
         rem_report,
         r"\pagebreak",

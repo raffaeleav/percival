@@ -23,7 +23,7 @@ def get_index():
     return text
 
 
-def get_intermediate_report(client, findings_json, section):
+def get_intermediate_report(section, findings_json, client):
     max_tokens = 900
     prompt = _get_prompt("intermediate_report")
 
@@ -51,17 +51,15 @@ def get_intermediate_report(client, findings_json, section):
     return text
 
 
-def get_executive_summary(client, sections):
+def get_executive_summary(paragraphs, client):
     prompt = _get_prompt("executive_summary")
 
     if not prompt:
         return None
     
-    findings = "\n\n".join(sections)
+    findings = "\n\n".join(paragraphs)
 
     try:
-        findings = "\n\n".join(sections)
-
         section = api.query_hf(client, prompt, findings)
     except Exception as e:
         section = None
@@ -78,13 +76,13 @@ def get_executive_summary(client, sections):
     return text
 
 
-def get_remediation_report(client, sections):
+def get_remediation_report(paragraphs, client):
     prompt = _get_prompt("remediation_report")
 
     if not prompt:
         return None
 
-    findings = "\n\n".join(sections)
+    findings = "\n\n".join(paragraphs)
 
     try:
         section = api.query_hf(client, prompt, findings)
