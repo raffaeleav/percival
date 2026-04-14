@@ -23,7 +23,7 @@ def get_index():
     return text
 
 
-def get_intermediate_report(findings_json, section, api_token):
+def get_intermediate_report(client, findings_json, section):
     max_tokens = 900
     prompt = _get_prompt("intermediate_report")
 
@@ -33,7 +33,7 @@ def get_intermediate_report(findings_json, section, api_token):
     findings_json = findings_json.get("findings", {}).get(f"{section}", {})
 
     try:
-        section = api.query_hf(api_token, prompt, findings_json, max_tokens)
+        section = api.query_hf(client, prompt, findings_json, max_tokens)
     except Exception as e:
         section = None
 
@@ -51,7 +51,7 @@ def get_intermediate_report(findings_json, section, api_token):
     return text
 
 
-def get_executive_summary(sections, api_token):
+def get_executive_summary(client, sections):
     prompt = _get_prompt("executive_summary")
 
     if not prompt:
@@ -62,7 +62,7 @@ def get_executive_summary(sections, api_token):
     try:
         findings = "\n\n".join(sections)
 
-        section = api.query_hf(api_token, prompt, findings)
+        section = api.query_hf(client, prompt, findings)
     except Exception as e:
         section = None
 
@@ -78,7 +78,7 @@ def get_executive_summary(sections, api_token):
     return text
 
 
-def get_remediation_report(sections, api_token):
+def get_remediation_report(client, sections):
     prompt = _get_prompt("remediation_report")
 
     if not prompt:
@@ -87,11 +87,11 @@ def get_remediation_report(sections, api_token):
     findings = "\n\n".join(sections)
 
     try:
-        section = api.query_hf(api_token, prompt, findings)
+        section = api.query_hf(client, prompt, findings)
     except Exception:
         section = None
 
-    no_results = "An error occurred with the text generation API while generating this section. Please retry generating the report."
+    no_results = "An error occurred with the text generation API while generating this section (your HF credits may be expired). Please retry generating the report."
 
     lines = [
         r"\section{Remediation Report}", 

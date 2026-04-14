@@ -1,5 +1,6 @@
 import os
 import sys
+import glob
 import platform
 
 from yaspin import yaspin
@@ -35,9 +36,9 @@ def is_fetched(image_tag):
 def is_analyzed(image_tag):
     report_dir = fld.get_reports_dir()
     image_report_dir = fld.get_dir(report_dir, image_tag)
-    findings_file = fld.get_file_path(image_report_dir, "findings.html")
+    findings_file = fld.get_file_path(image_report_dir, "findings.*")
 
-    return os.path.exists(findings_file)
+    return len(glob.glob(findings_file)) > 0
     
 
 def run_with_spinner(desc, func, *args, **kwargs):

@@ -214,16 +214,18 @@ def report(image_tag):
     else:
         findings_json = get_findings_json(image_tag, None)
 
+    client = api.get_hf_client(api_token)
+
     index = wrt.get_index()
     
-    vul_report = wrt.get_intermediate_report(findings_json, "vscanner", api_token)
-    con_report = wrt.get_intermediate_report(findings_json, "cchecker", api_token)
-    sec_report = wrt.get_intermediate_report(findings_json, "sdetector", api_token)
+    vul_report = wrt.get_intermediate_report(client, findings_json, "vscanner")
+    con_report = wrt.get_intermediate_report(client, findings_json, "cchecker")
+    sec_report = wrt.get_intermediate_report(client, findings_json, "sdetector")
 
     sections = [ vul_report, con_report, sec_report ]
 
-    exe_summary = wrt.get_executive_summary(sections, api_token)
-    rem_report = wrt.get_remediation_report(sections, api_token)
+    exe_summary = wrt.get_executive_summary(client, sections)
+    rem_report = wrt.get_remediation_report(client, sections)
     det_summary = wrt.get_detailed_summary()
 
     lines = [
