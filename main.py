@@ -55,7 +55,7 @@ class Percival(cmd2.Cmd):
         }
 
 
-    def do_update(self):
+    def do_update(self, _):
         """
         Update AppThreat Vulnerabilty Database.
         """

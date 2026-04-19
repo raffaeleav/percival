@@ -80,7 +80,7 @@ def check_config(image_tag):
 
     with open(rules_file, "r") as f:
         data = yaml.safe_load(f)
-        rules = data["docker_file_rules"]
+        rules = data["dockerfile_rules"]
 
     for rule in rules:
         condition = rule["condition"]
