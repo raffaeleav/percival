@@ -52,71 +52,38 @@ def syft(image_tag, type, catalogers):
     return output
 
 
-def scan_os_packages(image_tag):
+def scan(image_tag, item_type):
     if not rnt.is_fetched(image_tag):
         raise RuntimeError("An unexpected error occurred while scanning with perCIVAl, please fetch the image and try again")
     
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
-    pkgs_file = fld.get_file_path(image_temp_dir, "pkgs.json")
-    pkgs_vulns_file = fld.get_file_path(image_temp_dir, "pkgs_vulns.json")
+    items_file = fld.get_file_path(image_temp_dir, f"{item_type}.json")
+    items_vulns_file = fld.get_file_path(image_temp_dir, f"{item_type}_vulns.json")
 
     findings = []
 
-    syft(image_tag, "pkgs", pkgs_catalogers)
+    catalogers = pkgs_catalogers if item_type == "pkgs" else lngs_catalogers
 
-    with open(pkgs_file, "r") as f:
-        pkgs = json.load(f)
+    syft(image_tag, item_type, catalogers)
 
-    for pkg in pkgs:
-        purl = pkg["purl"]
+    with open(items_file, "r") as f:
+        items = json.load(f)
+
+    for item in items:
+        purl = item["purl"]
         
         cves = qry.search_by_purl(purl)
             
         if cves:
             findings.append({
-                "name": pkg["name"],
-                "version": pkg["version"],
-                "layer": pkg["layer"],
-                "type": pkg["type"],
+                "name": item["name"],
+                "version": item["version"],
+                "layer": item["layer"],
+                "type": item["type"],
                 "cves": cves
             })
     
-    with open(pkgs_vulns_file, "w") as f:
-        json.dump(findings, f, indent=2)
-
-    return findings
-
-
-def scan_language_dependencies(image_tag):
-    if not rnt.is_fetched(image_tag):
-        raise RuntimeError("An unexpected error occurred while scanning with perCIVAl, please fetch the image and try again")
-    
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
-    lngs_file = fld.get_file_path(image_temp_dir, "lngs.json")
-    lngs_vulns_file = fld.get_file_path(image_temp_dir, "lngs_vulns.json")
-
-    findings = []
-    
-    syft(image_tag, "lngs", lngs_catalogers)
-
-    with open(lngs_file, "r") as f:
-        lngs = json.load(f)
-
-    for lng in lngs:
-        purl = lng["purl"]
-        
-        cves = qry.search_by_purl(purl)
-            
-        if cves:
-            findings.append({
-                "name": lng["name"],
-                "version": lng["version"],
-                "layer": lng["layer"],
-                "type": lng["type"],
-                "cves": cves
-            })
-    
-    with open(lngs_vulns_file, "w") as f:
+    with open(items_vulns_file, "w") as f:
         json.dump(findings, f, indent=2)
 
     return findings

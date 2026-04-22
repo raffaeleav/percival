@@ -25,8 +25,8 @@ def setup(image_tag, with_trivy):
 
 def analysis(image_tag, with_trivy):
     scan_tasks = {
-            "scan_pkgs": (scn.scan_os_packages, image_tag),
-            "scan_lngs": (scn.scan_language_dependencies, image_tag),
+            "scan_pkgs": (scn.scan, image_tag, "pkgs"),
+            "scan_lngs": (scn.scan, image_tag, "lngs"),
             "check_efficiency": (chk.dive, image_tag),
             "check_dockerfile": (chk.check_config, image_tag),
             "detect_secrets": (det.detect_secrets, image_tag)

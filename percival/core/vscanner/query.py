@@ -2,8 +2,7 @@ import os
 import time
 import percival.helpers.folders as fld
 
-from vdb.lib import search
-from vdb.lib import config, db6 as db_lib
+from vdb.lib import search, config
 from vdb.lib.orasclient import download_image
 
 

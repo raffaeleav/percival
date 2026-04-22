@@ -1,7 +1,7 @@
 from functools import partial
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 
-# io-bound tasks
+
 def io_parallelize(function, items, **kwargs): 
     task = partial(function, **kwargs) if kwargs else function
     
@@ -17,7 +17,6 @@ def io_parallelize(function, items, **kwargs):
     return results
 
 
-# cpu-bound tasks
 def cpu_parallelize(function, items, **kwargs):
     task = partial(function, **kwargs) if kwargs else function
 

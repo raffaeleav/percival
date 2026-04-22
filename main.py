@@ -7,6 +7,7 @@ from percival.core.rengine import report as rpt
 from percival.helpers import folders as fld, runtime as rnt
 from percival.core.dloader import extract as ext, fetch as ftc 
 
+
 class Percival(cmd2.Cmd):
     intro = "Welcome to perCIVAl shell, type \033[1mhelp\033[0m to list commands or \033[1mexit\033[0m to quit"
     prompt = "\033[38;2;0;122;204mperCIVAl >\033[0m "
@@ -59,7 +60,7 @@ class Percival(cmd2.Cmd):
         """
         Update AppThreat Vulnerabilty Database.
         """
-        rnt.run_with_spinner("Updating db", qry.download_db)
+        rnt.spinner("Updating db", qry.download_db)
 
         
     @cmd2.with_argparser(analyze_parser)
@@ -79,16 +80,16 @@ class Percival(cmd2.Cmd):
         output_file = args.output
 
         if not rnt.is_fetched(image_tag):
-            rnt.run_with_spinner("Pulling image", ftc.pull, self, image_tag)
-            rnt.run_with_spinner("Extracting manifest", ext.get_manifest, self, image_tag)
-            rnt.run_with_spinner("Extracting layers", ext.get_layers, self, image_tag)
+            rnt.spinner("Pulling image", ftc.pull, self, image_tag)
+            rnt.spinner("Extracting manifest", ext.get_manifest, self, image_tag)
+            rnt.spinner("Extracting layers", ext.get_layers, self, image_tag)
 
-        rnt.run_with_spinner("Image setup", run.setup, image_tag, with_trivy)
-        rnt.run_with_spinner("Analyzing image", run.analysis, image_tag, with_trivy)
-        rnt.run_with_spinner("Generating findings", rpt.get_findings, image_tag, format, output_file, template=template)
+        rnt.spinner("Image setup", run.setup, image_tag, with_trivy)
+        rnt.spinner("Analyzing image", run.analysis, image_tag, with_trivy)
+        rnt.spinner("Generating findings", rpt.get_findings, image_tag, format, output_file, template=template)
 
         if format == "html":
-            rnt.run_with_spinner("Opening findings", rpt.view_findings_html, image_tag, output_file)
+            rnt.spinner("Opening findings", rpt.view_findings_html, image_tag, output_file)
 
 
     def do_report(self, image_tag):
@@ -99,14 +100,14 @@ class Percival(cmd2.Cmd):
             print("\033[38;2;241;76;76m[Failure]\033[0m To generate a report for an image, it should be analyzed first")
             return
         
-        rnt.run_with_spinner("Generating report", rpt.report, image_tag)
+        rnt.spinner("Generating report", rpt.report, image_tag)
 
 
     def do_cleanup(self, _):
         """
         Remove temporary files created during fetching and scanning.
         """
-        rnt.run_with_spinner("Deleting temp files", fld.remove_temp_files)
+        rnt.spinner("Deleting temp files", fld.remove_temp_files)
 
 
     def do_clear(self, _):
@@ -114,13 +115,6 @@ class Percival(cmd2.Cmd):
         Clear the shell output.
         """
         rnt.clear()
-
-
-    def do_restart(self, _):
-        """
-        Reload the CLI.
-        """
-        rnt.restart()
 
 
     def do_exit(self, _):

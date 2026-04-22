@@ -41,7 +41,7 @@ def is_analyzed(image_tag):
     return len(glob.glob(findings_file)) > 0
     
 
-def run_with_spinner(desc, func, *args, **kwargs):
+def spinner(desc, func, *args, **kwargs):
     with yaspin(Spinners.arc, text=desc) as spinner:
         try:
             result = func(*args, **kwargs)
@@ -57,9 +57,3 @@ def run_with_spinner(desc, func, *args, **kwargs):
 
 def clear():
     print("\033c", end="")
-
-
-def restart():
-    python = sys.executable
-    os.execl(python, python, *sys.argv)
-    
