@@ -1,7 +1,6 @@
 import re
-import math
 import json
-
+import numpy as np
 
 from percival.helpers import pool as pol
 from percival.core.dloader import extract as ext
@@ -25,15 +24,11 @@ def _is_excluded(file):
 
 
 def _shannon_entropy(string):
-    if not isinstance(string, str):
-        return 0.0
+    counts = np.frombuffer(string.encode(), dtype=np.uint8)
+    _, freq = np.unique(counts, return_counts=True)
+    probs = freq / len(string)
 
-    freq = {ch: string.count(ch) for ch in set(string)}
-    length = len(string)
-
-    entropy = -sum((count/length) * math.log2(count/length) for count in freq.values())
-
-    return entropy
+    return -np.sum(probs * np.log2(probs))
 
 
 def _get_secrets(lines, min_length, max_length, max_strings, threshold=4.5):
@@ -44,6 +39,8 @@ def _get_secrets(lines, min_length, max_length, max_strings, threshold=4.5):
     keys = []
     
     for line in lines:
+        matched = False
+
         for key_type, pattern in key_patterns.items():
             match = re.search(pattern, line)
 
@@ -53,7 +50,9 @@ def _get_secrets(lines, min_length, max_length, max_strings, threshold=4.5):
                     "value": match.group(0),
                 })
 
-        if len(strings) < max_strings:
+                matched = True
+
+        if not matched and len(strings) < max_strings:
             for word in line.split():
                 length = len(word)
 
