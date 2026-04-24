@@ -8,6 +8,19 @@ from percival.helpers import folders as fld, runtime as rnt
 from percival.core.dloader import extract as ext, fetch as ftc 
 
 
+class TargetAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        valid_chars = {"v", "c", "s"}
+
+        if not values.strip():
+            raise argparse.ArgumentError(self, "Target list cannot be empty, don't use the flag or use any combination of: v, c, s")
+        
+        if not set(values).issubset(valid_chars):
+            raise argparse.ArgumentError(self, f"Invalid target in '{values}', use any combination of: v, c, s")
+        
+        setattr(namespace, self.dest, list(set(values)))
+
+
 class Percival(cmd2.Cmd):
     intro = "Welcome to perCIVAl shell, type \033[1mhelp\033[0m to list commands or \033[1mexit\033[0m to quit"
     prompt = "\033[38;2;0;122;204mperCIVAl >\033[0m "
@@ -18,9 +31,15 @@ class Percival(cmd2.Cmd):
         help="Docker image tag to analyze"
     )
     analyze_parser.add_argument(
-            "--with-trivy",
-            action="store_true",
-            help="Run additional vulnerability scanning with Trivy"
+        "--targets",
+        action=TargetAction, 
+        default=["v", "c", "s"],
+        help="Components to use in analysis (default: vcs)."
+    )
+    analyze_parser.add_argument(
+        "--with-trivy",
+        action="store_true",
+        help="Run additional vulnerability scanning with Trivy"
     )
     analyze_parser.add_argument(
         "--format", 
@@ -74,6 +93,7 @@ class Percival(cmd2.Cmd):
             return
         
         image_tag = args.image_tag
+        targets = args.targets
         with_trivy = args.with_trivy
         format = args.format
         template = args.template
@@ -84,8 +104,8 @@ class Percival(cmd2.Cmd):
             rnt.spinner("Extracting manifest", ext.get_manifest, self, image_tag)
             rnt.spinner("Extracting layers", ext.get_layers, self, image_tag)
 
-        rnt.spinner("Image setup", run.setup, image_tag, with_trivy)
-        rnt.spinner("Analyzing image", run.analysis, image_tag, with_trivy)
+        rnt.spinner("Image setup", run.setup, image_tag, targets, with_trivy)
+        rnt.spinner("Analyzing image", run.analysis, image_tag, targets, with_trivy)
         rnt.spinner("Generating findings", rpt.get_findings, image_tag, format, output_file, template=template)
 
         if format == "html":

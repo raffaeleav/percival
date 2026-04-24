@@ -4,11 +4,14 @@ from percival.core.vscanner import scan as scn, query as qry
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
-def setup(image_tag, with_trivy):
-    setup_tasks = {
-        "update_db": (qry.init_db,),
-        "reconstruct_dockerfile": (chk.reconstruct_docker_file, image_tag)
-    }
+def setup(image_tag, targets, with_trivy):
+    setup_tasks = {}
+
+    if "v" in targets:
+        setup_tasks["update_db"] = (qry.init_db,)
+
+    if "c" in targets:
+        setup_tasks["reconstruct_dockerfile"] = (chk.reconstruct_docker_file, image_tag)
 
     if with_trivy:
         setup_tasks["update_trivy_db"] = (scn.update_trivy,)
@@ -23,14 +26,19 @@ def setup(image_tag, with_trivy):
             future.result()
 
 
-def analysis(image_tag, with_trivy):
-    scan_tasks = {
-            "scan_pkgs": (scn.scan, image_tag, "pkgs"),
-            "scan_lngs": (scn.scan, image_tag, "lngs"),
-            "check_efficiency": (chk.dive, image_tag),
-            "check_dockerfile": (chk.check_config, image_tag),
-            "detect_secrets": (det.detect_secrets, image_tag)
-        }
+def analysis(image_tag, targets, with_trivy):
+    scan_tasks = {}
+
+    if "v" in targets:
+        scan_tasks["scan_pkgs"] = (scn.scan, image_tag, "pkgs")
+        scan_tasks["scan_lngs"] = (scn.scan, image_tag, "lngs")
+
+    if "c" in targets:
+        scan_tasks["check_efficiency"] = (chk.dive, image_tag)
+        scan_tasks["check_dockerfile"] = (chk.check_config, image_tag)
+
+    if "s" in targets:
+        scan_tasks["detect_secrets"] = (det.detect_secrets, image_tag)
     
     if with_trivy:
         scan_tasks["scan_trivy"] = (scn.trivy, image_tag)
