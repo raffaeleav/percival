@@ -94,19 +94,19 @@ def detect_secrets(image_tag):
     files = ext.get_all_files(image_tag)
 
     findings = []
-    min_length = 20
-    max_length = 500
-    max_strings = 5
-    threshold = 5.0
 
-    findings = pol.cpu_parallelize(
-        _process_file, 
-        files,
-        min_length=min_length,
-        max_length=max_length,
-        max_strings=max_strings,
-        threshold=threshold,
-    )
+    params = {
+        "min_length": 20,
+        "max_length": 500,
+        "max_strings": 5,
+        "threshold": 5.0
+    }
+
+    for file_path in files:
+        result = _process_file(file_path, **params)
+
+        if result:
+            findings.append(result)
                 
     with open(secrets_file, "w") as f:
         json.dump(findings, f, indent=2)
