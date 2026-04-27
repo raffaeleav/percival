@@ -10,8 +10,9 @@ def get_manifest(self, image_tag):
         raise RuntimeError("An unexpected error occurred while extracting manifest, please try fetching again")
 
     images_dir = fld.get_dir(fld.get_data_dir(), "images")
-    image_file = fld.get_file_path(images_dir, image_tag + ".tar")
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_file = fld.get_file_path(images_dir, local_tag + ".tar")
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
 
     with open(image_file, "wb") as f:
         for chunk in self.params["image"].save():
@@ -57,10 +58,11 @@ def _extract_layer(layer, image_file, image_temp_dir):
 def get_layers(self, image_tag):
     if self.params["image"] is None:
         raise RuntimeError("An unexpected error occurred while extracting layers, please try fetching again")
-
+    
     images_dir = fld.get_dir(fld.get_data_dir(), "images")
-    image_file = fld.get_file_path(images_dir, image_tag + ".tar")
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_file = fld.get_file_path(images_dir, local_tag + ".tar")
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
     manifest_file = fld.get_file_path(image_temp_dir, "manifest.json")
 
     with open(manifest_file, "r") as f:
@@ -96,7 +98,8 @@ def get_all_files(image_tag):
     if not rnt.is_fetched(image_tag):
         raise RuntimeError("An unexpected error occurred while extracting files, please fetch the image and try again")
     
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
     layers_dir = fld.get_dir(image_temp_dir, "blobs")
     layers_dir = fld.get_dir(layers_dir, "sha256")
 

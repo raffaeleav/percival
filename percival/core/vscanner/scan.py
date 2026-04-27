@@ -42,7 +42,8 @@ def syft(image_tag, type, catalogers):
     if not rnt.is_fetched(image_tag):
         raise RuntimeError("An unexpected error occurred while  extracting packages, please fetch the image and try again")
     
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
     vscanner_config_dir = fld.get_dir(fld.get_config_dir(), "vscanner")
     template_file = fld.get_file_path(vscanner_config_dir, "custom.template")
     output_file = fld.get_file_path(image_temp_dir, f"{type}.json")

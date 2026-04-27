@@ -28,14 +28,16 @@ def is_docker_running():
 
 def is_fetched(image_tag):
     images_dir = fld.get_images_dir()
-    tar_file = fld.get_file_path(images_dir, image_tag + ".tar")
+    local_tag = fld.sanitize(image_tag)
+    tar_file = fld.get_file_path(images_dir, local_tag + ".tar")
 
     return os.path.exists(tar_file)
 
 
 def is_analyzed(image_tag):
     report_dir = fld.get_reports_dir()
-    image_report_dir = fld.get_dir(report_dir, image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_report_dir = fld.get_dir(report_dir, local_tag)
     findings_file = fld.get_file_path(image_report_dir, "findings.*")
 
     return len(glob.glob(findings_file)) > 0
