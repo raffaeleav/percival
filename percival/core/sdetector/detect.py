@@ -52,8 +52,11 @@ def _get_secrets(lines, min_length, max_length, max_strings, threshold=4.5):
 
                 matched = True
 
-        if not matched and len(strings) < max_strings:
+        if not matched:
             for word in line.split():
+                if len(strings) >= max_strings:
+                    break
+
                 length = len(word)
 
                 if min_length <= length <= max_length:
