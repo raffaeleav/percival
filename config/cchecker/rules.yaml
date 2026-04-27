@@ -6,12 +6,6 @@ dockerfile_rules:
     severity: "High"
     remediation: "Switch to a non-root user using the USER instruction."
 
-  - id: "NO_HEALTHCHECK"
-    description: "Container has no HEALTHCHECK instruction"
-    condition: "!HEALTHCHECK"
-    severity: "Medium"
-    remediation: "Add a HEALTHCHECK instruction to define a container health check command."
-
   - id: "EXPOSED_PORTS"
     description: "Exposed ports could increase attack surface"
     condition: "EXPOSE"
@@ -29,4 +23,24 @@ dockerfile_rules:
     condition: "RUN sudo *"
     severity: "Low"
     remediation: "Remove sudo from RUN commands, as they run as root by default."
+
+  - id: "VOLUME_USAGE"
+    description: "Volume usage is anachronistic"
+    condition: "VOLUME *"
+    severity: "Low"
+    remediation: > 
+      Volume mount points should be defined at runtime using the -v or --mount flag
+      in docker run, or declared in docker-compose.yml.
+
+  - id: "NO_HEALTHCHECK"
+    description: "Container has no HEALTHCHECK instruction"
+    condition: "HEALTHCHECK"
+    severity: "Medium"
+    remediation: "Add a HEALTHCHECK instruction to define a container health check command."
+
+  - id: "NO_MANTAINER"
+    description: "Container has no MANTAINER instruction"
+    condition: "MANTAINER"
+    severity: "Medium"
+    remediation: "Add a MANTAINER instruction."
 ...

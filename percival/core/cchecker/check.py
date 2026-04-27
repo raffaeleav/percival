@@ -64,6 +64,12 @@ def dive(image_tag):
     return output
 
 
+def is_missing(rule, lines):
+    lines = set(lines)
+  
+    return not any(rule in line for line in lines)
+    
+
 def check_config(image_tag):
     if not rnt.is_fetched(image_tag):
         raise RuntimeError("An unexpected error occurred while checking configuration, please fetch the image and try again")
@@ -87,6 +93,18 @@ def check_config(image_tag):
 
     for rule in rules:
         condition = rule["condition"]
+
+        if rule["id"].startswith("NO_"):
+            if is_missing(rule["condition"], lines):
+                findings.append({
+                    "line": "N/A",
+                    "condition": rule["condition"],
+                    "description": rule["description"],
+                    "severity": rule["severity"],
+                    "remediation": rule["remediation"]
+                })
+
+                continue
 
         for line in lines:
             if condition in line:
