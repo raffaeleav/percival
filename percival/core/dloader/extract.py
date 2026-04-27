@@ -31,6 +31,9 @@ def _get_all_members(layer_tar, layer_dir):
         raise TypeError(f"layer_dir must be a path-like object, got {type(layer_dir).__name__} instead")
 
     for member in layer_tar.getmembers():
+        if member.ischr() or member.isblk():
+            continue
+
         if member.islnk() or member.issym():
             if os.path.isabs(member.linkname):
                 member.linkname = member.linkname.lstrip("/")

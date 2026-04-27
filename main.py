@@ -101,7 +101,7 @@ class Percival(cmd2.Cmd):
 
         rnt.spinner("Preparing image", run.setup, image_tag, targets, with_trivy)
         rnt.spinner("Analyzing image", run.analysis, image_tag, targets, with_trivy)
-        rnt.spinner("Generating findings", rpt.get_findings, image_tag, format, output_file, template=template)
+        rnt.spinner("Generating findings", rpt.get_findings, image_tag , format, output_file, template=template)
 
         if format == "html":
             rnt.spinner("Opening findings", rpt.view_findings_html, image_tag, output_file)
