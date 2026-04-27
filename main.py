@@ -10,12 +10,12 @@ from percival.core.dloader import extract as ext, fetch as ftc
 
 class TargetAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        valid_chars = {"v", "c", "s"}
+        targets = ["v", "c", "s"]
 
         if not values.strip():
             raise argparse.ArgumentError(self, "Target list cannot be empty, don't use the flag or use any combination of: v, c, s")
         
-        if not set(values).issubset(valid_chars):
+        if not set(values).issubset(targets):
             raise argparse.ArgumentError(self, f"Invalid target in '{values}', use any combination of: v, c, s")
         
         setattr(namespace, self.dest, list(set(values)))
@@ -26,44 +26,39 @@ class Percival(cmd2.Cmd):
     prompt = "\033[38;2;0;122;204mperCIVAl >\033[0m "
 
     analyze_parser = argparse.ArgumentParser()
-    analyze_parser.add_argument(
-        "image_tag", 
-        help="Docker image tag to analyze"
+    analyze_parser.add_argument("image_tag", 
+        help="Docker image to analyze"
     )
     analyze_parser.add_argument(
         "--targets",
         action=TargetAction, 
         default=["v", "c", "s"],
-        help="Components to use in analysis (default: vcs)."
+        help="Analysis targets: v (packages/dependencies vulnerabilities), c (configuration), s (secrets)"
     )
     analyze_parser.add_argument(
         "--with-trivy",
         action="store_true",
-        help="Run additional vulnerability scanning with Trivy"
+        help="Additional packages/dependencies vulnerability scan with Trivy"
     )
     analyze_parser.add_argument(
         "--format", 
         choices=["html", "json", "xml", "sarif", "custom"], 
         default="html", 
-        help="Findings format (default: html)"
+        help="Findings format"
     )
     analyze_parser.add_argument(
         "--template",
         default=None,
-        help="Custom Go template for findings formatting"
+        help="Custom Go template for 'custom' --format argument"
     )
     analyze_parser.add_argument(
         "--output",
         default=None,
-        help="Output file path"
+        help="Findings output file"
     )
 
 
     def __init__(self):
-        """
-        Initialize the perCIVAl shell, check the operating system,
-        and perform initial setup.
-        """
         super().__init__()
 
         rnt.clear()
@@ -77,7 +72,7 @@ class Percival(cmd2.Cmd):
 
     def do_update(self, _):
         """
-        Update AppThreat Vulnerabilty Database.
+        Update AppThreat Vulnerabilty Database
         """
         rnt.spinner("Updating db", qry.download_db)
 
@@ -85,7 +80,7 @@ class Percival(cmd2.Cmd):
     @cmd2.with_argparser(analyze_parser)
     def do_analyze(self, args):
         """
-        Analyze a Docker image with all the components.
+        Analyze a Docker image
         """
         if not rnt.is_docker_running():
             print("\033[38;2;241;76;76m[Failure]\033[0m To analyze an image, Docker daemon should be running")
@@ -104,7 +99,7 @@ class Percival(cmd2.Cmd):
             rnt.spinner("Extracting manifest", ext.get_manifest, self, image_tag)
             rnt.spinner("Extracting layers", ext.get_layers, self, image_tag)
 
-        rnt.spinner("Image setup", run.setup, image_tag, targets, with_trivy)
+        rnt.spinner("Preparing image", run.setup, image_tag, targets, with_trivy)
         rnt.spinner("Analyzing image", run.analysis, image_tag, targets, with_trivy)
         rnt.spinner("Generating findings", rpt.get_findings, image_tag, format, output_file, template=template)
 
@@ -114,7 +109,7 @@ class Percival(cmd2.Cmd):
 
     def do_report(self, image_tag):
         """
-        Generate LLM report for the analysis conducted on the given Docker image. 
+        Generate LLM report for the analysis conducted on the given Docker image
         """
         if not rnt.is_analyzed(image_tag):
             print("\033[38;2;241;76;76m[Failure]\033[0m To generate a report for an image, it should be analyzed first")
@@ -125,21 +120,21 @@ class Percival(cmd2.Cmd):
 
     def do_cleanup(self, _):
         """
-        Remove temporary files created during fetching and scanning.
+        Remove temporary files created during fetching and scanning
         """
         rnt.spinner("Deleting temp files", fld.remove_temp_files)
 
 
     def do_clear(self, _):
         """
-        Clear the shell output.
+        Clear the shell output
         """
         rnt.clear()
 
 
     def do_exit(self, _):
         """
-        Exit the PerCIVAl shell.
+        Exit the PerCIVAl shell
         """
         return True
 

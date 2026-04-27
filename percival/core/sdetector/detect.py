@@ -88,7 +88,8 @@ def detect_secrets(image_tag):
     if not rnt.is_fetched(image_tag):
         raise RuntimeError("An unexpected error occurred during secret detection, please fetch the image and try again")
     
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
     secrets_file = fld.get_file_path(image_temp_dir, "secrets.json")
 
     files = ext.get_all_files(image_tag)

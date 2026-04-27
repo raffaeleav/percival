@@ -1,5 +1,10 @@
 import os
+import re
 import shutil
+
+
+def sanitize(image_tag):
+    return re.sub(r"[/:@]", "_", image_tag)
 
 
 def setup():

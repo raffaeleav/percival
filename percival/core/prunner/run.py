@@ -11,7 +11,7 @@ def setup(image_tag, targets, with_trivy):
         setup_tasks["update_db"] = (qry.init_db,)
 
     if "c" in targets:
-        setup_tasks["reconstruct_dockerfile"] = (chk.reconstruct_docker_file, image_tag)
+        setup_tasks["reconstruct_dockerfile"] = (chk.reconstruct_dockerfile, image_tag)
 
     if with_trivy:
         setup_tasks["update_trivy_db"] = (scn.update_trivy,)

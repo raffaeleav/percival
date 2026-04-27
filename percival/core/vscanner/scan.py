@@ -17,7 +17,8 @@ def trivy(image_tag):
     if not rnt.is_fetched(image_tag):
         raise RuntimeError("An unexpected error occurred while scanning with Trivy, please fetch the image and try again")
     
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
     vulns_file = fld.get_file_path(image_temp_dir, "trivy_vulns.json")
     pkgs_vulns_file = fld.get_file_path(image_temp_dir, "trivy_pkgs_vulns.json")
     lngs_vulns_file = fld.get_file_path(image_temp_dir, "trivy_lngs_vulns.json")
@@ -56,7 +57,8 @@ def scan(image_tag, item_type):
     if not rnt.is_fetched(image_tag):
         raise RuntimeError("An unexpected error occurred while scanning with perCIVAl, please fetch the image and try again")
     
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
     items_file = fld.get_file_path(image_temp_dir, f"{item_type}.json")
     items_vulns_file = fld.get_file_path(image_temp_dir, f"{item_type}_vulns.json")
 

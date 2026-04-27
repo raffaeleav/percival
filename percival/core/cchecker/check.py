@@ -6,11 +6,12 @@ from percival.core.cchecker import dockerfile_commands, run_regex
 from percival.helpers import folders as fld, runtime as rnt, shell as sh
 
 
-def reconstruct_docker_file(image_tag): 
+def reconstruct_dockerfile(image_tag): 
     if not rnt.is_fetched(image_tag):
         raise RuntimeError("An unexpected error occurred while checking configuration, please fetch the image and try again")
     
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
     dockerfile = fld.get_file_path(image_temp_dir, "Dockerfile")
 
     cmd = f"docker history --no-trunc {image_tag} --format json"
@@ -53,7 +54,8 @@ def dive(image_tag):
     if not rnt.is_fetched(image_tag):
         raise RuntimeError("An unexpected error occurred while executing Dive, please fetch the image and try again")
     
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
     dive_findings = fld.get_file_path(image_temp_dir, "dive.json")
 
     cmd = f"dive {image_tag} --json {dive_findings}"
@@ -66,7 +68,8 @@ def check_config(image_tag):
     if not rnt.is_fetched(image_tag):
         raise RuntimeError("An unexpected error occurred while checking configuration, please fetch the image and try again")
     
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
     ccheck_file = fld.get_file_path(image_temp_dir, "ccheck.json")
     
     dockerfile = fld.get_file_path(image_temp_dir, "Dockerfile")

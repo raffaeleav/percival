@@ -7,7 +7,8 @@ from percival.core.rengine import vscanner_files, cchecker_files, sdetector_file
 
 
 def get_vscanner_findings_html(image_tag):
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
 
     files = fld.list_files(image_temp_dir)
     files = [
@@ -73,7 +74,8 @@ def get_vscanner_findings_html(image_tag):
 
 
 def get_cchecker_findings_html(image_tag):
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
 
     files = fld.list_files(image_temp_dir)
     files = [
@@ -120,7 +122,8 @@ def get_cchecker_findings_html(image_tag):
 
 
 def get_sdetector_findings_html(image_tag):
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
 
     files = fld.list_files(image_temp_dir)
     files = [
@@ -165,7 +168,8 @@ def get_sdetector_findings_html(image_tag):
 
 
 def get_vscanner_findings_json(image_tag):
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
 
     files = fld.list_files(image_temp_dir)
     files = [
@@ -205,7 +209,8 @@ def get_vscanner_findings_json(image_tag):
 
 
 def get_cchecker_findings_json(image_tag):
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
 
     files = fld.list_files(image_temp_dir)
     files = [
@@ -250,7 +255,8 @@ def get_cchecker_findings_json(image_tag):
 
 
 def get_sdetector_findings_json(image_tag):
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
 
     files = fld.list_files(image_temp_dir)
     files = [
@@ -289,7 +295,8 @@ def get_sdetector_findings_json(image_tag):
 
 
 def get_vscanner_findings_sarif(image_tag, findings_sarif):
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
 
     files = fld.list_files(image_temp_dir)
     files = [
@@ -354,7 +361,8 @@ def get_vscanner_findings_sarif(image_tag, findings_sarif):
 
 
 def get_cchecker_findings_sarif(image_tag, findings_sarif):
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
     dockerfile = fld.get_file_path(image_temp_dir, "Dockerfile")
 
     files = fld.list_files(image_temp_dir)
@@ -423,7 +431,8 @@ def get_cchecker_findings_sarif(image_tag, findings_sarif):
 
 
 def get_sdetector_findings_sarif(image_tag, findings_sarif):
-    image_temp_dir = fld.get_dir(fld.get_temp_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
 
     files = fld.list_files(image_temp_dir)
     files = [

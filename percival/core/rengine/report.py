@@ -15,7 +15,8 @@ def get_findings_html(image_tag, output_file):
     rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
     styles_file = fld.get_file_path(rengine_config_dir, "styles.css")
 
-    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), local_tag)
     md_file = fld.get_file_path(image_report_dir, "findings.md")
 
     if not output_file:
@@ -50,7 +51,8 @@ def get_findings_html(image_tag, output_file):
 
 
 def view_findings_html(image_tag, output_file):
-    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), local_tag)
 
     if not output_file:
         output_file = fld.get_file_path(image_report_dir, "findings.html")
@@ -68,7 +70,8 @@ def view_findings_html(image_tag, output_file):
 
 
 def get_findings_json(image_tag, output_file):
-    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), local_tag)
 
     if not output_file:
         output_file = fld.get_file_path(image_report_dir, "findings.json")
@@ -99,7 +102,8 @@ def get_findings_json(image_tag, output_file):
 
 
 def get_findings_xml(image_tag, output_file):
-    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), local_tag)
     findings_json_file = fld.get_file_path(image_report_dir, "findings.json")
 
     if not output_file:
@@ -120,7 +124,8 @@ def get_findings_xml(image_tag, output_file):
 
 
 def get_findings_sarif(image_tag, output_file):
-    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), local_tag)
 
     if not output_file:
         output_file = fld.get_file_path(image_report_dir, "findings.sarif")
@@ -144,7 +149,8 @@ def get_findings_sarif(image_tag, output_file):
 
 
 def get_findings_custom(image_tag, template, output_file):
-    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), local_tag)
     findings_json_file = fld.get_file_path(image_report_dir, "findings.json")
     rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
     default_template_file = fld.get_file_path(rengine_config_dir, "default.template")
@@ -193,7 +199,8 @@ def get_findings(image_tag, format, output_file, **kwargs):
 
 
 def report(image_tag):
-    image_report_dir = fld.get_dir(fld.get_reports_dir(), image_tag)
+    local_tag = fld.sanitize(image_tag)
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), local_tag)
     findings_json_file = fld.get_file_path(image_report_dir, "findings.json")
     tex_file = fld.get_file_path(image_report_dir, "report.tex")
     
