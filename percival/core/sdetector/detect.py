@@ -1,23 +1,42 @@
+import os
 import re
 import json
 import numpy as np
 
-from percival.helpers import pool as pol
 from percival.core.dloader import extract as ext
 from percival.helpers import folders as fld, runtime as rnt
-from percival.core.sdetector import excluded_files, excluded_dirs, key_patterns
+from percival.core.sdetector import excluded_dirs, excluded_cache_dirs, excluded_exts, key_patterns
 
 
-def _is_excluded(file):
-    if not isinstance(file, str):
+def _get_virtual_path(file_path):
+    parts = file_path.split(os.sep)
+
+    try:
+        sha256_idx = parts.index("sha256")
+        virtual_file_path = os.sep + os.sep.join(parts[sha256_idx + 2:])
+
+        return virtual_file_path
+    except ValueError:
+        return file_path
+
+
+def _is_excluded(file_path):
+    if not isinstance(file_path, str):
         return False
     
-    for excluded_file in excluded_files:
-        if excluded_file in file:
+    filename = os.path.basename(file_path)
+    virtual_file_path = _get_virtual_path(file_path)
+        
+    for dir in excluded_dirs:
+        if virtual_file_path.startswith(dir):
             return True
         
-    for excluded_dir in excluded_dirs:
-        if excluded_dir in file:
+    for dir in excluded_cache_dirs:
+        if dir in virtual_file_path:
+            return True
+        
+    for ext in excluded_exts:
+        if ext in filename:
             return True
 
     return False
@@ -66,12 +85,12 @@ def _get_secrets(lines, min_length, max_length, max_strings, threshold=4.5):
     return keys, strings
 
 
-def _process_file(file, min_length, max_length, max_strings, threshold):
-    if _is_excluded(file):
+def _process_file(file_path, min_length, max_length, max_strings, threshold):
+    if _is_excluded(file_path):
         return None
     
     try:
-        with open(file, "r", errors="ignore") as f:
+        with open(file_path, "r", errors="ignore") as f:
             lines = f.readlines()
     except Exception:
         return None
@@ -82,7 +101,7 @@ def _process_file(file, min_length, max_length, max_strings, threshold):
     keys, strings = _get_secrets(lines, min_length, max_length, max_strings, threshold)
 
     if keys or strings:
-        return {"file": file, "keys": keys, "strings": strings}
+        return {"file": file_path, "keys": keys, "strings": strings}
     
     return None
 
@@ -97,11 +116,12 @@ def detect_secrets(image_tag):
 
     files = ext.get_all_files(image_tag)
 
+    seen = set()
     findings = []
 
     params = {
-        "min_length": 20,
-        "max_length": 500,
+        "min_length": 10,
+        "max_length": 100,
         "max_strings": 5,
         "threshold": 5.0
     }
@@ -110,7 +130,24 @@ def detect_secrets(image_tag):
         result = _process_file(file_path, **params)
 
         if result:
-            findings.append(result)
+            keys = []
+            strings = []
+
+            for key in result["keys"]:
+                if key["value"] not in seen:
+                    seen.add(key["value"])
+                    keys.append(key)
+
+            for string in result["strings"]:
+                if string not in seen:
+                    seen.add(string)
+                    strings.append(string)
+
+            if keys or strings:
+                result["keys"] = keys
+                result["strings"] = strings
+
+                findings.append(result)
                 
     with open(secrets_file, "w") as f:
         json.dump(findings, f, indent=2)

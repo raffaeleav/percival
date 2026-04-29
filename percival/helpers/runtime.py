@@ -59,3 +59,8 @@ def spinner(desc, func, *args, **kwargs):
 
 def clear():
     print("\033c", end="")
+
+
+def restart():
+    python = sys.executable
+    os.execl(python, python, *sys.argv)

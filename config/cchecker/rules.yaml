@@ -14,19 +14,19 @@ dockerfile_rules:
 
   - id: "LATEST_TAG"
     description: "Uses an unpinned image tag"
-    condition: "FROM .*:latest"
+    condition: "FROM :latest"
     severity: "Low"
     remediation: "Pin the image version by replacing :latest with a specific version tag."
 
   - id: "SUDO_USAGE"
     description: "Uses sudo"
-    condition: "RUN sudo *"
+    condition: "RUN sudo"
     severity: "Low"
     remediation: "Remove sudo from RUN commands, as they run as root by default."
 
   - id: "VOLUME_USAGE"
     description: "Volume usage is anachronistic"
-    condition: "VOLUME *"
+    condition: "VOLUME"
     severity: "Low"
     remediation: > 
       Volume mount points should be defined at runtime using the -v or --mount flag

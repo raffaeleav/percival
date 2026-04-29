@@ -132,6 +132,13 @@ class Percival(cmd2.Cmd):
         rnt.clear()
 
 
+    def do_restart(self, _):
+        """
+        Reload the CLI.
+        """
+        rnt.restart()
+
+
     def do_exit(self, _):
         """
         Exit the PerCIVAl shell
