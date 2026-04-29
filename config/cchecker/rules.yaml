@@ -2,30 +2,35 @@
 dockerfile_rules:
   - id: "ROOT_USER"
     description: "Container runs as root user"
+    pattern: ".*USER\\s+root.*"
     condition: "USER root"
     severity: "High"
     remediation: "Switch to a non-root user using the USER instruction."
 
   - id: "EXPOSED_PORTS"
     description: "Exposed ports could increase attack surface"
+    pattern: "^.*EXPOSE.*"
     condition: "EXPOSE"
     severity: "Medium"
     remediation: "Remove all unnecessary ports from the EXPOSE instruction."
 
   - id: "LATEST_TAG"
     description: "Uses an unpinned image tag"
-    condition: "FROM :latest"
+    pattern: "^.*:latest.*"
+    condition: "FROM *:latest"
     severity: "Low"
     remediation: "Pin the image version by replacing :latest with a specific version tag."
 
   - id: "SUDO_USAGE"
     description: "Uses sudo"
+    pattern: "^RUN\\s+(/bin/sh\\s+-c\\s+)?sudo\\s+"
     condition: "RUN sudo"
     severity: "Low"
     remediation: "Remove sudo from RUN commands, as they run as root by default."
 
   - id: "VOLUME_USAGE"
     description: "Volume usage is anachronistic"
+    pattern: "^.*VOLUME.*"
     condition: "VOLUME"
     severity: "Low"
     remediation: > 
@@ -38,9 +43,9 @@ dockerfile_rules:
     severity: "Medium"
     remediation: "Add a HEALTHCHECK instruction to define a container health check command."
 
-  - id: "NO_MANTAINER"
+  - id: "NO_MAINTAINER"
     description: "Container has no MANTAINER instruction"
-    condition: "MANTAINER"
+    condition: "MAINTAINER"
     severity: "Medium"
     remediation: "Add a MANTAINER instruction."
 ...

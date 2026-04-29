@@ -58,10 +58,10 @@ def convert_cchecker_findings(findings):
     for entry in findings:
         # each line has a \n that ruins table formatting
         line = entry.get("line", "").strip() 
-        condition = entry.get("condition", "")
-        description = entry.get("description", "")
-        severity = entry.get("severity", "")
-        remediation = entry.get("remediation", "")
+        condition = entry.get("condition", "").strip()
+        description = entry.get("description", "").strip()
+        severity = entry.get("severity", "").strip()
+        remediation = entry.get("remediation", "").strip()
 
         md_lines += f"| {line} | {condition} | {description} | {severity} | {remediation} |\n"
         

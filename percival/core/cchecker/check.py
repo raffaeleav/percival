@@ -95,10 +95,10 @@ def check_config(image_tag):
         condition = rule["condition"]
 
         if rule["id"].startswith("NO_"):
-            if is_missing(rule["condition"], lines):
+            if is_missing(condition, lines):
                 findings.append({
                     "line": "N/A",
-                    "condition": rule["condition"],
+                    "condition": condition,
                     "description": rule["description"],
                     "severity": rule["severity"],
                     "remediation": rule["remediation"]
@@ -106,11 +106,13 @@ def check_config(image_tag):
 
                 continue
 
+        pattern = rule["pattern"]
+
         for line in lines:
-            if condition in line:
+             if re.search(pattern, line):
                 findings.append({
                     "line": line,
-                    "condition": rule["condition"],
+                    "condition": condition,
                     "description": rule["description"],
                     "severity": rule["severity"],
                     "remediation": rule["remediation"]
