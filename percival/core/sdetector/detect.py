@@ -5,7 +5,7 @@ import numpy as np
 
 from percival.core.dloader import extract as ext
 from percival.helpers import folders as fld, runtime as rnt
-from percival.core.sdetector import excluded_dirs, excluded_cache_dirs, excluded_exts, key_patterns
+from percival.core.sdetector import excluded_dirs, excluded_cache_dirs, excluded_exts, excluded_files, key_patterns
 
 
 def _get_virtual_path(file_path):
@@ -37,6 +37,10 @@ def _is_excluded(file_path):
         
     for ext in excluded_exts:
         if ext in filename:
+            return True
+        
+    for file in excluded_files:
+        if file in virtual_file_path:
             return True
 
     return False
@@ -123,7 +127,7 @@ def detect_secrets(image_tag):
         "min_length": 10,
         "max_length": 100,
         "max_strings": 5,
-        "threshold": 5.0
+        "threshold": 4.0
     }
 
     for file_path in files:

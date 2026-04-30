@@ -16,7 +16,7 @@ excluded_exts = {
     ".qm",
     ".rar",
     ".sig", ".so", ".state", ".strings", ".svg", ".svgz",
-    ".tar", ".tgz", ".tiff", ".tmp", ".trace", ".ts", ".ttf",
+    ".tar", ".tgz", ".tiff", ".tmp", ".trace", ".ts", ".ttf", ".types",
     ".wav", ".webp", ".whl",
     ".xz",
     ".zip", ".7z"
@@ -26,14 +26,17 @@ excluded_dirs = {
     "/bin",
     "/boot",
     "/dev",
-    "/etc/ssh/moduli",
+    "/etc/apt", "/etc/default", "/etc/dpkg", "/etc/init.d", "/etc/skel",
+    "/etc/mailcap", "/etc/nginx", "/etc/pam.d", "/etc/protocols", 
+    "/etc/selinux/",
+    "/etc/services", "/etc/ssl/certs/", "/etc/ssh/moduli", "/etc/sudoers", "/etc/terminfo",
     "/lib", "/lib64",
     "/proc",
     "/sbin",
     "/sys",
     "/usr/bin", "/usr/include", "/usr/lib", "/usr/lib64", 
     "/usr/local/lib", "/usr/sbin", "/usr/share", "/usr/src",
-    "/var/cache", "/var/lib", "/var/log"
+    "/var/cache", "/var/lib", "/var/log", "/var/www/"
 }
 
 excluded_cache_dirs = {
@@ -43,6 +46,14 @@ excluded_cache_dirs = {
     ".npm",
     "__pycache__",
     "node_modules",
+}
+
+excluded_files = {
+    "/etc/adduser.conf", "/etc/bash.bashrc", "/etc/ca-certificates.conf", "/etc/deluser.conf",
+    "/etc/ethertypes", "/etc/passwd", "/etc/passwd-", "/etc/profile", "/etc/security/access.conf",
+    "/etc/security/group.conf", "/etc/security/namespace.conf", "/etc/security/namespace.init", "/etc/security/pam_env.conf",
+    "/etc/ssl/openssl.cnf", "/etc/sudo_logsrvd.conf", "/etc/xattr.conf",
+    "/root/.bashrc"
 }
 
 key_patterns = {
