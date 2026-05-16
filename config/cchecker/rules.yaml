@@ -14,6 +14,13 @@ dockerfile_rules:
     severity: "Medium"
     remediation: "Remove all unnecessary ports from the EXPOSE instruction."
 
+  - id: "ADD_USAGE"
+    description: "ADD usage is not recommended since it can fetch remote URLs and unpack archives"
+    pattern: "^.*ADD.*"
+    condition: "ADD"
+    severity: "Medium"
+    remediation: "Use COPY instead of ADD"
+
   - id: "LATEST_TAG"
     description: "Uses an unpinned image tag"
     pattern: "^.*:latest.*"
@@ -25,7 +32,7 @@ dockerfile_rules:
     description: "Uses sudo"
     pattern: "^RUN\\s+(/bin/sh\\s+-c\\s+)?sudo\\s+"
     condition: "RUN sudo"
-    severity: "Low"
+    severity: "High"
     remediation: "Remove sudo from RUN commands, as they run as root by default."
 
   - id: "VOLUME_USAGE"

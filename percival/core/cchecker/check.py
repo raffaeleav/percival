@@ -109,7 +109,7 @@ def check_config(image_tag):
         pattern = rule["pattern"]
 
         for line in lines:
-             if re.search(pattern, line):
+            if re.search(pattern, line):
                 findings.append({
                     "line": line,
                     "condition": condition,

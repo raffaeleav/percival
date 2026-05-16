@@ -18,12 +18,14 @@ def trivy(image_tag):
         raise RuntimeError("An unexpected error occurred while scanning with Trivy, please fetch the image and try again")
     
     local_tag = fld.sanitize(image_tag)
+    images_dir = fld.get_images_dir()
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
+    image_file = fld.get_file_path(images_dir, f"{local_tag}.tar")
     vulns_file = fld.get_file_path(image_temp_dir, "trivy_vulns.json")
     pkgs_vulns_file = fld.get_file_path(image_temp_dir, "trivy_pkgs_vulns.json")
     lngs_vulns_file = fld.get_file_path(image_temp_dir, "trivy_lngs_vulns.json")
 
-    cmd = f"trivy image --format json --output {vulns_file} {image_tag}"
+    cmd = f"trivy image --format json --output {vulns_file} --input {image_file}"
     output = sh.run_command(cmd)
 
     pkgs_findings, lngs_findings = prs.parse_trivy_file(vulns_file)
