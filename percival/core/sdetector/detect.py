@@ -127,7 +127,7 @@ def detect_secrets(image_tag):
         "min_length": 10,
         "max_length": 100,
         "max_strings": 5,
-        "threshold": 4.0
+        "threshold": 4.5
     }
 
     for file_path in files:

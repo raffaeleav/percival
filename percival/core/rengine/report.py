@@ -11,6 +11,45 @@ from percival.core.rengine import format as fmt, write as wrt
 from percival.helpers import api, folders as fld, pool as pol, shell as sh
 
 
+def get_findings_md(image_tag, output_file):
+    local_tag = fld.sanitize(image_tag)
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), local_tag)
+
+    if not output_file:
+        output_file = fld.get_file_path(image_report_dir, "findings.md")
+
+    vscanner_findings = fmt.get_vscanner_findings_html(image_tag)
+    cchecker_findings = fmt.get_cchecker_findings_html(image_tag)
+    sdetector_findings = fmt.get_sdetector_findings_html(image_tag)
+
+    lines = [
+        "# perCIVAl Findings",
+        vscanner_findings, 
+        cchecker_findings, 
+        sdetector_findings,
+    ]
+
+    findings_md = "\n".join(lines)
+
+    with open(output_file, "w") as f:
+        f.write(findings_md)
+
+
+def view_findings_md(self, image_tag, output_file):
+    local_tag = fld.sanitize(image_tag)
+    image_report_dir = fld.get_dir(fld.get_reports_dir(), local_tag)
+
+    if not output_file:
+        output_file = fld.get_file_path(image_report_dir, "findings.md")
+
+    with open(output_file, "r") as f:
+        findings_md = f.readlines()
+
+    self.poutput(open(output_file).read())
+
+    return findings_md
+
+
 def get_findings_html(image_tag, output_file):
     rengine_config_dir = fld.get_dir(fld.get_config_dir(), "rengine")
     styles_file = fld.get_file_path(rengine_config_dir, "styles.css")
@@ -183,6 +222,7 @@ def get_findings_custom(image_tag, template, output_file):
 
 def get_findings(image_tag, format, output_file, **kwargs): 
     mode = {
+            "md": get_findings_md,
             "html": get_findings_html,
             "json": get_findings_json,
             "xml": get_findings_xml,
