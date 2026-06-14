@@ -6,7 +6,7 @@ from percival.core.rengine import tabulate as tbt
 from percival.core.rengine import vscanner_files, cchecker_files, sdetector_files
 
 
-def get_vscanner_findings_html(image_tag):
+def get_vscanner_findings_md(image_tag):
     local_tag = fld.sanitize(image_tag)
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
 
@@ -73,7 +73,7 @@ def get_vscanner_findings_html(image_tag):
     return vscanner_findings
 
 
-def get_cchecker_findings_html(image_tag):
+def get_cchecker_findings_md(image_tag):
     local_tag = fld.sanitize(image_tag)
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
 
@@ -121,7 +121,7 @@ def get_cchecker_findings_html(image_tag):
     return cchecker_findings
 
 
-def get_sdetector_findings_html(image_tag):
+def get_sdetector_findings_md(image_tag):
     local_tag = fld.sanitize(image_tag)
     image_temp_dir = fld.get_dir(fld.get_temp_dir(), local_tag)
 

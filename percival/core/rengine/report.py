@@ -18,9 +18,9 @@ def get_findings_md(image_tag, output_file):
     if not output_file:
         output_file = fld.get_file_path(image_report_dir, "findings.md")
 
-    vscanner_findings = fmt.get_vscanner_findings_html(image_tag)
-    cchecker_findings = fmt.get_cchecker_findings_html(image_tag)
-    sdetector_findings = fmt.get_sdetector_findings_html(image_tag)
+    vscanner_findings = fmt.get_vscanner_findings_md(image_tag)
+    cchecker_findings = fmt.get_cchecker_findings_md(image_tag)
+    sdetector_findings = fmt.get_sdetector_findings_md(image_tag)
 
     lines = [
         "# perCIVAl Findings",
@@ -56,29 +56,16 @@ def get_findings_html(image_tag, output_file):
 
     local_tag = fld.sanitize(image_tag)
     image_report_dir = fld.get_dir(fld.get_reports_dir(), local_tag)
-    md_file = fld.get_file_path(image_report_dir, "findings.md")
+    findings_md_file = fld.get_file_path(image_report_dir, "findings.md")
+
+    if not findings_md_file:
+        get_findings_md(image_tag, output_file)
 
     if not output_file:
         output_file = fld.get_file_path(image_report_dir, "findings.html")
 
-    vscanner_findings = fmt.get_vscanner_findings_html(image_tag)
-    cchecker_findings = fmt.get_cchecker_findings_html(image_tag)
-    sdetector_findings = fmt.get_sdetector_findings_html(image_tag)
-
-    lines = [
-        "# perCIVAl Findings",
-        vscanner_findings, 
-        cchecker_findings, 
-        sdetector_findings,
-    ]
-
-    findings = "\n".join(lines)
-
-    with open(md_file, "w") as f:
-        f.write(findings)
-
     cmd = (
-        f"pandoc {md_file} "
+        f"pandoc {findings_md_file} "
         f"-o {output_file} "
         f"-c {styles_file} "
         "--self-contained "
