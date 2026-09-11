@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  A Python CLI that scans for vulnerabilities in Docker container images, developed as a project for the Penetration Testing and Ethical Hacking course, part of the Computer Science Master's Degree program at the University of Salerno
+  A Python CLI that scans for vulnerabilities in Docker container images, developed as a project for my Computer Science Master Thesis at the University of Salerno
 </p>
 
 
@@ -19,7 +19,9 @@
 
 ## Overview 
 <p>
-    perCIVAl was build to provide a valuable tool in the context of Vulnerability Assessment of container images. The CLI enables users to fetch a Docker image (given its image name and tag), scan for OS packages / language dependencies vulnerabilities and then produce a report.
+  perCIVAl was build to provide a valuable tool in the context of Vulnerability Assessment of container images. The CLI enables users to fetch a Docker image (given its image tag),
+  scan for OS packages / language dependencies vulnerabilities, check for configuration errors and secrets. The vulnerabilites are then included in a structured or natural 
+  language report.
 </p>
 
 
@@ -34,8 +36,11 @@
 2) Scan with Trivy
 3) Scan for OS packages vulnerabilities
 4) Scan for language dependencies vulnerabilities
-5) Generate report
-6) Delete temp files (such as image layers and manifest.json)
+5) Check for configuration errors
+6) Regex-based secret detection
+7) Entropy-based secret detection
+8) Produce structured vulnerability report (html, xml, json, sarif, go templates formats)
+9) Produce natural language vulnerability report in pdf format
 
 
 ## Requirements 
@@ -96,15 +101,11 @@ cd percival
 ```bash
 python main.py
 ```
-5) Fetch an image (assuming Docker daemon it's running)
+5) Scan for vulnerabilities
 ```bash
-fetch <image-name>:<tag>
+analyze <image-name>:<tag>
 ```
-6) Scan for vulnerabilities
-```bash
-vscan <image-name>:<tag>
-```
-7) Generate report (found in percival/data/reports directory)
+7) Produce natural language report
 ```bash
 report <image-name>:<tag>
 ```
