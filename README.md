@@ -92,19 +92,16 @@ conda create -n "percival"
 conda activate percival
 pip install -r percival/requirements.txt
 ```
-3) Switch to the project directory
+3) Start the CLI
 ```bash
 cd percival
-```
-4) Start the CLI
-```bash
 python main.py
 ```
-5) Scan for vulnerabilities
+4) Scan for vulnerabilities
 ```bash
 analyze <image-name>:<tag>
 ```
-7) Produce natural language report
+5) Produce natural language report
 ```bash
 report <image-name>:<tag>
 ```
