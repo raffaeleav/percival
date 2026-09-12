@@ -48,34 +48,35 @@
 - [Trivy](https://github.com/aquasecurity/trivy)
 - Python dependencies are listed in the "requirements.txt" file
 
+
 ## Project structure
 ```
 percival/
 │── data/                  
-│   ├── images/            # Docker images
+│   ├── images/                # Docker images
 │   ├── reports/		   
-│   └── temp/              # Image layers
+│   └── temp/                  # Image layers
 │
 │── percival/              
-│
-│── core/                  # React frontend
-│   ├── __init.py__        
-│   ├── extract.py	       # Layers / manifest.json extraction
-|   ├── fetch.py           # Image pull
-│   ├── parse.py           # Database file / language dependencies file parsers
-|   ├── report.py.         # Report generation
-|   └── scan.py            # Vulnerability scanner
-│  
-│ 
-│── helpers/               
-│   ├── __init.py__     
-│   ├── api.py             # Vulnerability database queries
-|   ├── folders.py__     
-│   └── shell.py	       
+│   │
+│   │── core/                  # React frontend
+│   │   ├── __init.py__        
+│   │   ├── extract.py	       # Layers / manifest.json extraction
+│   |   ├── fetch.py           # Image pull
+│   │   ├── parse.py           # Database file / language dependencies file parsers
+│   |   ├── report.py.         # Report generation
+│   |   └── scan.py            # Vulnerability scanner
+│   │  
+│   │ 
+│   └── helpers/               
+│       ├── __init.py__     
+│       ├── api.py             # Vulnerability database queries
+│       ├── folders.py__     
+│       └── shell.py	       
 │
 │── .gitignore
 |
-│── main.py/               # CLI entry point
+│── main.py/                   # CLI entry point
 |
 │── README.md
 └── requirements.txt
