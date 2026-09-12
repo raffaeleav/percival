@@ -14,7 +14,6 @@
 - [Requirements](#Requirements)
 - [Project structure](#Project-structure)
 - [How to replicate](#How-to-replicate)
-- [Built with](#Built-with)
 
 
 ## Overview 
@@ -109,6 +108,3 @@ analyze <image-name>:<tag>
 ```bash
 report <image-name>:<tag>
 ```
-
-## Built with
-- [cmd2](https://cmd2.readthedocs.io/en/latest/) - used for the CLI development
