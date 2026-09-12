@@ -66,7 +66,6 @@ percival/
 │   │   ├── parse.py           # Database file / language dependencies file parsers
 │   |   ├── report.py.         # Report generation
 │   |   └── scan.py            # Vulnerability scanner
-│   │  
 │   │ 
 │   └── helpers/               
 │       ├── __init.py__     
